@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper class for plagiarism_turnitincheck component in forums
+ * Helper class for plagiarism_turnitinsim component in forums
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tcforum {
+class tsforum {
 
     /**
      * Get the text from the database for the forum post.
@@ -116,7 +116,7 @@ class tcforum {
             $context = context_course::instance($courseid);
         }
 
-        if (has_capability('plagiarism/turnitincheck:viewfullreport', $context) || $USER->id == $userid) {
+        if (has_capability('plagiarism/turnitinsim:viewfullreport', $context) || $USER->id == $userid) {
             return true;
         }
 

@@ -18,12 +18,12 @@
  * Task to update local config from Turnitin including testing the webhook, eatures enabled and
  * checking the latest version of the EULA with Turnitin.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @copyright  2018 John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\task;
+namespace plagiarism_turnitinsim\task;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,13 +33,13 @@ defined('MOODLE_INTERNAL') || die();
 class admin_update extends \core\task\scheduled_task {
 
     public function get_name() {
-        return get_string('taskadminupdate', 'plagiarism_turnitincheck');
+        return get_string('taskadminupdate', 'plagiarism_turnitinsim');
     }
 
     public function execute() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitincheck/locallib.php');
-        plagiarism_turnitincheck_task_admin_update();
+        require_once($CFG->dirroot.'/plagiarism/turnitinsim/locallib.php');
+        plagiarism_turnitinsim_task_admin_update();
     }
 }

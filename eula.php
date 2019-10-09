@@ -17,14 +17,14 @@
 /**
  * Page to allow users to accept the EULA
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__.'/../../config.php');
 require_once(__DIR__.'/lib.php');
-require_once(__DIR__.'/classes/tcrequest.class.php');
+require_once(__DIR__.'/classes/tsrequest.class.php');
 
 $cmd = optional_param('cmd', 'eularedirect', PARAM_ALPHAEXT);
 
@@ -38,8 +38,8 @@ switch ($cmd) {
         }
 
         // Get EULA Link.
-        $tcrequest = new tcrequest();
-        $lang = $tcrequest->get_language();
+        $tsrequest = new tsrequest();
+        $lang = $tsrequest->get_language();
         $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
         header('Location: '.$eulaurl);
@@ -50,17 +50,17 @@ switch ($cmd) {
 
         // Set up $PAGE for displaying.
         $PAGE->set_context(context_system::instance());
-        $PAGE->set_heading(get_string('eulaheader', 'plagiarism_turnitincheck'));
+        $PAGE->set_heading(get_string('eulaheader', 'plagiarism_turnitinsim'));
         $PAGE->set_pagelayout('mypublic');
         $PAGE->set_pagetype('user-profile');
-        $PAGE->set_title(get_string('eulaheader', 'plagiarism_turnitincheck'));
+        $PAGE->set_title(get_string('eulaheader', 'plagiarism_turnitinsim'));
         $PAGE->set_url($_SERVER['REQUEST_URI']);
 
         echo $OUTPUT->header();
 
         // Display EULA link.
-        $plagiarismpluginturnitincheck = new plagiarismpluginturnitincheck();
-        echo $plagiarismpluginturnitincheck->print_disclosure(-1);
+        $plagiarismpluginturnitinsim = new plagiarismpluginturnitinsim();
+        echo $plagiarismpluginturnitinsim->print_disclosure(-1);
 
         echo $OUTPUT->footer();
 

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for assign module class for plagiarism_turnitincheck component
+ * Tests for assign module class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcassign.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsassign.class.php');
 
-class tcassign_test extends advanced_testcase {
+class tsassign_test extends advanced_testcase {
 
     const TEST_ASSIGN_TEXT = 'This is text content for unit testing a text submission.';
 
@@ -88,12 +88,12 @@ class tcassign_test extends advanced_testcase {
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log new user in.
         $this->setUser($this->student1);
@@ -108,8 +108,8 @@ class tcassign_test extends advanced_testcase {
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
-        $tcassign = new tcassign();
-        $result = $tcassign->get_onlinetext($submission->id);
+        $tsassign = new tsassign();
+        $result = $tsassign->get_onlinetext($submission->id);
 
         $this->assertEquals($result, self::TEST_ASSIGN_TEXT);
     }
@@ -133,12 +133,12 @@ class tcassign_test extends advanced_testcase {
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log new user in.
         $this->setUser($this->student1);
@@ -154,13 +154,13 @@ class tcassign_test extends advanced_testcase {
         $plugin->save($submission, $data);
 
         // Get itemid.
-        $tcassign = new tcassign();
+        $tsassign = new tsassign();
         $params = new stdClass();
         $params->moduleid = $cm->instance;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_ASSIGN_TEXT;
 
-        $this->assertEquals($tcassign->get_itemid($params), $submission->id);
+        $this->assertEquals($tsassign->get_itemid($params), $submission->id);
     }
 
     /**
@@ -178,13 +178,13 @@ class tcassign_test extends advanced_testcase {
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Get itemid.
-        $tcassign = new tcassign();
+        $tsassign = new tsassign();
         $params = new stdClass();
         $params->moduleid = $cm->instance;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_ASSIGN_TEXT;
 
-        $this->assertEquals($tcassign->get_itemid($params), 0);
+        $this->assertEquals($tsassign->get_itemid($params), 0);
     }
 
     /*
@@ -224,18 +224,18 @@ class tcassign_test extends advanced_testcase {
         $plugin->save($submission, $data);
 
         // Test that get author returns student2 as the author.
-        $tcassign = new tcassign();
-        $response = $tcassign->get_author($this->student1->id, $this->student2->id, $cm, 0);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_author($this->student1->id, $this->student2->id, $cm, 0);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
-        $tcassign = new tcassign();
-        $response = $tcassign->get_author($this->student1->id, 0, $cm, 0);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_author($this->student1->id, 0, $cm, 0);
         $this->assertEquals($this->student1->id, $response);
 
         // Test that get author returns student2 as the author.
-        $tcassign = new tcassign();
-        $response = $tcassign->get_author($this->instructor->id, 0, $cm, $submission->id);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_author($this->instructor->id, 0, $cm, $submission->id);
         $this->assertEquals($this->student1->id, $response);
 
     }
@@ -253,8 +253,8 @@ class tcassign_test extends advanced_testcase {
         groups_add_member($group, $this->student1);
         groups_add_member($group, $this->student2);
 
-        $tcassign = new tcassign();
-        $response = $tcassign->get_first_group_author($this->course->id, $group->id);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return the first student id.
         $this->assertEquals($this->student1->id, $response);
@@ -273,8 +273,8 @@ class tcassign_test extends advanced_testcase {
         groups_add_member($group, $this->instructor);
         groups_add_member($group, $this->student1);
 
-        $tcassign = new tcassign();
-        $response = $tcassign->get_first_group_author($this->course->id, $group->id);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return the student id and not the instructor id.
         $this->assertEquals($this->student1->id, $response);
@@ -292,8 +292,8 @@ class tcassign_test extends advanced_testcase {
         // Enrol instructor and student in group.
         groups_add_member($group, $this->instructor);
 
-        $tcassign = new tcassign();
-        $response = $tcassign->get_first_group_author($this->course->id, $group->id);
+        $tsassign = new tsassign();
+        $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return 0.
         $this->assertEquals(0, $response);
@@ -324,8 +324,8 @@ class tcassign_test extends advanced_testcase {
         $submission->latest = 0;
         $submission->id = $DB->insert_record('assign_submission', $submission);
 
-        $tcassign = new tcassign();
-        $response = $tcassign->is_submission_draft($submission->id);
+        $tsassign = new tsassign();
+        $response = $tsassign->is_submission_draft($submission->id);
 
         // Test should return true that the submission is a draft.
         $this->assertEquals(true, $response);
@@ -334,7 +334,7 @@ class tcassign_test extends advanced_testcase {
         $submission->status = 'submitted';
         $DB->update_record('assign_submission', $submission);
 
-        $response = $tcassign->is_submission_draft($submission->id);
+        $response = $tsassign->is_submission_draft($submission->id);
 
         // Test should return true that the submission is not a draft.
         $this->assertEquals(false, $response);
@@ -345,7 +345,7 @@ class tcassign_test extends advanced_testcase {
      */
     public function test_get_due_date() {
         $this->resetAfterTest();
-        $tcassign = new tcassign();
+        $tsassign = new tsassign();
 
         // Log instructor in.
         $this->setUser($this->instructor);
@@ -356,7 +356,7 @@ class tcassign_test extends advanced_testcase {
         $record->duedate = 1000000001;
         $assign = $this->getDataGenerator()->create_module('assign', $record);
 
-        $response = $tcassign->get_due_date($assign->id);
+        $response = $tsassign->get_due_date($assign->id);
         $this->assertEquals(1000000001, $response);
 
         // Create assign module without a due date.
@@ -365,7 +365,7 @@ class tcassign_test extends advanced_testcase {
         $record->duedate = 1000000001;
         $assign = $this->getDataGenerator()->create_module('assign', $record);
 
-        $response = $tcassign->get_due_date($assign->id);
+        $response = $tsassign->get_due_date($assign->id);
         $this->assertEquals(1000000001, $response);
     }
 
@@ -375,8 +375,8 @@ class tcassign_test extends advanced_testcase {
     public function test_show_other_posts_links() {
         $this->resetAfterTest();
 
-        $tcassign = new tcassign();
-        $response = $tcassign->show_other_posts_links(0, 0);
+        $tsassign = new tsassign();
+        $response = $tsassign->show_other_posts_links(0, 0);
         $this->assertEquals(true, $response);
     }
 

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Configuration to remove on install for plagiarism_turnitincheck component
+ * Configuration to remove on install for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Configuration to remove on install.
  */
-function xmldb_plagiarism_turnitincheck_uninstall() {
+function xmldb_plagiarism_turnitinsim_uninstall() {
 
-    set_config('turnitincheck_use', null, 'plagiarism');
+    set_config('turnitinsim_use', null, 'plagiarism');
 
     // Loop through all modules that support Plagiarism.
     $mods = core_component::get_plugin_list('mod');

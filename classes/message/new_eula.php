@@ -17,12 +17,12 @@
 /**
  * Notification for users that a new user is available that testing webhook check has failed.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\message;
+namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,19 +35,19 @@ class new_eula {
 
         $eventdata = new \core\message\message();
 
-        $eventdata->component         = 'plagiarism_turnitincheck';
+        $eventdata->component         = 'plagiarism_turnitinsim';
         $eventdata->name              = 'new_eula'; // This is the message name from messages.php.
         $eventdata->userfrom          = \core_user::get_noreply_user();
-        $eventdata->subject           = get_string('neweula:subject', 'plagiarism_turnitincheck');
-        $eventdata->fullmessage       = get_string('neweula:message', 'plagiarism_turnitincheck', $CFG->wwwroot.TURNITINCHECK_EULA);
+        $eventdata->subject           = get_string('neweula:subject', 'plagiarism_turnitinsim');
+        $eventdata->fullmessage       = get_string('neweula:message', 'plagiarism_turnitinsim', $CFG->wwwroot.TURNITINSIM_EULA);
         $eventdata->fullmessageformat = FORMAT_HTML;
-        $eventdata->fullmessagehtml   = get_string('neweula:message', 'plagiarism_turnitincheck', $CFG->wwwroot.TURNITINCHECK_EULA);
+        $eventdata->fullmessagehtml   = get_string('neweula:message', 'plagiarism_turnitinsim', $CFG->wwwroot.TURNITINSIM_EULA);
         $eventdata->smallmessage      = '';
         $eventdata->notification      = 1; // This is only set to 0 for personal messages between users.
         $eventdata->courseid          = 0;
 
         // Get all users linked to Turnitin.
-        $users = $DB->get_records('plagiarism_turnitincheck_usr');
+        $users = $DB->get_records('plagiarism_turnitinsim_usr');
 
         // Send notifications.
         foreach ($users as $user) {

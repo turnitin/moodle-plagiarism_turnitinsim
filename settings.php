@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pluging settings for plagiarism_turnitincheck component
+ * Pluging settings for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,29 +28,29 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 
 // Require classes.
-require_once(__DIR__ . '/classes/forms/tcsetupform.class.php');
+require_once(__DIR__ . '/classes/forms/tssetupform.class.php');
 
 global $PAGE;
 
 // Require the JS module to test the connection.
-$PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitincheck');
-$PAGE->requires->string_for_js('connecttestfailed', 'plagiarism_turnitincheck');
-$PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitincheck');
-$PAGE->requires->js_call_amd('plagiarism_turnitincheck/connection_test', 'connectionTest');
+$PAGE->requires->string_for_js('connecttestsuccess', 'plagiarism_turnitinsim');
+$PAGE->requires->string_for_js('connecttestfailed', 'plagiarism_turnitinsim');
+$PAGE->requires->string_for_js('connecttest', 'plagiarism_turnitinsim');
+$PAGE->requires->js_call_amd('plagiarism_turnitinsim/connection_test', 'connectionTest');
 
 // Restrict access to admins only.
 require_login();
-admin_externalpage_setup('plagiarismturnitincheck');
+admin_externalpage_setup('plagiarismturnitinsim');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 $output = $OUTPUT->header();
 
-$tcsetupform = new tcsetupform('');
+$tssetupform = new tssetupform('');
 // Save posted form data.
-if (($data = $tcsetupform->get_data()) && confirm_sesskey()) {
-    $tcsetupform->save($data);
-    $output .= $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitincheck'), 'notifysuccess');
+if (($data = $tssetupform->get_data()) && confirm_sesskey()) {
+    $tssetupform->save($data);
+    $output .= $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitinsim'), 'notifysuccess');
 }
 
 // Add tabs to output.
@@ -62,7 +62,7 @@ $output .= ob_get_contents();
 ob_end_clean();
 
 // Display Turnitin enabled features.
-$output .= $tcsetupform->display_features();
+$output .= $tssetupform->display_features();
 
 // Display plugin settings form with saved configuration.
 $pluginconfig = get_config('plagiarism');
@@ -71,8 +71,8 @@ $pluginconfig = get_config('plagiarism');
 $pluginconfig->permissionoptions['turnitinviewerviewfullsource'] = (!empty($pluginconfig->turnitinviewerviewfullsource)) ? 1 : 0;
 $pluginconfig->permissionoptions['turnitinviewermatchsubinfo'] = (!empty($pluginconfig->turnitinviewermatchsubinfo)) ? 1 : 0;
 
-$tcsetupform->set_data($pluginconfig);
-$output .= $tcsetupform->display();
+$tssetupform->set_data($pluginconfig);
+$output .= $tssetupform->display();
 
 echo $output;
 

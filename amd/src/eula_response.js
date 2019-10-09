@@ -16,13 +16,13 @@
 /**
  * Javascript controller for handling the EULA response.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module plagiarism_turnitincheck/handleEulaResponse
+ * @module plagiarism_turnitinsim/handleEulaResponse
  */
 
 define(['jquery'], function($) {
@@ -38,17 +38,17 @@ define(['jquery'], function($) {
                 // Hide the EULA link.
                 $.ajax({
                     type: "POST",
-                    url: M.cfg.wwwroot + "/plagiarism/turnitincheck/ajax/eula_response.php",
+                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
                     dataType: "text",
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
-                        $('#eulacontainer').hide().html(M.str.plagiarism_turnitincheck.eulaaccepted).fadeIn();
+                        $('#eulacontainer').hide().html(M.str.plagiarism_turnitinsim.eulaaccepted).fadeIn();
                     }
                 });
             });
 
             $(document).on('click', '#pp-eula-decline', function() {
-                $('#eulacontainer').hide().html(M.str.plagiarism_turnitincheck.euladeclined).fadeIn();
+                $('#eulacontainer').hide().html(M.str.plagiarism_turnitinsim.euladeclined).fadeIn();
                 $('input[name=submitbutton]').prop('disabled', '');
             });
         }

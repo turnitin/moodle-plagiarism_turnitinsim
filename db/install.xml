@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="plagiarism/turnitincheck/db" VERSION="20171018" COMMENT="XMLDB file for Moodle plagiarism/turnitincheck plugin"
+<XMLDB PATH="plagiarism/turnitinsim/db" VERSION="20171018" COMMENT="XMLDB file for Moodle plagiarism/turnitinsim plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
     <TABLES>
-        <TABLE NAME="plagiarism_turnitincheck_sub" COMMENT="info about files either submitted or awaiting submission to Turnitin" NEXT="plagiarism_turnitincheck_mod">
+        <TABLE NAME="plagiarism_turnitinsim_sub" COMMENT="info about files either submitted or awaiting submission to Turnitin" NEXT="plagiarism_turnitinsim_mod">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
@@ -28,7 +28,7 @@
                 <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade" PREVIOUS="cm"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitincheck_mod" COMMENT="info about modules configured to use Turnitin" NEXT="plagiarism_turnitincheck_usr">
+        <TABLE NAME="plagiarism_turnitinsim_mod" COMMENT="info about modules configured to use Turnitin" NEXT="plagiarism_turnitinsim_usr">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="turnitinenabled"/>
@@ -45,7 +45,7 @@
                 <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" ONDELETE="cascade" PREVIOUS="primary"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitincheck_usr" COMMENT="info about users linked to Turnitin">
+        <TABLE NAME="plagiarism_turnitinsim_users" COMMENT="info about users linked to Turnitin">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="turnitinid"/>
@@ -58,7 +58,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitincheck_grp" COMMENT="info about groups linked to Turnitin as users">
+        <TABLE NAME="plagiarism_turnitinsim_group" COMMENT="info about groups linked to Turnitin as users">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="turnitinid"/>

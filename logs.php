@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * View logs page for plagiarism_turnitincheck component
+ * View logs page for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,11 +27,11 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 // Require classes.
-require_once(__DIR__ . '/classes/forms/tcsetupform.class.php');
+require_once(__DIR__ . '/classes/forms/tssetupform.class.php');
 
 // Restrict access to admins only.
 require_login();
-admin_externalpage_setup('plagiarismturnitincheck');
+admin_externalpage_setup('plagiarismturnitinsim');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
@@ -48,7 +48,7 @@ require('settings_tabs.php');
 $output .= ob_get_contents();
 ob_end_clean();
 
-$logsdir = $CFG->tempdir . "/turnitincheck/logs/";
+$logsdir = $CFG->tempdir . "/turnitinsim/logs/";
 $savefile = 'apilog_'.$filedate.'.txt';
 
 // If a file date has been passed in then show that file.
@@ -67,8 +67,8 @@ if (!is_null($filedate)) {
                 $date = array_pop($split);
                 $date = str_replace('.txt', '', $date);
 
-                $link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitincheck/logs.php?filedate='.$date,
-                    get_string('viewapilog', 'plagiarism_turnitincheck', userdate(strtotime($date), '%d/%m/%Y')),
+                $link = html_writer::link($CFG->wwwroot.'/plagiarism/turnitinsim/logs.php?filedate='.$date,
+                    get_string('viewapilog', 'plagiarism_turnitinsim', userdate(strtotime($date), '%d/%m/%Y')),
                     array('target' => '_blank'));
                 $output .= html_writer::tag('p', $link);
             }

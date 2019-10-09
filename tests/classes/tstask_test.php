@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/tctask.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/tstask.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tctask.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tstask.class.php');
 
 /**
- * Tests for TurnitinCheck user class.
+ * Tests for TurnitinSim user class.
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
+class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -46,7 +46,7 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
         // Overwrite mtrace.
-        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
 
     /**
@@ -56,7 +56,7 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock settings class and get_enabled_features method.
-        $tcsettings = $this->getMockBuilder(tcsettings::class)
+        $tssettings = $this->getMockBuilder(tssettings::class)
             ->setMethods(['get_enabled_features'])
             ->getMock();
 
@@ -64,14 +64,14 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $featuresenabled = json_decode(file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json'));
 
         // Mock send request method for upload.
-        $tcsettings->expects($this->once())
+        $tssettings->expects($this->once())
             ->method('get_enabled_features')
             ->willReturn($featuresenabled);
 
         $params = new stdClass();
-        $params->tcsettings = $tcsettings;
-        $tctask = new tctask($params);
-        $this->assertTrue($tctask->admin_update());
+        $params->tssettings = $tssettings;
+        $tstask = new tstask($params);
+        $this->assertTrue($tstask->admin_update());
     }
 
     /**
@@ -81,19 +81,19 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API callback request class and send call.
-        $tccallback = $this->getMockBuilder(tccallback::class)
+        $tscallback = $this->getMockBuilder(tscallback::class)
             ->setMethods(['create_webhook'])
             ->getMock();
 
         // Mock get_webhook request method.
-        $tccallback->expects($this->once())
+        $tscallback->expects($this->once())
             ->method('create_webhook')
             ->willReturn('');
 
         $params = new stdClass();
-        $params->tccallback = $tccallback;
-        $tctask = new tctask($params);
-        $this->assertTrue($tctask->test_webhook());
+        $params->tscallback = $tscallback;
+        $tstask = new tstask($params);
+        $this->assertTrue($tstask->test_webhook());
     }
 
     /**
@@ -103,7 +103,7 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API eula request class and get latest version call.
-        $tceula = $this->getMockBuilder(tceula::class)
+        $tseula = $this->getMockBuilder(tseula::class)
             ->setMethods(['get_latest_version'])
             ->getMock();
 
@@ -111,14 +111,14 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $latesteula = json_decode(file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json'));
 
         // Mock get_latest_version request method.
-        $tceula->expects($this->once())
+        $tseula->expects($this->once())
             ->method('get_latest_version')
             ->willReturn($latesteula);
 
         $params = new stdClass();
-        $params->tceula = $tceula;
-        $tctask = new tctask($params);
-        $this->assertTrue($tctask->check_latest_eula_version());
+        $params->tseula = $tseula;
+        $tstask = new tstask($params);
+        $this->assertTrue($tstask->check_latest_eula_version());
 
         // Check version and url are set in config.
         $version = get_config('plagiarism', 'turnitin_eula_version');
@@ -135,7 +135,7 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock settings class and get_enabled_features method.
-        $tcsettings = $this->getMockBuilder(tcsettings::class)
+        $tssettings = $this->getMockBuilder(tssettings::class)
             ->setMethods(['get_enabled_features'])
             ->getMock();
 
@@ -143,14 +143,14 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
         $featuresenabled = json_decode(file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json'));
 
         // Mock send request method for upload.
-        $tcsettings->expects($this->once())
+        $tssettings->expects($this->once())
             ->method('get_enabled_features')
             ->willReturn($featuresenabled);
 
         $params = new stdClass();
-        $params->tcsettings = $tcsettings;
-        $tctask = new tctask($params);
-        $this->assertTrue($tctask->check_enabled_features());
+        $params->tssettings = $tssettings;
+        $tstask = new tstask($params);
+        $this->assertTrue($tstask->check_enabled_features());
 
         // Check features were set in config.
         $features = get_config('plagiarism', 'turnitin_features_enabled');
@@ -162,16 +162,16 @@ class plagiarism_turnitincheck_task_class_testcase extends advanced_testcase {
      */
     public function test_get_report_gen_score_and_request_delay() {
         $this->resetAfterTest();
-        $tctask = new tctask();
+        $tstask = new tstask();
 
         // Verify that normal delays are returned.
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_SCORE_DELAY, $tctask->get_report_gen_score_delay());
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_REQUEST_DELAY, $tctask->get_report_gen_request_delay());
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_SCORE_DELAY, $tstask->get_report_gen_score_delay());
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_REQUEST_DELAY, $tstask->get_report_gen_request_delay());
 
         // Verify that shorter delay is returned due to behat tests running.
         define('BEHAT_TEST', true);
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_REQUEST_DELAY_TESTING, $tctask->get_report_gen_request_delay());
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_SCORE_DELAY_TESTING, $tctask->get_report_gen_score_delay());
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_REQUEST_DELAY_TESTING, $tstask->get_report_gen_request_delay());
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_SCORE_DELAY_TESTING, $tstask->get_report_gen_score_delay());
     }
 
 }

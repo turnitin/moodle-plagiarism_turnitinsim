@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/turnitincheck_setttings_defaults_form.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/turnitinsim_setttings_defaults_form.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/forms/tcdefaultsform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tsdefaultsform.class.php');
 
 /**
  * Tests for default settings form.
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_tcdefaultsform_testcase extends advanced_testcase {
+class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -55,7 +55,7 @@ class plagiarism_tcdefaultsform_testcase extends advanced_testcase {
         // Create data object for default assignment settings.
         $data = new stdClass();
         $data->turnitinenabled = 1;
-        $data->reportgenoptions['reportgeneration'] = TURNITINCHECK_REPORT_GEN_DUEDATE;
+        $data->reportgenoptions['reportgeneration'] = TURNITINSIM_REPORT_GEN_DUEDATE;
         $data->queuedrafts = 1;
         $data->indexoptions['addtoindex'] = 0;
         $data->excludeoptions['excludequotes'] = 0;
@@ -63,14 +63,14 @@ class plagiarism_tcdefaultsform_testcase extends advanced_testcase {
         $data->accessoptions['accessstudents'] = 1;
 
         // Save Module Settings.
-        $form = new tcdefaultsform();
+        $form = new tsdefaultsform();
         $form->save($data);
 
         // Check settings have been saved.
-        $settings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => 0));
+        $settings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => 0));
 
         $this->assertEquals(1, $settings->turnitinenabled);
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_DUEDATE, $settings->reportgeneration);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_DUEDATE, $settings->reportgeneration);
         $this->assertEquals(1, $settings->queuedrafts);
         $this->assertEquals(0, $settings->addtoindex);
         $this->assertEquals(0, $settings->excludequotes);
@@ -85,7 +85,7 @@ class plagiarism_tcdefaultsform_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Save Module Settings.
-        $form = new tcdefaultsform();
+        $form = new tsdefaultsform();
         $output = $form->display();
 
         $this->assertContains('</form>', $output);

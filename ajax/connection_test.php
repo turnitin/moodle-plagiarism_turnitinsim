@@ -17,7 +17,7 @@
 /**
  * Ajax functionality related to testing a connection to Turnitin.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,7 +40,7 @@ switch ($action) {
             $apiurl = required_param('apiurl', PARAM_RAW);
             $apikey = required_param('apikey', PARAM_RAW);
 
-            $tcrequest = new tcrequest();
-            echo $tcrequest->test_connection($apiurl, $apikey);
+            $tsrequest = new tsrequest();
+            echo $tsrequest->test_connection($apiurl, $apikey);
         }
 }

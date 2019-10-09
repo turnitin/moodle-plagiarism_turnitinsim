@@ -17,27 +17,27 @@
 /**
  * Privacy provider tests.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @copyright  2018 John McGettrick
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\deletion_criteria;
-use plagiarism_turnitincheck\privacy\provider;
+use plagiarism_turnitinsim\privacy\provider;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/tests/turnitincheck_generator.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/turnitinsim_generator.php');
 
-class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testcase {
+class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase {
 
     public function setup() {
-        $this->turnitincheck_generator = new turnitincheck_generator();
-        $this->submission = $this->turnitincheck_generator->create_submission();
+        $this->turnitinsim_generator = new turnitinsim_generator();
+        $this->submission = $this->turnitinsim_generator->create_submission();
     }
 
     /**
@@ -46,14 +46,14 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
     public function test_get_metadata() {
         $this->resetAfterTest();
 
-        $collection = new collection('plagiarism_turnitincheck');
+        $collection = new collection('plagiarism_turnitinsim');
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
         $this->assertCount(3, $itemcollection);
 
-        // Verify plagiarism_turnitincheck_sub data is returned.
-        $this->assertEquals('plagiarism_turnitincheck_sub', $itemcollection[0]->get_name());
+        // Verify plagiarism_turnitinsim_sub data is returned.
+        $this->assertEquals('plagiarism_turnitinsim_sub', $itemcollection[0]->get_name());
 
         $privacyfields = $itemcollection[0]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
@@ -63,8 +63,8 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         $this->assertArrayHasKey('submitted_time', $privacyfields);
         $this->assertArrayHasKey('overall_score', $privacyfields);
 
-        // Verify plagiarism_turnitincheck_usr data is returned.
-        $this->assertEquals('plagiarism_turnitincheck_usr', $itemcollection[1]->get_name());
+        // Verify plagiarism_turnitinsim_usr data is returned.
+        $this->assertEquals('plagiarism_turnitinsim_usr', $itemcollection[1]->get_name());
 
         $privacyfields = $itemcollection[1]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
@@ -73,8 +73,8 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         $this->assertArrayHasKey('lasteulaacceptedtime', $privacyfields);
         $this->assertArrayHasKey('lasteulaacceptedlang', $privacyfields);
 
-        // Verify turnitincheck_client data is returned.
-        $this->assertEquals('plagiarism_turnitincheck_client', $itemcollection[2]->get_name());
+        // Verify turnitinsim_client data is returned.
+        $this->assertEquals('plagiarism_turnitinsim_client', $itemcollection[2]->get_name());
 
         $privacyfields = $itemcollection[2]->get_privacy_fields();
         $this->assertArrayHasKey('firstname', $privacyfields);
@@ -83,7 +83,7 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         $this->assertArrayHasKey('submission_filename', $privacyfields);
         $this->assertArrayHasKey('submission_content', $privacyfields);
 
-        $this->assertEquals('privacy:metadata:plagiarism_turnitincheck_client', $itemcollection[2]->get_summary());
+        $this->assertEquals('privacy:metadata:plagiarism_turnitinsim_client', $itemcollection[2]->get_summary());
     }
 
     /**
@@ -96,13 +96,13 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         // Set the cm to the correct one for our submission.
         $cms = $DB->get_records('course_modules');
         $cm = reset($cms);
-        $submissions = $DB->get_records('plagiarism_turnitincheck_sub');
+        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
         $submission = reset($submissions);
 
         $update = new stdClass();
         $update->id = $submission->id;
         $update->cm = $cm->instance;
-        $DB->update_record('plagiarism_turnitincheck_sub', $update);
+        $DB->update_record('plagiarism_turnitinsim_sub', $update);
 
         $this->assertEquals(1, count($submissions));
 
@@ -115,7 +115,7 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         global $DB;
         $this->resetAfterTest();
 
-        $submissions = $DB->get_records('plagiarism_turnitincheck_sub');
+        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
         $this->assertEquals(1, count($submissions));
 
         // Export all of the data for the user.
@@ -128,13 +128,13 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         global $DB;
         $this->resetAfterTest();
 
-        $submissions = $DB->get_records('plagiarism_turnitincheck_sub');
+        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
         $this->assertEquals(1, count($submissions));
 
         // Delete all of the data for the user.
         provider::delete_plagiarism_for_user($this->submission['student']->id, $this->submission['context']);
 
-        $submissions = $DB->get_records('plagiarism_turnitincheck_sub');
+        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
         $this->assertEquals(0, count($submissions));
     }
 
@@ -142,23 +142,23 @@ class plagiarism_turnitincheck_privacy_provider_testcase extends advanced_testca
         global $DB;
         $this->resetAfterTest();
 
-        $submissions = $this->turnitincheck_generator->create_submission(3);
+        $submissions = $this->turnitinsim_generator->create_submission(3);
 
         $cmid = $submissions['context']->__get('instanceid');
 
-        $turnitinchecksubmissions = $DB->get_records(
-            'plagiarism_turnitincheck_sub',
+        $turnitinsimsubmissions = $DB->get_records(
+            'plagiarism_turnitinsim_sub',
             array('cm' => $cmid)
         );
-        $this->assertEquals(3, count($turnitinchecksubmissions));
+        $this->assertEquals(3, count($turnitinsimsubmissions));
 
         // Delete all of the data for the user.
         provider::delete_plagiarism_for_context($submissions['context']);
 
-        $turnitinchecksubmissions = $DB->get_records(
-            'plagiarism_turnitincheck_sub',
+        $turnitinsimsubmissions = $DB->get_records(
+            'plagiarism_turnitinsim_sub',
             array('cm' => $cmid)
         );
-        $this->assertEquals(0, count($turnitinchecksubmissions));
+        $this->assertEquals(0, count($turnitinsimsubmissions));
     }
 }

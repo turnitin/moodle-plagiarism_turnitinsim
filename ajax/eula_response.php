@@ -17,7 +17,7 @@
 /**
  * Ajax functionality for handling the Turnitin EULA response.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,21 +35,21 @@ if (!confirm_sesskey()) {
 $action = required_param('action', PARAM_ALPHAEXT);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 
-$tcrequest = new tcrequest();
+$tsrequest = new tsrequest();
 
 switch ($action) {
     case "accept_eula":
         // Get current user record.
-        $user = $DB->get_record('plagiarism_turnitincheck_usr', array('userid' => $USER->id));
+        $user = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $USER->id));
 
         // Update EULA accepted version and timestamp for user.
         $data = new stdClass();
         $data->id = $user->id;
         $data->lasteulaaccepted = get_config('plagiarism', 'turnitin_eula_version');
         $data->lasteulaacceptedtime = time();
-        $lang = $tcrequest->get_language();
+        $lang = $tsrequest->get_language();
         $data->lasteulaacceptedlang = $lang->localecode;
-        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_usr', $data);
 
         // If we have a context id then this is an instructor. So we update current submissions.
         if (!empty($contextid)) {
@@ -57,10 +57,10 @@ switch ($action) {
             // Get all submissions in this context.
             $context = context::instance_by_id($contextid);
             $submissions = $DB->get_records(
-                'plagiarism_turnitincheck_sub',
+                'plagiarism_turnitinsim_sub',
                 array(
                     'cm'        => $context->instanceid,
-                    'status'    => TURNITINCHECK_SUBMISSION_STATUS_EULA_NOT_ACCEPTED,
+                    'status'    => TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED,
                     'submitter' => $USER->id
                 )
             );
@@ -69,10 +69,10 @@ switch ($action) {
             foreach ($submissions as $submission) {
                 $data = new stdClass();
                 $data->id     = $submission->id;
-                $data->status = TURNITINCHECK_SUBMISSION_STATUS_QUEUED;
+                $data->status = TURNITINSIM_SUBMISSION_STATUS_QUEUED;
                 $data->cm     = $context->instanceid;
 
-                $DB->update_record('plagiarism_turnitincheck_sub', $data);
+                $DB->update_record('plagiarism_turnitinsim_sub', $data);
             }
         }
         echo json_encode(["success" => true]);

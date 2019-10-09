@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Configuration to update on install for plagiarism_turnitincheck component
+ * Configuration to update on install for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,6 +27,30 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Configuration to update on install.
  */
-function xmldb_plagiarism_turnitincheck_install() {
+function xmldb_plagiarism_turnitinsim_install() {
+    global $DB;
+
     set_config('enableplagiarism', 1);
+
+    if ($DB->get_record('config_plugins', array('plugin' => 'plagiarism_turnitincheck'))) {
+        upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_grp", "plagiarism_turnitinsim_group");
+        upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_mod", "plagiarism_turnitinsim_mod");
+        upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_sub", "plagiarism_turnitinsim_sub");
+        upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_usr", "plagiarism_turnitinsim_users");
+    }
+}
+
+function upgrade_from_turnitincheck_plugin($oldtable, $newtable) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    $table = new xmldb_table($oldtable);
+    if ($dbman->table_exists($table)) {
+        $data = $DB->get_records($oldtable);
+        foreach ($data as $row) {
+            unset($row->id);
+            $DB->insert_record($newtable, $row);
+        }
+    }
 }

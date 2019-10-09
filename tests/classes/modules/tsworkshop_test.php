@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for workshop module class for plagiarism_turnitincheck component
+ * Tests for workshop module class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,11 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcworkshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsworkshop.class.php');
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 
-class tcworkshop_test extends advanced_testcase {
+class tsworkshop_test extends advanced_testcase {
 
     const TEST_WORKSHOP_TEXT = 'Generated content';
 
@@ -68,8 +68,8 @@ class tcworkshop_test extends advanced_testcase {
 
         $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
 
-        $tcworkshop = new tcworkshop();
-        $result = $tcworkshop->get_onlinetext($submissionid);
+        $tsworkshop = new tsworkshop();
+        $result = $tsworkshop->get_onlinetext($submissionid);
 
         $this->assertEquals($result, self::TEST_WORKSHOP_TEXT);
     }
@@ -100,12 +100,12 @@ class tcworkshop_test extends advanced_testcase {
         $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
 
         // Get item id.
-        $tcworkshop = new tcworkshop();
+        $tsworkshop = new tsworkshop();
         $params = new stdClass();
         $params->moduleid = $workshop->id;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_WORKSHOP_TEXT;
-        $result = $tcworkshop->get_itemid($params);
+        $result = $tsworkshop->get_itemid($params);
 
         $this->assertEquals($result, $submissionid);
     }
@@ -123,12 +123,12 @@ class tcworkshop_test extends advanced_testcase {
         $workshop = $this->getDataGenerator()->create_module('workshop', array('course' => $course));
 
         // Get item id.
-        $tcworkshop = new tcworkshop();
+        $tsworkshop = new tsworkshop();
         $params = new stdClass();
         $params->moduleid = $workshop->id;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_WORKSHOP_TEXT;
-        $result = $tcworkshop->get_itemid($params);
+        $result = $tsworkshop->get_itemid($params);
 
         $this->assertEquals($result, 0);
     }
@@ -140,13 +140,13 @@ class tcworkshop_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         // Test that get author returns student2 as the author.
-        $tcworkshop = new tcworkshop();
-        $response = $tcworkshop->get_author($this->student1->id, $this->student2->id, 0, 0);
+        $tsworkshop = new tsworkshop();
+        $response = $tsworkshop->get_author($this->student1->id, $this->student2->id, 0, 0);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
-        $tcworkshop = new tcworkshop();
-        $response = $tcworkshop->get_author($this->student1->id, 0, 0, 0);
+        $tsworkshop = new tsworkshop();
+        $response = $tsworkshop->get_author($this->student1->id, 0, 0, 0);
         $this->assertEquals($this->student1->id, $response);
     }
 
@@ -156,8 +156,8 @@ class tcworkshop_test extends advanced_testcase {
     public function test_is_submission_draft() {
         $this->resetAfterTest();
 
-        $tcworkshop = new tcworkshop();
-        $response = $tcworkshop->is_submission_draft(0);
+        $tsworkshop = new tsworkshop();
+        $response = $tsworkshop->is_submission_draft(0);
         $this->assertEquals(false, $response);
     }
 
@@ -167,8 +167,8 @@ class tcworkshop_test extends advanced_testcase {
     public function test_get_due_date() {
         $this->resetAfterTest();
 
-        $tcworkshop = new tcworkshop();
-        $response = $tcworkshop->get_due_date(0);
+        $tsworkshop = new tsworkshop();
+        $response = $tsworkshop->get_due_date(0);
         $this->assertEquals(0, $response);
     }
 
@@ -178,8 +178,8 @@ class tcworkshop_test extends advanced_testcase {
     public function test_show_other_posts_links() {
         $this->resetAfterTest();
 
-        $tcworkshop = new tcworkshop();
-        $response = $tcworkshop->show_other_posts_links(0, 0);
+        $tsworkshop = new tsworkshop();
+        $response = $tsworkshop->show_other_posts_links(0, 0);
         $this->assertEquals(true, $response);
     }
 }

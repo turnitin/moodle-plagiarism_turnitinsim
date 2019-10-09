@@ -16,13 +16,13 @@
 /**
  * Javascript controller for the Turnitin Cloud Viewer launch.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module plagiarism_turnitincheck/cv_launch
+ * @module plagiarism_turnitinsim/cv_launch
  */
 
 define(['jquery'], function($) {
@@ -43,16 +43,16 @@ define(['jquery'], function($) {
                 // It is being done this way as in the future we may have to listen for it closing and act on it.
                 var dvWindow = window.open('', 'cvWindow');
                 var loading = '<div class="tii_dv_loading" style="text-align:center;">';
-                var icon = M.cfg.wwwroot + '/plagiarism/turnitincheck/pix/tiiIcon.svg';
+                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiIcon.svg';
                 loading += '<img src="' + icon + '" style="width:100px; height: 100px">';
-                var loadingCvStr = M.str.plagiarism_turnitincheck.loadingcv;
+                var loadingCvStr = M.str.plagiarism_turnitinsim.loadingcv;
                 loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + loadingCvStr + '</p>';
                 loading += '</div>';
                 $(dvWindow.document.body).html(loading);
 
                 $.ajax({
                     type: "GET",
-                    url: M.cfg.wwwroot + "/plagiarism/turnitincheck/ajax/cv.php",
+                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/cv.php",
                     dataType: "json",
                     data: {
                         action: 'request_cv_launch',

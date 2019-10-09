@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/tcsettings.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/tssettings.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,15 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/forms/tcdefaultsform.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tcsettings.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tsdefaultsform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tssettings.class.php');
 
 /**
  * Tests for settings form.
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_tcsettings_class_testcase extends advanced_testcase {
+class plagiarism_tssettings_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -47,7 +47,7 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
         // Overwrite mtrace.
-        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
 
     /**
@@ -62,7 +62,7 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $data = new stdClass();
         $data->coursemodule = 1;
         $data->turnitinenabled = 1;
-        $data->reportgenoptions['reportgeneration'] = TURNITINCHECK_REPORT_GEN_DUEDATE;
+        $data->reportgenoptions['reportgeneration'] = TURNITINSIM_REPORT_GEN_DUEDATE;
         $data->queuedrafts = 1;
         $data->indexoptions['addtoindex'] = 0;
         $data->excludeoptions['excludequotes'] = 0;
@@ -70,14 +70,14 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $data->accessoptions['accessstudents'] = 1;
 
         // Save Module Settings to test inserting.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Check settings have been saved.
-        $settings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => $data->coursemodule));
+        $settings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $data->coursemodule));
 
         $this->assertEquals(1, $settings->turnitinenabled);
-        $this->assertEquals(TURNITINCHECK_REPORT_GEN_DUEDATE, $settings->reportgeneration);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_DUEDATE, $settings->reportgeneration);
         $this->assertEquals(1, $settings->queuedrafts);
         $this->assertEquals(0, $settings->addtoindex);
         $this->assertEquals(0, $settings->excludequotes);
@@ -89,11 +89,11 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $data->excludeoptions['excludebiblio'] = 0;
 
         // Save Module Settings again.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Check settings have been saved.
-        $settings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => $data->coursemodule));
+        $settings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $data->coursemodule));
 
         $this->assertEquals(1, $settings->excludequotes);
         $this->assertEquals(0, $settings->excludebiblio);
@@ -109,19 +109,19 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_FEATURES_ENABLED])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get Features enabled.
-        $tcsettings = new tcsettings( $tcrequest );
-        $result = $tcsettings->get_enabled_features();
+        $tssettings = new tssettings( $tsrequest );
+        $result = $tssettings->get_enabled_features();
 
         // Test that the enabled features have not been retrieved.
         $this->assertFalse(isset($result->similarity));
@@ -134,19 +134,19 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_FEATURES_ENABLED])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->will($this->throwException(new Exception()));
 
         // Get Features enabled.
-        $tcsettings = new tcsettings($tcrequest);
-        $result = $tcsettings->get_enabled_features();
+        $tssettings = new tssettings($tsrequest);
+        $result = $tssettings->get_enabled_features();
 
         // Test that the enabled features have not been retrieved.
         $this->assertFalse(isset($result->similarity));
@@ -162,19 +162,19 @@ class plagiarism_tcsettings_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_FEATURES_ENABLED])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get the latest EULA version.
-        $tcsettings = new tcsettings( $tcrequest );
-        $result = $tcsettings->get_enabled_features();
+        $tssettings = new tssettings( $tsrequest );
+        $result = $tssettings->get_enabled_features();
 
         // Test that the latest EULA version has been retrieved.
         $this->assertTrue(isset($result->similarity));

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Events and observers for plagiarism_turnitincheck component
+ * Events and observers for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,26 +27,26 @@ defined('MOODLE_INTERNAL') || die();
 $observers = array (
     array(
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitincheck_observer::assignsubmission_file_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_file_uploaded'
     ),
     array(
         'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitincheck_observer::assignsubmission_onlinetext_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_onlinetext_uploaded'
     ),
     array(
         'eventname' => '\mod_assign\event\assessable_submitted',
-        'callback'  => 'plagiarism_turnitincheck_observer::assignsubmission_submitted'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_submitted'
     ),
     array(
         'eventname' => '\mod_workshop\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitincheck_observer::workshop_assessable_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::workshop_assessable_uploaded'
     ),
     array(
         'eventname' => '\mod_forum\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitincheck_observer::forum_assessable_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::forum_assessable_uploaded'
     ),
     array(
         'eventname' => '\core\event\course_module_updated',
-        'callback'  => 'plagiarism_turnitincheck_observer::module_updated'
+        'callback'  => 'plagiarism_turnitinsim_observer::module_updated'
     )
 );

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/tcsubmission.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/tssubmission.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,15 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for TurnitinCheck submission class
+ * Tests for TurnitinSim submission class
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_turnitincheck_submission_class_testcase extends advanced_testcase {
+class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase {
 
     const VALID_SUBMISSION_ID = '0ec9141f-3390-460e-8d2f-a4080080e749';
     const INVALID_SUBMISSION_ID = 'INVALID_ID';
@@ -58,7 +58,7 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
 
         // Overwrite mtrace.
-        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
 
         // Create a course.
         $this->course = $this->getDataGenerator()->create_course();
@@ -90,7 +90,7 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
 
         // Assign capability to instructor to view full reports at course level.
         $context = context_course::instance($this->course->id);
-        assign_capability('plagiarism/turnitincheck:viewfullreport', CAP_ALLOW, $instructorrole->id, $context->id);
+        assign_capability('plagiarism/turnitinsim:viewfullreport', CAP_ALLOW, $instructorrole->id, $context->id);
         role_assign($instructorrole->id, $this->instructor->id, $context->id);
         accesslib_clear_all_caches_for_unit_testing();
     }
@@ -104,42 +104,42 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Submissions table should be empty.
-        $submission = $DB->get_records('plagiarism_turnitincheck_sub');
+        $submission = $DB->get_records('plagiarism_turnitinsim_sub');
         $this->assertEmpty($submission);
 
         // Create new submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm(1);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier('PATHNAMEHASH');
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
-        $tcsubmission->settogenerate(1);
-        $tcsubmission->setgenerationtime(100000001);
-        $tcsubmission->update();
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier('PATHNAMEHASH');
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->settogenerate(1);
+        $tssubmission->setgenerationtime(100000001);
+        $tssubmission->update();
 
         // Submission id should now be set.
-        $this->assertInternalType("int", $tcsubmission->getid());
+        $this->assertInternalType("int", $tssubmission->getid());
 
         // Check an id that doesn't exist doesn't return an object.
-        $submission = $DB->get_record('plagiarism_turnitincheck_sub', array('id' => 0));
+        $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => 0));
         $this->assertFalse(is_object($submission));
 
         // There should now be an entry in the database table.
-        $submission = $DB->get_record('plagiarism_turnitincheck_sub', array('id' => $tcsubmission->getid()));
+        $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => $tssubmission->getid()));
         $this->assertTrue(is_object($submission));
 
         // Check params are what we set originally.
-        $this->assertEquals($submission->identifier, $tcsubmission->getidentifier());
-        $this->assertEquals($submission->status, TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
+        $this->assertEquals($submission->identifier, $tssubmission->getidentifier());
+        $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $this->assertEquals($submission->userid, $this->student1->id);
         $this->assertEquals($submission->cm, 1);
         $this->assertEquals($submission->to_generate, 1);
         $this->assertEquals($submission->generation_time, 100000001);
 
         // Change a parameter and check it saves correctly.
-        $tcsubmission->setidentifier('NEWPATHNAMEHASH');
-        $this->assertEquals($tcsubmission->getidentifier(), 'NEWPATHNAMEHASH');
+        $tssubmission->setidentifier('NEWPATHNAMEHASH');
+        $this->assertEquals($tssubmission->getidentifier(), 'NEWPATHNAMEHASH');
     }
 
     /**
@@ -149,11 +149,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and check response.
-        $userentry = $tcsubmission->build_user_array_entry('');
+        $userentry = $tssubmission->build_user_array_entry('');
         $this->assertEmpty($userentry);
     }
 
@@ -164,18 +164,18 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and get Turnitin id.
-        $userentry = $tcsubmission->build_user_array_entry($this->student1);
-        $tcuser = new tcuser($this->student1->id);
+        $userentry = $tssubmission->build_user_array_entry($this->student1);
+        $tsuser = new tsuser($this->student1->id);
 
         // Check user array returns correct details.
         $this->assertEquals($this->student1->lastname, $userentry['family_name']);
         $this->assertEquals($this->student1->firstname, $userentry['given_name']);
         $this->assertEquals($this->student1->email, $userentry['email']);
-        $this->assertEquals($tcuser->get_turnitinid(), $userentry['id']);
+        $this->assertEquals($tsuser->get_turnitinid(), $userentry['id']);
     }
 
     /*
@@ -184,9 +184,9 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
     public function test_create_group_metadata_no_cm() {
         $this->resetAfterTest();
 
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm(-1);
-        $this->assertFalse($tcsubmission->create_group_metadata());
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm(-1);
+        $this->assertFalse($tssubmission->create_group_metadata());
     }
 
     /**
@@ -201,24 +201,24 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         groups_add_member($group->id, $this->student2->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setgroupid($group->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setgroupid($group->id);
 
         // Build user entry and get Turnitin id.
-        $owners = $tcsubmission->create_owners_metadata();
-        $tcuser1 = new tcuser($this->student1->id);
-        $tcuser2 = new tcuser($this->student2->id);
+        $owners = $tssubmission->create_owners_metadata();
+        $tsuser1 = new tsuser($this->student1->id);
+        $tsuser2 = new tsuser($this->student2->id);
 
         // Check user array returns correct details.
         $this->assertContains($this->student1->lastname, $owners[0]['family_name']);
         $this->assertContains($this->student1->firstname, $owners[0]['given_name']);
         $this->assertContains($this->student1->email, $owners[0]['email']);
-        $this->assertContains($tcuser1->get_turnitinid(), $owners[0]['id']);
+        $this->assertContains($tsuser1->get_turnitinid(), $owners[0]['id']);
 
         $this->assertContains($this->student2->lastname, $owners[1]['family_name']);
         $this->assertContains($this->student2->firstname, $owners[1]['given_name']);
         $this->assertContains($this->student2->email, $owners[1]['email']);
-        $this->assertContains($tcuser2->get_turnitinid(), $owners[1]['id']);
+        $this->assertContains($tsuser2->get_turnitinid(), $owners[1]['id']);
     }
 
     /**
@@ -228,18 +228,18 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and get Turnitin id.
-        $owners = $tcsubmission->create_owners_metadata();
-        $tcuser = new tcuser($this->student1->id);
+        $owners = $tssubmission->create_owners_metadata();
+        $tsuser = new tsuser($this->student1->id);
 
         // Check user array returns correct details.
         $this->assertEquals($this->student1->lastname, $owners[0]['family_name']);
         $this->assertEquals($this->student1->firstname, $owners[0]['given_name']);
         $this->assertEquals($this->student1->email, $owners[0]['email']);
-        $this->assertEquals($tcuser->get_turnitinid(), $owners[0]['id']);
+        $this->assertEquals($tsuser->get_turnitinid(), $owners[0]['id']);
     }
 
     /**
@@ -249,10 +249,10 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
+        $tssubmission = new tssubmission();
 
         // Build user entry and get Turnitin id.
-        $owners = $tcsubmission->create_owners_metadata();
+        $owners = $tssubmission->create_owners_metadata();
 
         // Check user array returns correct details.
         $this->assertEmpty($owners);
@@ -265,14 +265,14 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $this->resetAfterTest();
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setuserid($this->student1->id);
 
-        $owner = $tcsubmission->get_owner();
-        $tcuser = new tcuser($this->student1->id);
+        $owner = $tssubmission->get_owner();
+        $tsuser = new tsuser($this->student1->id);
 
         // Check owner is the user.
-        $this->assertEquals($tcuser->get_turnitinid(), $owner);
+        $this->assertEquals($tsuser->get_turnitinid(), $owner);
     }
 
     /**
@@ -285,15 +285,15 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setgroupid($group->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setgroupid($group->id);
 
         // Build user entry and get Turnitin id.
-        $owner = $tcsubmission->get_owner();
-        $tcgroup = new tcgroup($group->id);
+        $owner = $tssubmission->get_owner();
+        $tsgroup = new tsgroup($group->id);
 
         // Check owner is the group.
-        $this->assertEquals($tcgroup->get_turnitinid(), $owner);
+        $this->assertEquals($tsgroup->get_turnitinid(), $owner);
     }
 
     /*
@@ -312,10 +312,10 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
-        $metadata = $tcsubmission->create_group_metadata();
+        $metadata = $tssubmission->create_group_metadata();
 
         // Verify assignment is in metadata.
         $this->assertEquals($metadata['group']['id'], $cm->id);
@@ -328,9 +328,9 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
 
         // Verify instructor is in metadata.
         $instructor = $DB->get_record('user', array('id' => $this->instructor->id));
-        $instructor->tcdetails = new tcuser($this->instructor->id);
+        $instructor->tsdetails = new tsuser($this->instructor->id);
 
-        $this->assertEquals($metadata['group_context']['owners'][0]['id'], $instructor->tcdetails->get_turnitinid());
+        $this->assertEquals($metadata['group_context']['owners'][0]['id'], $instructor->tsdetails->get_turnitinid());
         $this->assertEquals($metadata['group_context']['owners'][0]['family_name'], $instructor->lastname);
         $this->assertEquals($metadata['group_context']['owners'][0]['given_name'], $instructor->firstname);
         $this->assertEquals($metadata['group_context']['owners'][0]['email'], $instructor->email);
@@ -342,10 +342,10 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
     public function test_get_file_details_with_non_existent_file() {
         $this->resetAfterTest();
 
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setidentifier('HASH FOR FILE THAT WONT EXIST');
+        $tssubmission = new tssubmission();
+        $tssubmission->setidentifier('HASH FOR FILE THAT WONT EXIST');
 
-        $this->assertFalse($tcsubmission->get_file_details());
+        $this->assertFalse($tssubmission->get_file_details());
     }
 
     /**
@@ -360,10 +360,10 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
 
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
-        $tcsubmission = new tcsubmission( new tcrequest() );
-        $tcsubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission->setidentifier($file->get_pathnamehash());
 
-        $file = $tcsubmission->get_file_details();
+        $file = $tssubmission->get_file_details();
         $this->assertTrue( is_a($file, 'stored_file') );
     }
 
@@ -377,13 +377,13 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $response = file_get_contents(__DIR__ . '/../fixtures/create_submission_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_CREATE_SUBMISSION])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
@@ -394,15 +394,15 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm(1);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->create_submission_in_turnitin();
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->create_submission_in_turnitin();
 
         // Test that the submission status is created.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_CREATED, $tcsubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_CREATED, $tssubmission->getstatus());
     }
 
     /**
@@ -415,13 +415,13 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $response = file_get_contents(__DIR__ . '/../fixtures/create_submission_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_CREATE_SUBMISSION])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
@@ -454,17 +454,17 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $plugin->save($submission, $data);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setidentifier(sha1($textcontent));
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_CONTENT);
-        $tcsubmission->create_submission_in_turnitin();
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setidentifier(sha1($textcontent));
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
+        $tssubmission->create_submission_in_turnitin();
 
         // Test that the submission status is created.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_CREATED, $tcsubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_CREATED, $tssubmission->getstatus());
     }
 
     /**
@@ -477,22 +477,22 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $uploadresponse = file_get_contents(__DIR__ . '/../fixtures/upload_file_to_submission_success.json');
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
-        $endpoint = ENDPOINT_UPLOAD_SUBMISSION;
+        $endpoint = TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION;
         $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($uploadresponse);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
+        $tssubmission = new tssubmission($tsrequest);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -509,19 +509,19 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
         // Set submission object params.
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setturnitinid(self::VALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_CREATED);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Upload file to submission.
-        $tcsubmission->upload_submission_to_turnitin();
+        $tssubmission->upload_submission_to_turnitin();
 
         // Test that the submission status is uploaded.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED, $tcsubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $tssubmission->getstatus());
     }
 
     /**
@@ -535,16 +535,16 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $jsonresponse = (array)json_decode($uploadresponse);
 
         // Mock API update submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
-        $endpoint = ENDPOINT_UPLOAD_SUBMISSION;
+        $endpoint = TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION;
         $endpoint = str_replace('{{submission_id}}', self::INVALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($uploadresponse);
@@ -556,21 +556,21 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
         // Create submission object with status created and an invalid Turnitin Id to simulate a not found error.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm(1);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->setturnitinid(self::INVALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_CREATED);
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setturnitinid(self::INVALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Upload file to submission.
-        $tcsubmission->upload_submission_to_turnitin();
+        $tssubmission->upload_submission_to_turnitin();
 
         // Test that the submission status is uploaded.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_ERROR, $tcsubmission->getstatus());
-        $this->assertEquals($jsonresponse['message'], $tcsubmission->geterrormessage());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
+        $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
     }
 
     /**
@@ -583,22 +583,22 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $uploadresponse = file_get_contents(__DIR__ . '/../fixtures/upload_file_to_submission_success.json');
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
-        $endpoint = ENDPOINT_UPLOAD_SUBMISSION;
+        $endpoint = TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION;
         $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($uploadresponse);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
+        $tssubmission = new tssubmission($tsrequest);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -629,20 +629,20 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $plugin->save($submission, $data);
 
         // Set submission object params.
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setturnitinid(self::VALID_SUBMISSION_ID);
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_CREATED);
-        $tcsubmission->setidentifier(sha1($textcontent));
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_CONTENT);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->setidentifier(sha1($textcontent));
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
 
         // Upload file to submission.
-        $tcsubmission->upload_submission_to_turnitin();
+        $tssubmission->upload_submission_to_turnitin();
 
         // Test that the submission status is uploaded.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED, $tcsubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $tssubmission->getstatus());
     }
 
     /**
@@ -655,16 +655,16 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $reportgenresponse = file_get_contents(__DIR__ . '/../fixtures/request_report_generation_success.json');
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
-        $endpoint = ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
         $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($reportgenresponse);
@@ -700,25 +700,25 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $data->checkprivate = 1;
 
         // Save Module Settings.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setturnitinid(self::VALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Request report generation.
-        $tcsubmission->request_turnitin_report_generation();
+        $tssubmission->request_turnitin_report_generation();
 
         // Test that the submission status is uploaded.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_REQUESTED, $tcsubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_REQUESTED, $tssubmission->getstatus());
     }
 
     /**
@@ -732,16 +732,16 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
-        $endpoint = ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
         $endpoint = str_replace('{{submission_id}}', self::INVALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($reportgenresponse);
@@ -775,26 +775,26 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setturnitinid(self::INVALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::INVALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Request report generation.
-        $tcsubmission->request_turnitin_report_generation();
+        $tssubmission->request_turnitin_report_generation();
 
         // Test that the submission status is errored.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_ERROR, $tcsubmission->getstatus());
-        $this->assertEquals($jsonresponse['message'], $tcsubmission->geterrormessage());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
+        $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
     }
 
     /**
@@ -809,16 +809,16 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
-        $endpoint = ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
         $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($reportgenresponse);
@@ -852,26 +852,26 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setturnitinid(self::VALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Request report generation.
-        $tcsubmission->request_turnitin_report_generation();
+        $tssubmission->request_turnitin_report_generation();
 
         // Test that the submission status is errored.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_ERROR, $tcsubmission->getstatus());
-        $this->assertEquals($jsonresponse['message'], $tcsubmission->geterrormessage());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
+        $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
     }
 
     /**
@@ -885,16 +885,16 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
-        $endpoint = ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
         $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
 
         // Mock send request method for upload.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->with($endpoint)
             ->willReturn($reportgenresponse);
@@ -928,26 +928,26 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tcsettings();
+        $form = new tssettings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission($tcrequest);
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->setitemid($submission->id);
-        $tcsubmission->setturnitinid(self::VALID_SUBMISSION_ID);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
-        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
         // Request report generation.
-        $tcsubmission->request_turnitin_report_generation();
+        $tssubmission->request_turnitin_report_generation();
 
         // Test that the submission status is errored.
-        $this->assertEquals(TURNITINCHECK_SUBMISSION_STATUS_ERROR, $tcsubmission->getstatus());
-        $this->assertEquals($jsonresponse['message'], $tcsubmission->geterrormessage());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
+        $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
     }
 
     /**
@@ -969,12 +969,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -995,21 +995,21 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
             "file" => $file
         );
 
-        // Create a TurnitinCheck submission record that is queued for sending to Turnitin.
-        $tcsubmission = new tcsubmission(new tcrequest());
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->settogenerate(1);
-        $tcsubmission->update();
+        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->settogenerate(1);
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->userid, $this->student1->id);
-        $this->assertEquals($result->status, TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
+        $this->assertEquals($result->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $this->assertEquals($result->identifier, $file->get_pathnamehash());
     }
 
@@ -1033,12 +1033,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -1064,10 +1064,10 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         );
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->userid, $this->student1->id);
-        $this->assertEquals($result->status, TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
+        $this->assertEquals($result->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $this->assertEquals($result->identifier, sha1($textcontent));
         $this->assertEquals($result->itemid, $submission->id);
     }
@@ -1091,12 +1091,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
-        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINCHECK_REPORT_GEN_IMMEDIATE);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINSIM_REPORT_GEN_IMMEDIATE);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -1117,18 +1117,18 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
             "file" => $file
         );
 
-        // Create a TurnitinCheck submission record that is queued for sending to Turnitin.
-        $tcsubmission = new tcsubmission(new tcrequest());
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->calculate_generation_time();
-        $tcsubmission->update();
+        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
@@ -1159,13 +1159,13 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1,
-            'reportgeneration' => TURNITINCHECK_REPORT_GEN_IMMEDIATE_AND_DUEDATE);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+            'reportgeneration' => TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -1186,29 +1186,29 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
             "file" => $file
         );
 
-        // Create a TurnitinCheck submission record that is queued for sending to Turnitin.
-        $tcsubmission = new tcsubmission(new tcrequest());
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->calculate_generation_time();
-        $tcsubmission->update();
+        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
 
         // Update status and generation time.
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_COMPLETE);
-        $tcsubmission->calculate_generation_time();
-        $tcsubmission->update();
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_COMPLETE);
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertEquals($result->generation_time, $duedate);
@@ -1238,12 +1238,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism');
 
         // Enable plugin for module.
-        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINCHECK_REPORT_GEN_DUEDATE);
-        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINSIM_REPORT_GEN_DUEDATE);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -1264,18 +1264,18 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
             "file" => $file
         );
 
-        // Create a TurnitinCheck submission record that is queued for sending to Turnitin.
-        $tcsubmission = new tcsubmission(new tcrequest());
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
-        $tcsubmission->setsubmitter($this->student1->id);
-        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
-        $tcsubmission->setidentifier($file->get_pathnamehash());
-        $tcsubmission->calculate_generation_time();
-        $tcsubmission->update();
+        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertEquals($result->generation_time, $duedate);
@@ -1288,11 +1288,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $DB->update_record('assign', $update);
 
         // Update generation time.
-        $tcsubmission->calculate_generation_time();
-        $tcsubmission->update();
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
 
         // Compare submission details.
-        $result = tcsubmission::get_submission_details($linkarray);
+        $result = tssubmission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
@@ -1317,12 +1317,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $this->course);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
 
         // Test that the submission is not anonymous if blindmarking is off.
-        $this->assertEquals(false, $tcsubmission->is_submission_anonymous());
+        $this->assertEquals(false, $tssubmission->is_submission_anonymous());
     }
 
     /**
@@ -1346,12 +1346,12 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $assign = new assign($context, $cm, $this->course);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
-        $tcsubmission->setuserid($this->student1->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
 
         // Test that the submission is not anonymous if blindmarking is on.
-        $this->assertEquals(true, $tcsubmission->is_submission_anonymous());
+        $this->assertEquals(true, $tssubmission->is_submission_anonymous());
 
         // Reveal Identities.
         $data = new stdClass();
@@ -1360,7 +1360,7 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $DB->update_record('assign', $data);
 
         // Test that the submission is not anonymous if blindmarking is on and identities have been revealed.
-        $this->assertEquals(false, $tcsubmission->is_submission_anonymous());
+        $this->assertEquals(false, $tssubmission->is_submission_anonymous());
     }
 
     /**
@@ -1380,11 +1380,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
         // Test that the submission is anonymous if hide identities is on.
-        $this->assertEquals(true, $tcsubmission->is_submission_anonymous());
+        $this->assertEquals(true, $tssubmission->is_submission_anonymous());
     }
 
     /**
@@ -1404,11 +1404,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
         // Test that the submission is anonymous if hide identities is on.
-        $this->assertEquals(false, $tcsubmission->is_submission_anonymous());
+        $this->assertEquals(false, $tssubmission->is_submission_anonymous());
     }
 
     /**
@@ -1429,11 +1429,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $permissions = $tcsubmission->create_report_viewer_permissions();
+        $permissions = $tssubmission->create_report_viewer_permissions();
         $this->assertEquals(true, $permissions['may_view_submission_full_source']);
         $this->assertEquals(true, $permissions['may_view_match_submission_info']);
     }
@@ -1456,11 +1456,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are false as the config values are set to false.
-        $permissions = $tcsubmission->create_report_viewer_permissions();
+        $permissions = $tssubmission->create_report_viewer_permissions();
         $this->assertEquals(false, $permissions['may_view_submission_full_source']);
         $this->assertEquals(false, $permissions['may_view_match_submission_info']);
     }
@@ -1480,11 +1480,11 @@ class plagiarism_turnitincheck_submission_class_testcase extends advanced_testca
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tcsubmission = new tcsubmission();
-        $tcsubmission->setcm($cm->id);
+        $tssubmission = new tssubmission();
+        $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $overrides = $tcsubmission->create_similarity_overrides();
+        $overrides = $tssubmission->create_similarity_overrides();
         $this->assertEquals(true, $overrides['modes']['match_overview']);
         $this->assertEquals(true, $overrides['modes']['all_sources']);
     }

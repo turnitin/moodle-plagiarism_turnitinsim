@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ $messageproviders = array (
     'digital_receipt_student' => array (),
     // Notify instructors with their copy of the digital receipt.
     'digital_receipt_instructor' => array (
-        'capability'  => 'plagiarism/turnitincheck:viewfullreport'
+        'capability'  => 'plagiarism/turnitinsim:viewfullreport'
     ),
     // Notify administrators if the test webhook check fails.
     'get_webhook_failure' => array (

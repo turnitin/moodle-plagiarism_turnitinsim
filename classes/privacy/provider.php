@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for plagiarism_turnitincheck.
+ * Privacy Subsystem implementation for plagiarism_turnitinsim.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @copyright  2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\privacy;
+namespace plagiarism_turnitinsim\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -50,37 +50,37 @@ class provider implements
      */
     public static function _get_metadata(collection $collection) {
         $collection->add_database_table(
-            'plagiarism_turnitincheck_sub',
+            'plagiarism_turnitinsim_sub',
             [
-                'userid' => 'privacy:metadata:plagiarism_turnitincheck_sub:userid',
-                'turnitinid' => 'privacy:metadata:plagiarism_turnitincheck_sub:turnitinid',
-                'identifier' => 'privacy:metadata:plagiarism_turnitincheck_sub:identifier',
-                'itemid' => 'privacy:metadata:plagiarism_turnitincheck_sub:itemid',
-                'submitted_time' => 'privacy:metadata:plagiarism_turnitincheck_sub:submitted_time',
-                'overall_score' => 'privacy:metadata:plagiarism_turnitincheck_sub:overall_score'
+                'userid' => 'privacy:metadata:plagiarism_turnitinsim_sub:userid',
+                'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_sub:turnitinid',
+                'identifier' => 'privacy:metadata:plagiarism_turnitinsim_sub:identifier',
+                'itemid' => 'privacy:metadata:plagiarism_turnitinsim_sub:itemid',
+                'submitted_time' => 'privacy:metadata:plagiarism_turnitinsim_sub:submitted_time',
+                'overall_score' => 'privacy:metadata:plagiarism_turnitinsim_sub:overall_score'
             ],
-            'privacy:metadata:plagiarism_turnitincheck_sub'
+            'privacy:metadata:plagiarism_turnitinsim_sub'
         );
 
         $collection->add_database_table(
-            'plagiarism_turnitincheck_usr',
+            'plagiarism_turnitinsim_usr',
             [
-                'userid' => 'privacy:metadata:plagiarism_turnitincheck_usr:userid',
-                'turnitinid' => 'privacy:metadata:plagiarism_turnitincheck_usr:turnitinid',
-                'lasteulaaccepted' => 'privacy:metadata:plagiarism_turnitincheck_usr:lasteulaaccepted',
-                'lasteulaacceptedtime' => 'privacy:metadata:plagiarism_turnitincheck_usr:lasteulaacceptedtime',
-                'lasteulaacceptedlang' => 'privacy:metadata:plagiarism_turnitincheck_usr:lasteulaacceptedlang'
+                'userid' => 'privacy:metadata:plagiarism_turnitinsim_usr:userid',
+                'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_usr:turnitinid',
+                'lasteulaaccepted' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaaccepted',
+                'lasteulaacceptedtime' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedtime',
+                'lasteulaacceptedlang' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedlang'
             ],
-            'privacy:metadata:plagiarism_turnitincheck_usr'
+            'privacy:metadata:plagiarism_turnitinsim_usr'
         );
 
-        $collection->link_external_location('plagiarism_turnitincheck_client', [
-            'firstname' => 'privacy:metadata:plagiarism_turnitincheck_client:firstname',
-            'lastname' => 'privacy:metadata:plagiarism_turnitincheck_client:lastname',
-            'submission_title' => 'privacy:metadata:plagiarism_turnitincheck_client:submission_title',
-            'submission_filename' => 'privacy:metadata:plagiarism_turnitincheck_client:submission_filename',
-            'submission_content' => 'privacy:metadata:plagiarism_turnitincheck_client:submission_content',
-        ], 'privacy:metadata:plagiarism_turnitincheck_client');
+        $collection->link_external_location('plagiarism_turnitinsim_client', [
+            'firstname' => 'privacy:metadata:plagiarism_turnitinsim_client:firstname',
+            'lastname' => 'privacy:metadata:plagiarism_turnitinsim_client:lastname',
+            'submission_title' => 'privacy:metadata:plagiarism_turnitinsim_client:submission_title',
+            'submission_filename' => 'privacy:metadata:plagiarism_turnitinsim_client:submission_filename',
+            'submission_content' => 'privacy:metadata:plagiarism_turnitinsim_client:submission_content',
+        ], 'privacy:metadata:plagiarism_turnitinsim_client');
 
         return $collection;
     }
@@ -102,7 +102,7 @@ class provider implements
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {assign} a ON cm.instance = a.id
                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
-             LEFT JOIN {plagiarism_turnitincheck_sub} ts ON ts.cm = cm.instance
+             LEFT JOIN {plagiarism_turnitinsim_sub} ts ON ts.cm = cm.instance
                  WHERE ts.userid = :userid";
 
         $contextlist = new contextlist();
@@ -138,13 +138,13 @@ class provider implements
                 itemid,
                 submitted_time,
                 overall_score
-                  FROM {plagiarism_turnitincheck_sub}
+                  FROM {plagiarism_turnitinsim_sub}
                  WHERE userid = :userid";
         $submissions = $DB->get_records_sql($sql, $params);
 
         foreach ($submissions as $submission) {
             $context = \context_module::instance($submission->cm);
-            self::_export_plagiarism_turnitincheck_data_for_user((array)$submission, $context, $user);
+            self::_export_plagiarism_turnitinsim_data_for_user((array)$submission, $context, $user);
         }
     }
 
@@ -155,7 +155,7 @@ class provider implements
      * @param \context_module $context the module context.
      * @param \stdClass $user the user record
      */
-    protected static function _export_plagiarism_turnitincheck_data_for_user(array $submissiondata,
+    protected static function _export_plagiarism_turnitinsim_data_for_user(array $submissiondata,
          \context_module $context, \stdClass $user) {
         // Fetch the generic module data.
         $contextdata = helper::get_context_data($context, $user);
@@ -185,7 +185,7 @@ class provider implements
         }
 
         // Delete all submissions.
-        $DB->delete_records('plagiarism_turnitincheck_sub', ['cm' => $context->instanceid]);
+        $DB->delete_records('plagiarism_turnitinsim_sub', ['cm' => $context->instanceid]);
     }
 
     /**
@@ -197,7 +197,7 @@ class provider implements
     public static function _delete_plagiarism_for_user($userid, \context $context) {
         global $DB;
 
-        $DB->delete_records('plagiarism_turnitincheck_sub', ['userid' => $userid]);
-        $DB->delete_records('plagiarism_turnitincheck_usr', ['userid' => $userid]);
+        $DB->delete_records('plagiarism_turnitinsim_sub', ['userid' => $userid]);
+        $DB->delete_records('plagiarism_turnitinsim_usr', ['userid' => $userid]);
     }
 }

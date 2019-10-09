@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scheduled tasks for plagiarism_turnitincheck component
+ * Scheduled tasks for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'plagiarism_turnitincheck\task\get_reports',
+        'classname' => 'plagiarism_turnitinsim\task\get_reports',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',
@@ -35,7 +35,7 @@ $tasks = array(
         'month' => '*'
     ),
     array(
-        'classname' => 'plagiarism_turnitincheck\task\send_submissions',
+        'classname' => 'plagiarism_turnitinsim\task\send_submissions',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',
@@ -44,7 +44,7 @@ $tasks = array(
         'month' => '*'
     ),
     array(
-        'classname' => 'plagiarism_turnitincheck\task\admin_update',
+        'classname' => 'plagiarism_turnitinsim\task\admin_update',
         'blocking' => 0,
         'minute' => '0',
         'hour' => '0',

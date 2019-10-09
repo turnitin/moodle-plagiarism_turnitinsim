@@ -17,7 +17,7 @@
 /**
  * Communicate with Turnitin.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,12 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 /**
  * Get report Scores from Turnitin.
  */
-class tcrequest {
+class tsrequest {
 
     public $headers;
     public $apiurl;
@@ -43,7 +43,7 @@ class tcrequest {
 
         $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
         $this->set_apikey($pluginconfig->turnitinapikey);
-        $this->logger = ($pluginconfig->turnitinenablelogging) ? new tclogger() : false;
+        $this->logger = ($pluginconfig->turnitinenablelogging) ? new tslogger() : false;
 
         $this->set_headers();
     }
@@ -56,12 +56,12 @@ class tcrequest {
 
         $this->headers = array(
             'sms-namespace: redwood',
-            'sms-serviceName: tca',
+            'sms-serviceName: tsa',
             'sms-tenantId: *',
             'sms-serviceVersion: latest',
             'Authorization: Bearer ' . $this->apikey,
             'X-Turnitin-Integration-Name: Moodle',
-            'X-Turnitin-Integration-Version: tii-v' . get_config('plagiarism_turnitincheck', 'version'). '.' . $CFG->version
+            'X-Turnitin-Integration-Version: tii-v' . get_config('plagiarism_turnitinsim', 'version'). '.' . $CFG->version
         );
     }
 
@@ -176,13 +176,13 @@ class tcrequest {
         $this->set_apikey($apikey);
         $this->set_headers();
 
-        $response = $this->send_request(ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
+        $response = $this->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
         $responsedata = json_decode($response);
 
-        if (isset($responsedata->httpstatus) && $responsedata->httpstatus == HTTP_OK) {
-            $data["connection_status"] = HTTP_OK;
+        if (isset($responsedata->httpstatus) && $responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+            $data["connection_status"] = TURNITINSIM_HTTP_OK;
         } else {
-            $data["connection_status"] = HTTP_BAD_REQUEST;
+            $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
         }
 
         return json_encode($data);
@@ -196,10 +196,10 @@ class tcrequest {
      */
     public function handle_exception($e, $displaystr = '') {
 
-        $errorstr = get_string($displaystr, 'plagiarism_turnitincheck').PHP_EOL;
+        $errorstr = get_string($displaystr, 'plagiarism_turnitinsim').PHP_EOL;
 
         if (is_callable(array($e, 'getFaultCode'))) {
-            $errorstr .= get_string('faultcode', 'plagiarism_turnitincheck').": ".$e->getFaultCode().PHP_EOL;
+            $errorstr .= get_string('faultcode', 'plagiarism_turnitinsim').": ".$e->getFaultCode().PHP_EOL;
         }
 
         if (is_callable(array($e, 'getFile'))) {
@@ -207,15 +207,15 @@ class tcrequest {
         }
 
         if (is_callable(array($e, 'getLine'))) {
-            $errorstr .= get_string('line', 'plagiarism_turnitincheck').": ".$e->getLine().PHP_EOL;
+            $errorstr .= get_string('line', 'plagiarism_turnitinsim').": ".$e->getLine().PHP_EOL;
         }
 
         if (is_callable(array($e, 'getMessage'))) {
-            $errorstr .= get_string('message', 'plagiarism_turnitincheck').": ".$e->getMessage().PHP_EOL;
+            $errorstr .= get_string('message', 'plagiarism_turnitinsim').": ".$e->getMessage().PHP_EOL;
         }
 
         if (is_callable(array($e, 'getCode'))) {
-            $errorstr .= get_string('code', 'plagiarism_turnitincheck').": ".$e->getCode().PHP_EOL;
+            $errorstr .= get_string('code', 'plagiarism_turnitinsim').": ".$e->getCode().PHP_EOL;
         }
 
         if ($this->logger) {

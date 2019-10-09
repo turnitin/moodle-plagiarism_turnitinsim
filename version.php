@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,8 +26,8 @@ if (!isset($plugin)) {
     $plugin = new StdClass();
 }
 
-$plugin->version = 2019083001;
+$plugin->version = 2019100701;
 $plugin->release = "v0.0";
 $plugin->requires = 2017051500;
-$plugin->component = 'plagiarism_turnitincheck';
+$plugin->component = 'plagiarism_turnitinsim';
 $plugin->maturity  = MATURITY_BETA;

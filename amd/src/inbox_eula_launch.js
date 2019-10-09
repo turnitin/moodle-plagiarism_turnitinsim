@@ -1,11 +1,11 @@
 /**
- * @module plagiarism_turnitincheck/inbox_eula_launch
+ * @module plagiarism_turnitinsim/inbox_eula_launch
  */
 
 define(['jquery',
         'core/templates',
         'core/modal_factory',
-        'plagiarism_turnitincheck/modal_eula'
+        'plagiarism_turnitinsim/modal_eula'
     ],
     function($, Templates, ModalFactory, ModalTcEula) {
         return {

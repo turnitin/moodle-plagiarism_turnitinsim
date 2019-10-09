@@ -1,34 +1,34 @@
 /* Plugin setup */
-.turnitincheck_features {
+.turnitinsim_features {
     position: relative;
 }
 
-.turnitincheck_features, .turnitincheck_ferpa {
+.turnitinsim_features, .turnitinsim_ferpa {
     border: 1px solid #db4221;
     padding: 10px;
     margin-bottom: 10px;
 }
 
-.turnitincheck_features .turnitincheck_featurelist {
+.turnitinsim_features .turnitinsim_featurelist {
     float: left;
     margin-top: 0px;
     margin-right: 32px;
 }
 
-.turnitincheck_features h4 {
+.turnitinsim_features h4 {
     margin-top: 0px;
 }
 
-.turnitincheck_features p {
+.turnitinsim_features p {
     clear: both;
     margin-bottom: 0px;
 }
 
-.turnitincheck_setup_download_links .mdl-align {
+.turnitinsim_setup_download_links .mdl-align {
     text-align: left;
 }
 
-.turnitincheck_setup_download_links .mdl-align label {
+.turnitinsim_setup_download_links .mdl-align label {
     width: 320px;
 }
 
@@ -45,11 +45,11 @@
 }
 
 /* Icons in get_links */
-.turnitincheck_status {
+.turnitinsim_status {
     white-space: nowrap;
 }
 
-.turnitincheck_links .turnitincheck_status .tii_icon {
+.turnitinsim_links .turnitinsim_status .tii_icon {
     width: 20px;
     height: 20px;
     padding-right: 4px;
@@ -57,7 +57,7 @@
     top: 3px;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score {
+.turnitinsim_links .turnitinsim_status .or_score {
     min-width: 32px;
     font-size: 12px;
     display: inline-block;
@@ -66,65 +66,65 @@
     cursor: pointer;
 }
 
-.turnitincheck_links .turnitincheck_error_icon {
+.turnitinsim_links .turnitinsim_error_icon {
     float: left;
 }
 
-.turnitincheck_links .clear {
+.turnitinsim_links .clear {
     clear:both;
 }
 
-.turnitincheck_links .pp_resubmit_link, .turnitincheck_links .tii_status_text_eula, .turnitincheck_links .eula-row-launch {
+.turnitinsim_links .pp_resubmit_link, .turnitinsim_links .tii_status_text_eula, .turnitinsim_links .eula-row-launch {
     cursor: pointer;
 }
 
 /* Define OR score colours */
-.turnitincheck_links .turnitincheck_status .or_score_colour_0 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_0 {
     background: #3552b7;
     color: #fff;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_10 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_10 {
     background: #617b8d;
     color: #fff;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_20 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_20 {
     background: #a1b556;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_30 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_30 {
     background: #dae235;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_40 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_40 {
     background: #edac28;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_50 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_50 {
     background: #edd42f;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_60 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_60 {
     background: #ecad28;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_70 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_70 {
     background: #e15a21;
     color: #fff;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_80 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_80 {
     background: #e05a21;
     color: #fff;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_90 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_90 {
     background: #dc4321;
     color: #fff;
 }
 
-.turnitincheck_links .turnitincheck_status .or_score_colour_100 {
+.turnitinsim_links .turnitinsim_status .or_score_colour_100 {
     background: #db4221;
     color: #fff;
 }

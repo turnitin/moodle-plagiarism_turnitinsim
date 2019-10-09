@@ -17,7 +17,7 @@
 /**
  * Endpoint for handling callbacks from Turnitin.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,15 +26,15 @@
 require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once(__DIR__."/locallib.php");
-require_once(__DIR__."/classes/tccallback.class.php");
+require_once(__DIR__."/classes/tscallback.class.php");
 
 $PAGE->set_context(context_system::instance());
 
-$logger = new tclogger();
-$tccallback = new tccallback();
+$logger = new tslogger();
+$tscallback = new tscallback();
 
 // Get headers and body from request.
-$reqheaders = plagiarism_turnitincheck_get_request_headers();
+$reqheaders = plagiarism_turnitinsim_get_request_headers();
 // There is a strange anomaly with the headers on different environments.
 if (isset($reqheaders['X-Turnitin-Eventtype'])) {
     $reqheaders['X-Turnitin-EventType'] = $reqheaders['X-Turnitin-Eventtype'];
@@ -44,7 +44,7 @@ $requeststring = file_get_contents('php://input');
 $params = (object)json_decode($requeststring, true);
 
 // Generate expected secret.
-$expectedsecret = $tccallback->expected_callback_signature($requeststring);
+$expectedsecret = $tscallback->expected_callback_signature($requeststring);
 
 $pluginconfig = get_config('plagiarism');
 
@@ -60,37 +60,37 @@ if ($pluginconfig->turnitinenablelogging) {
 // Verify that callback is genuine. Exit if not.
 if ($expectedsecret !== $reqheaders['X-Turnitin-Signature']) {
     if ($pluginconfig->turnitinenablelogging) {
-        $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitincheck'));
+        $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
     }
 
-    echo get_string('webhookincorrectsignature', 'plagiarism_turnitincheck');
+    echo get_string('webhookincorrectsignature', 'plagiarism_turnitinsim');
     exit;
 }
 
 // Handle Submission complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == SUBMISSION_COMPLETE) {
+if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
     // Get Moodle submission id from Turnitin id.
-    $submission = $DB->get_record_select('plagiarism_turnitincheck_sub', 'turnitinid = ?', array($params->id));
-    $tcsubmission = new tcsubmission( new tcrequest(), $submission->id );
+    $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->id));
+    $tssubmission = new tssubmission( new tsrequest(), $submission->id );
 
     // If webhook comes after submission response then no need to handle it.
-    if ($tcsubmission->getstatus() == TURNITINCHECK_SUBMISSION_STATUS_UPLOADED) {
-        $tcsubmission->handle_upload_response($params, $params->title);
+    if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED) {
+        $tssubmission->handle_upload_response($params, $params->title);
     }
 
     // Request report to be generated if required.
-    if ($tcsubmission->gettogenerate() == 1 && $tcsubmission->getgenerationtime() <= time()) {
-        $tcsubmission->request_turnitin_report_generation();
+    if ($tssubmission->gettogenerate() == 1 && $tssubmission->getgenerationtime() <= time()) {
+        $tssubmission->request_turnitin_report_generation();
     }
 }
 
 // Handle Similarity complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == SIMILARITY_COMPLETE || $reqheaders['X-Turnitin-EventType'] == SIMILARITY_UPDATED) {
+if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE || $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
     // Get Moodle submission id from Turnitin id.
-    $submission = $DB->get_record_select('plagiarism_turnitincheck_sub', 'turnitinid = ?', array($params->submission_id));
-    $tcsubmission = new tcsubmission( new tcrequest(), $submission->id );
+    $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->submission_id));
+    $tssubmission = new tssubmission( new tsrequest(), $submission->id );
 
-    $tcsubmission->handle_similarity_response($params);
+    $tssubmission->handle_similarity_response($params);
 }
 
 $logger->info('-------- WEBHOOK END --------');

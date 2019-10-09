@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * View logs page for plagiarism_turnitincheck component
+ * View logs page for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,21 +26,21 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once(__DIR__ . '/lib.php');
-require_once(__DIR__ . '/classes/forms/tcdefaultsform.class.php');
+require_once(__DIR__ . '/classes/forms/tsdefaultsform.class.php');
 
 // Restrict access to admins only.
 require_login();
-admin_externalpage_setup('plagiarismturnitincheck');
+admin_externalpage_setup('plagiarismturnitinsim');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 $output = $OUTPUT->header();
 
-$defaultsform = new tcdefaultsform();
+$defaultsform = new tsdefaultsform();
 // Save posted form data.
 if (($data = $defaultsform->get_data()) && confirm_sesskey()) {
     $defaultsform->save($data);
-    $output .= $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitincheck'), 'notifysuccess');
+    $output .= $OUTPUT->notification(get_string('savesuccess', 'plagiarism_turnitinsim'), 'notifysuccess');
 }
 
 // Add tabs to output.
@@ -52,7 +52,7 @@ $output .= ob_get_contents();
 ob_end_clean();
 
 // Output form.
-$plugin = new plagiarism_plugin_turnitincheck();
+$plugin = new plagiarism_plugin_turnitinsim();
 $defaults = $plugin->get_settings(0);
 
 $defaultsform->set_data($defaults);

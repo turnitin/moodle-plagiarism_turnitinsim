@@ -16,13 +16,13 @@
 /**
  * Javascript controller for Requeueing submissions.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module plagiarism_turnitincheck/resendSubmission
+ * @module plagiarism_turnitinsim/resendSubmission
  */
 
 define(['jquery'], function($) {
@@ -44,12 +44,12 @@ define(['jquery'], function($) {
 
                 $.ajax({
                     type: "POST",
-                    url: M.cfg.wwwroot + "/plagiarism/turnitincheck/ajax/resend_submission.php",
+                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/resend_submission.php",
                     dataType: "text",
                     data: {action: "resubmit_event", submissionid: submissionid, sesskey: M.cfg.sesskey},
                     success: function() {
-                        that.siblings('.turnitincheck_status').removeClass('hidden');
-                        that.siblings('.tii_status_text').html(M.str.plagiarism_turnitincheck.submissiondisplaystatusqueued);
+                        that.siblings('.turnitinsim_status').removeClass('hidden');
+                        that.siblings('.tii_status_text').html(M.str.plagiarism_turnitinsim.submissiondisplaystatusqueued);
                         that.siblings('.pp_resubmitting').addClass('hidden');
                     },
                     error: function() {
