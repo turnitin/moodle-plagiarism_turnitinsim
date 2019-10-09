@@ -14,15 +14,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript controller for the Turnitin Cloud Viewer launch.
+ * Javascript controller for the Turnitin Connection Test.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module plagiarism_turnitincheck/cv_launch
+ * @module plagiarism_turnitinsim/connection_test
  */
 
 define(['jquery'], function($) {
@@ -35,7 +35,7 @@ define(['jquery'], function($) {
                 ct.click(function() {
                     $.ajax({
                         type: "POST",
-                        url: M.cfg.wwwroot + "/plagiarism/turnitincheck/ajax/connection_test.php",
+                        url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/connection_test.php",
                         dataType: "json",
                         data: {
                             action: "connection_test",
@@ -48,12 +48,12 @@ define(['jquery'], function($) {
                                 ct.removeClass("connection-test-failed");
                                 ct.addClass("connection-test-success");
 
-                                changeString(ct, M.str.plagiarism_turnitincheck.connecttestsuccess);
+                                changeString(ct, M.str.plagiarism_turnitinsim.connecttestsuccess);
                             } else {
                                 ct.removeClass("connection-test-success");
                                 ct.addClass("connection-test-failed");
 
-                                changeString(ct, M.str.plagiarism_turnitincheck.connecttestfailed);
+                                changeString(ct, M.str.plagiarism_turnitinsim.connecttestfailed);
                             }
 
                             // Fade out classes and swap back values.
@@ -61,7 +61,7 @@ define(['jquery'], function($) {
                                 $(this).removeClass("connection-test-failed");
                                 $(this).removeClass("connection-test-success");
 
-                                changeString(ct, M.str.plagiarism_turnitincheck.connecttest);
+                                changeString(ct, M.str.plagiarism_turnitinsim.connecttest);
                             }).fadeIn("slow");
                         }
                     });

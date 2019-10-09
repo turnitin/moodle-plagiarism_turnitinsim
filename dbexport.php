@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * View logs page for plagiarism_turnitincheck component
+ * View logs page for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@ require_once($CFG->libdir.'/dataformatlib.php');
 
 // Restrict access to admins only.
 require_login();
-admin_externalpage_setup('plagiarismturnitincheck');
+admin_externalpage_setup('plagiarismturnitinsim');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
@@ -63,21 +63,21 @@ if (!is_null($table)) {
 
     // Use Moodle's dataformatting functions to display a form to download output in different formats.
     $tables = array(
-        'plagiarism_turnitincheck_mod',
-        'plagiarism_turnitincheck_usr',
-        'plagiarism_turnitincheck_sub',
-        'plagiarism_turnitincheck_grp'
+        'plagiarism_turnitinsim_mod',
+        'plagiarism_turnitinsim_usr',
+        'plagiarism_turnitinsim_sub',
+        'plagiarism_turnitinsim_grp'
     );
 
     foreach ($tables as $table) {
         $downloadoptions = $OUTPUT->download_dataformat_selector(
-            get_string('dbexporttable', 'plagiarism_turnitincheck', $table),
+            get_string('dbexporttable', 'plagiarism_turnitinsim', $table),
             'dbexport.php',
             'dataformat',
             array('table' => $table)
         );
 
-        $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitincheck_setup_download_links'));
+        $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitinsim_setup_download_links'));
     }
 }
 

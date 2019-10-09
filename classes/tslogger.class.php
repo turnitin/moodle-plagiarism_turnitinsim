@@ -17,7 +17,7 @@
 /**
  * Log API requests and responses from Turnitin.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require($CFG->dirroot . '/plagiarism/turnitincheck/vendor/autoload.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
+require($CFG->dirroot . '/plagiarism/turnitinsim/vendor/autoload.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 use Katzgrau\KLogger;
 
-class tclogger extends Katzgrau\KLogger\Logger {
+class tslogger extends Katzgrau\KLogger\Logger {
 
-    const LOG_DIR = '/turnitincheck/logs/';
+    const LOG_DIR = '/turnitinsim/logs/';
     const KEEPLOGS = 10;
     const APILOG_PREFIX = 'apilog_';
 

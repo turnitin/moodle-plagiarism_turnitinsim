@@ -17,12 +17,12 @@
 /**
  * Send queued submissions to Turnitin.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\task;
+namespace plagiarism_turnitinsim\task;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,13 +32,13 @@ defined('MOODLE_INTERNAL') || die();
 class send_submissions extends \core\task\scheduled_task {
 
     public function get_name() {
-        return get_string('tasksendqueuedsubmissions', 'plagiarism_turnitincheck');
+        return get_string('tasksendqueuedsubmissions', 'plagiarism_turnitinsim');
     }
 
     public function execute() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitincheck/locallib.php');
-        plagiarism_turnitincheck_task_send_submissions();
+        require_once($CFG->dirroot.'/plagiarism/turnitinsim/locallib.php');
+        plagiarism_turnitinsim_task_send_submissions();
     }
 }

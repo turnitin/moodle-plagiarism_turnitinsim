@@ -17,19 +17,19 @@
 /**
  * Class for handling Turnitin's EULA.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tceula {
+class tseula {
 
-    public $tcrequest;
+    public $tsrequest;
 
-    public function __construct( tcrequest $tcrequest = null ) {
-        $this->tcrequest = ($tcrequest) ? $tcrequest : new tcrequest();
+    public function __construct(tsrequest $tsrequest = null ) {
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
     }
 
     /**
@@ -42,21 +42,21 @@ class tceula {
 
         // Make request to get the latest EULA version.
         try {
-            $endpoint = ENDPOINT_GET_LATEST_EULA;
-            $response = $this->tcrequest->send_request($endpoint, json_encode(array()), 'GET');
+            $endpoint = TURNITINSIM_ENDPOINT_GET_LATEST_EULA;
+            $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
             $responsedata = json_decode($response);
 
             // Latest version retrieved.
-            if ($responsedata->httpstatus == HTTP_OK) {
-                mtrace(get_string('taskoutputlatesteularetrieved', 'plagiarism_turnitincheck', $responsedata->version));
+            if ($responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+                mtrace(get_string('taskoutputlatesteularetrieved', 'plagiarism_turnitinsim', $responsedata->version));
                 return $responsedata;
             }
 
-            mtrace(get_string('taskoutputlatesteulanotretrieved', 'plagiarism_turnitincheck'));
+            mtrace(get_string('taskoutputlatesteulanotretrieved', 'plagiarism_turnitinsim'));
             return $responsedata;
 
         } catch (Exception $e) {
-            $this->tcrequest->handle_exception($e, 'taskoutputlatesteularetrievalfailure');
+            $this->tsrequest->handle_exception($e, 'taskoutputlatesteularetrievalfailure');
             return $responsedata;
         }
     }

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database upgrade script for plagiarism_turnitincheck component
+ * Database upgrade script for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die();
  * @param int $oldversion
  * @return bool
  */
-function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
+function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2018021501) {
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('requested_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'submitted_time');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -44,7 +44,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018021601) {
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('errormessage', XMLDB_TYPE_CHAR, '255', null, false, null, null, 'requested_time');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -53,7 +53,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018030601) {
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '20', null, false, null, null, 'itemid');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -62,7 +62,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018031801) {
-        $table = new xmldb_table('plagiarism_turnitincheck_mod');
+        $table = new xmldb_table('plagiarism_turnitinsim_mod');
 
         $field = new xmldb_field('queuedrafts', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'checkprivate');
 
@@ -72,7 +72,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018032001) {
-        $table = new xmldb_table('plagiarism_turnitincheck_mod');
+        $table = new xmldb_table('plagiarism_turnitinsim_mod');
 
         $field = new xmldb_field('reportgeneration', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'turnitinenabled');
 
@@ -82,7 +82,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018032003) {
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
 
         $field = new xmldb_field('to_generate', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'submitted_time');
 
@@ -98,7 +98,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018050401) {
-        $table = new xmldb_table('plagiarism_turnitincheck_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_usr');
 
         $field = new xmldb_field('lasteulaaccepted', XMLDB_TYPE_CHAR, '100', null, false, null, null, 'turnitinid');
 
@@ -114,7 +114,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018051001) {
-        $table = new xmldb_table('plagiarism_turnitincheck_mod');
+        $table = new xmldb_table('plagiarism_turnitinsim_mod');
 
         $field = new xmldb_field('addtoindex', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'reportgeneration');
 
@@ -130,7 +130,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018051501) {
-        $table = new xmldb_table('plagiarism_turnitincheck_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_usr');
         $field = new xmldb_field('lasteulaacceptedlang', XMLDB_TYPE_CHAR, '10', null, false, null, null, 'lasteulaacceptedtime');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -139,7 +139,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018062601) {
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('submitter', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'userid');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -150,7 +150,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
     if ($oldversion < 2018080301) {
 
         // Add groupid column to submission.
-        $table = new xmldb_table('plagiarism_turnitincheck_sub');
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'submitter');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -158,7 +158,7 @@ function xmldb_plagiarism_turnitincheck_upgrade($oldversion) {
         }
 
         // Add group table.
-        $table = new xmldb_table('plagiarism_turnitincheck_grp');
+        $table = new xmldb_table('plagiarism_turnitinsim_grp');
 
         // Adding fields.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);

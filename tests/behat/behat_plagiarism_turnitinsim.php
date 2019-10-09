@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/lib.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/lib.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,12 +26,12 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-class behat_plagiarism_turnitincheck extends behat_base {
+class behat_plagiarism_turnitinsim extends behat_base {
 
     /**
-     * @Given I configure TurnitinCheck credentials
+     * @Given I configure TurnitinSim credentials
      */
-    public function i_configure_turnitincheck_credentials() {
+    public function i_configure_turnitinsim_credentials() {
         $apikey = getenv('TII_APIKEY');
         $apiurl = getenv('TII_APIURL');
 

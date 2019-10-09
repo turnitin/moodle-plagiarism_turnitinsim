@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Student Digital Receipt for plagiarism_turnitincheck component
+ * Student Digital Receipt for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\message;
+namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,7 +44,7 @@ class receipt_student {
         $message->submission_date  = $input['submission_date'];
         $message->submission_id    = $input['submission_id'];
 
-        return get_string('receiptstudent:message', 'plagiarism_turnitincheck', $message);
+        return get_string('receiptstudent:message', 'plagiarism_turnitinsim', $message);
     }
 
     /**
@@ -57,11 +57,11 @@ class receipt_student {
     public function send_message($userid, $message, $courseid) {
         $eventdata = new \core\message\message();
 
-        $eventdata->component         = 'plagiarism_turnitincheck';
+        $eventdata->component         = 'plagiarism_turnitinsim';
         $eventdata->name              = 'digital_receipt_student';
         $eventdata->userfrom          = \core_user::get_noreply_user();
         $eventdata->userto            = $userid;
-        $eventdata->subject           = get_string('receiptstudent:subject', 'plagiarism_turnitincheck');
+        $eventdata->subject           = get_string('receiptstudent:subject', 'plagiarism_turnitinsim');
         $eventdata->fullmessage       = $message;
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $message;

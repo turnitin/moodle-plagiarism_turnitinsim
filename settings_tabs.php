@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings navigation tabs for plagiarism_turnitincheck
+ * Settings navigation tabs for plagiarism_turnitinsim
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,19 +30,19 @@ if (empty($currenttab)) {
 
 $tabs = array();
 $tabs[] = new tabobject('setup',
-    new moodle_url('/plagiarism/turnitincheck/settings.php'),
-    get_string('pluginsetup', 'plagiarism_turnitincheck'));
+    new moodle_url('/plagiarism/turnitinsim/settings.php'),
+    get_string('pluginsetup', 'plagiarism_turnitinsim'));
 
 $tabs[] = new tabobject('defaults',
-    new moodle_url('/plagiarism/turnitincheck/defaults.php'),
-    get_string('defaultsettings', 'plagiarism_turnitincheck'));
+    new moodle_url('/plagiarism/turnitinsim/defaults.php'),
+    get_string('defaultsettings', 'plagiarism_turnitinsim'));
 
 $tabs[] = new tabobject('logs',
-    new moodle_url('/plagiarism/turnitincheck/logs.php'),
-    get_string('viewlogs', 'plagiarism_turnitincheck'));
+    new moodle_url('/plagiarism/turnitinsim/logs.php'),
+    get_string('viewlogs', 'plagiarism_turnitinsim'));
 
 $tabs[] = new tabobject('dbexport',
-    new moodle_url('/plagiarism/turnitincheck/dbexport.php'),
-    get_string('dbexport', 'plagiarism_turnitincheck'));
+    new moodle_url('/plagiarism/turnitinsim/dbexport.php'),
+    get_string('dbexport', 'plagiarism_turnitinsim'));
 
-echo html_writer::tag('div', $OUTPUT->tabtree($tabs, $currenttab), array('class' => 'turnitincheck-settings-tabs'));
+echo html_writer::tag('div', $OUTPUT->tabtree($tabs, $currenttab), array('class' => 'turnitinsim-settings-tabs'));

@@ -17,12 +17,12 @@
 /**
  * Update report Scores from Turnitin.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_turnitincheck\task;
+namespace plagiarism_turnitinsim\task;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,13 +32,13 @@ defined('MOODLE_INTERNAL') || die();
 class get_reports extends \core\task\scheduled_task {
 
     public function get_name() {
-        return get_string('taskgetreportscores', 'plagiarism_turnitincheck');
+        return get_string('taskgetreportscores', 'plagiarism_turnitinsim');
     }
 
     public function execute() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/plagiarism/turnitincheck/locallib.php');
-        plagiarism_turnitincheck_task_get_reports();
+        require_once($CFG->dirroot.'/plagiarism/turnitinsim/locallib.php');
+        plagiarism_turnitinsim_task_get_reports();
     }
 }

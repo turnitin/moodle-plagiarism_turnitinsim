@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * User class for plagiarism_turnitincheck component
+ * User class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tcuser {
+class tsuser {
 
     public $userid;
     public $turnitinid;
     public $lasteulaaccepted;
     public $lasteulaacceptedtime;
     public $lasteulaacceptedlang;
-    public $tcrequest;
+    public $tsrequest;
 
     public function __construct($userid) {
         global $DB;
@@ -39,7 +39,7 @@ class tcuser {
         $this->set_userid($userid);
 
         // If there is no user record then create one.
-        if ($user = $DB->get_record('plagiarism_turnitincheck_usr', array('userid' => $userid))) {
+        if ($user = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $userid))) {
             $this->set_turnitinid($user->turnitinid);
             $this->set_lasteulaaccepted($user->lasteulaaccepted);
             $this->set_lasteulaacceptedtime($user->lasteulaacceptedtime);
@@ -65,7 +65,7 @@ class tcuser {
         $user->userid = $this->get_userid();
         $user->turnitinid = $turnitinid;
 
-        $DB->insert_record('plagiarism_turnitincheck_usr', $user);
+        $DB->insert_record('plagiarism_turnitinsim_usr', $user);
 
         return $turnitinid;
     }

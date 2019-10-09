@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -23,7 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'plagiarism/turnitincheck:enable' => array(
+    'plagiarism/turnitinsim:enable' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => array(
@@ -31,7 +31,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'plagiarism/turnitincheck:viewfullreport' => array(
+    'plagiarism/turnitinsim:viewfullreport' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => array(

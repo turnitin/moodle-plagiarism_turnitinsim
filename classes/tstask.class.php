@@ -17,7 +17,7 @@
 /**
  * Perform Scheduled Tasks.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @author     John McGettrick <jmcgettrick@turnitin.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,25 +26,25 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tccallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
 
-use plagiarism_turnitincheck\message\new_eula;
+use plagiarism_turnitinsim\message\new_eula;
 
 /**
  * Scheduled tasks.
  */
-class tctask {
+class tstask {
 
-    public $tcrequest;
-    public $tccallback;
-    public $tcsettings;
+    public $tsrequest;
+    public $tscallback;
+    public $tssettings;
 
     public function __construct( $params = null ) {
-        $this->tcrequest = (!empty($params->tcrequest)) ? $params->tcrequest : new tcrequest();
-        $this->tccallback = (!empty($params->tccallback)) ? $params->tccallback : new tccallback($this->tcrequest);
-        $this->tcsettings = (!empty($params->tcsettings)) ? $params->tcsettings : new tcsettings($this->tcrequest);
-        $this->tceula = (!empty($params->tceula)) ? $params->tceula : new tceula();
+        $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new tsrequest();
+        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new tscallback($this->tsrequest);
+        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new tssettings($this->tsrequest);
+        $this->tseula = (!empty($params->tseula)) ? $params->tseula : new tseula();
     }
 
     /**
@@ -57,35 +57,35 @@ class tctask {
         // Create webhook if necessary.
         $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
         if (empty($webhookid)) {
-            $this->tccallback = new tccallback($this->tcrequest);
-            $this->tccallback->create_webhook();
+            $this->tscallback = new tscallback($this->tsrequest);
+            $this->tscallback->create_webhook();
         }
 
         // Get Submissions to send.
-        $submissions = $DB->get_records_select('plagiarism_turnitincheck_sub', 'status = ?',
-            array(TURNITINCHECK_SUBMISSION_STATUS_QUEUED, TURNITINCHECK_SUBMISSION_STATUS_CREATED), '', '*', 0,
-            TURNITINCHECK_SUBMISSION_SEND_LIMIT);
+        $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub', 'status = ?',
+            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED), '', '*', 0,
+            TURNITINSIM_SUBMISSION_SEND_LIMIT);
 
         // Create each submission in Turnitin and upload submission.
         foreach ($submissions as $submission) {
 
             // Reset headers.
-            $this->tcrequest->set_headers();
+            $this->tsrequest->set_headers();
 
-            $tcsubmission = new tcsubmission($this->tcrequest, $submission->id);
+            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
 
-            if ($tcsubmission->getstatus() == TURNITINCHECK_SUBMISSION_STATUS_QUEUED) {
-                $tcsubmission->create_submission_in_turnitin();
+            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
+                $tssubmission->create_submission_in_turnitin();
             }
 
-            if (!empty($tcsubmission->getturnitinid())) {
-                $tcsubmission->upload_submission_to_turnitin();
+            if (!empty($tssubmission->getturnitinid())) {
+                $tssubmission->upload_submission_to_turnitin();
 
                 // Set the time for the report to be generated.
-                $tcsubmission->calculate_generation_time();
+                $tssubmission->calculate_generation_time();
             }
 
-            $tcsubmission->update();
+            $tssubmission->update();
         }
 
         return true;
@@ -100,34 +100,34 @@ class tctask {
 
         // Get submissions to request reports for.
         $submissions = $DB->get_records_select(
-            'plagiarism_turnitincheck_sub',
+            'plagiarism_turnitinsim_sub',
             " ((to_generate = ? AND generation_time <= ?) OR (status = ?)) AND turnitinid IS NOT NULL",
-            array(1, time(), TURNITINCHECK_SUBMISSION_STATUS_REQUESTED)
+            array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED)
             );
 
         // Request reports be generated or get scores for reports that have been requested.
         $count = 0;
         foreach ($submissions as $submission) {
 
-            $tcsubmission = new tcsubmission($this->tcrequest, $submission->id);
+            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
 
             // Request Originality Report to be generated if it hasn't already, this should have been done by the
             // webhook callback so ignore anything submitted to Turnitin in the 2 minutes.
             // Otherwise retrieve originality score if we haven't received it back within 5 minutes.
-            if ($tcsubmission->getstatus() == TURNITINCHECK_SUBMISSION_STATUS_UPLOADED
-                && $tcsubmission->getsubmittedtime() < (time() - $this->get_report_gen_request_delay())) {
+            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED
+                && $tssubmission->getsubmittedtime() < (time() - $this->get_report_gen_request_delay())) {
 
-                $tcsubmission->request_turnitin_report_generation();
+                $tssubmission->request_turnitin_report_generation();
 
-            } else if ($tcsubmission->getstatus() != TURNITINCHECK_SUBMISSION_STATUS_UPLOADED
-                && $tcsubmission->getrequestedtime() < (time() - $this->get_report_gen_score_delay())) {
+            } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
+                && $tssubmission->getrequestedtime() < (time() - $this->get_report_gen_score_delay())) {
 
-                $tcsubmission->request_turnitin_report_score();
+                $tssubmission->request_turnitin_report_score();
             }
 
             // Only process a set number of submissions.
             $count++;
-            if ($count == TURNITINCHECK_SUBMISSION_SEND_LIMIT) {
+            if ($count == TURNITINSIM_SUBMISSION_SEND_LIMIT) {
                 break;
             }
         }
@@ -164,21 +164,21 @@ class tctask {
      */
     public function test_webhook() {
         // Reset headers.
-        $this->tcrequest->set_headers();
+        $this->tsrequest->set_headers();
 
         // Check webhook is valid.
         $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
 
         // If we have a webhook id then retrieve the webhook.
         if ($webhookid) {
-            $valid = $this->tccallback->get_webhook($webhookid);
+            $valid = $this->tscallback->get_webhook($webhookid);
 
             if (!$valid) {
-                $this->tccallback->delete_webhook($webhookid);
-                $this->tccallback->create_webhook();
+                $this->tscallback->delete_webhook($webhookid);
+                $this->tscallback->create_webhook();
             }
         } else {
-            $this->tccallback->create_webhook();
+            $this->tscallback->create_webhook();
         }
 
         return true;
@@ -189,10 +189,10 @@ class tctask {
      */
     public function check_latest_eula_version() {
         // Reset headers.
-        $this->tcrequest->set_headers();
+        $this->tsrequest->set_headers();
 
         // Get the latest EULA version.
-        $response = $this->tceula->get_latest_version();
+        $response = $this->tseula->get_latest_version();
         if (!empty($response)) {
             // Compare latest EULA to the current EULA we have stored.
             $currenteulaversion = get_config('plagiarism', 'turnitin_eula_version');
@@ -217,9 +217,9 @@ class tctask {
      */
     public function check_enabled_features() {
         // Get the enabled features.
-        $response = $this->tcsettings->get_enabled_features();
+        $response = $this->tssettings->get_enabled_features();
 
-        if (!empty($response) && $response->httpstatus == HTTP_OK) {
+        if (!empty($response) && $response->httpstatus == TURNITINSIM_HTTP_OK) {
 
             // Remove status from response.
             unset($response->httpstatus);
@@ -246,10 +246,10 @@ class tctask {
      */
     public function get_report_gen_request_delay() {
         if (defined('BEHAT_SITE_RUNNING') || defined('BEHAT_TEST')) {
-            return TURNITINCHECK_REPORT_GEN_REQUEST_DELAY_TESTING;
+            return TURNITINSIM_REPORT_GEN_REQUEST_DELAY_TESTING;
         }
 
-        return TURNITINCHECK_REPORT_GEN_REQUEST_DELAY;
+        return TURNITINSIM_REPORT_GEN_REQUEST_DELAY;
     }
 
     /**
@@ -260,9 +260,9 @@ class tctask {
      */
     public function get_report_gen_score_delay() {
         if (defined('BEHAT_SITE_RUNNING') || defined('BEHAT_TEST')) {
-            return TURNITINCHECK_REPORT_GEN_SCORE_DELAY_TESTING;
+            return TURNITINSIM_REPORT_GEN_SCORE_DELAY_TESTING;
         }
 
-        return TURNITINCHECK_REPORT_GEN_SCORE_DELAY;
+        return TURNITINSIM_REPORT_GEN_SCORE_DELAY;
     }
 }

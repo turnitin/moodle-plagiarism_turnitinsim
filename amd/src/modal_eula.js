@@ -6,7 +6,7 @@
  */
 
 /**
- * @module plagiarism_turnitincheck/modal_eula
+ * @module plagiarism_turnitinsim/modal_eula
  */
 
 define(
@@ -37,7 +37,7 @@ define(
             Modal.call(this, root);
         };
 
-        ModalTcEula.TYPE = 'plagiarism_turnitincheck-modal_eula';
+        ModalTcEula.TYPE = 'plagiarism_turnitinsim-modal_eula';
         ModalTcEula.prototype = Object.create(Modal.prototype);
         ModalTcEula.prototype.constructor = ModalTcEula;
 
@@ -54,7 +54,7 @@ define(
             this.getModal().on(CustomEvents.events.activate, SELECTORS.EULA_LINK, function(e) {
                 e.preventDefault();
                 window.open(
-                    Config.wwwroot + '/plagiarism/turnitincheck/eula.php?cmd=eularedirect&sesskey=' + Config.sesskey,
+                    Config.wwwroot + '/plagiarism/turnitinsim/eula.php?cmd=eularedirect&sesskey=' + Config.sesskey,
                     '_blank'
                 );
             }.bind(this));
@@ -65,7 +65,7 @@ define(
 
                 $.ajax({
                     type: "POST",
-                    url: Config.wwwroot + "/plagiarism/turnitincheck/ajax/eula_response.php",
+                    url: Config.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
                     dataType: "json",
                     data: {
                         action: 'accept_eula',
@@ -97,7 +97,7 @@ define(
         // Automatically register with the modal registry the first time this module is imported so that
         // you can create modals of this type using the modal factory.
         if (!registered) {
-            ModalRegistry.register(ModalTcEula.TYPE, ModalTcEula, 'plagiarism_turnitincheck/modal_eula');
+            ModalRegistry.register(ModalTcEula.TYPE, ModalTcEula, 'plagiarism_turnitinsim/modal_eula');
             registered = true;
         }
 

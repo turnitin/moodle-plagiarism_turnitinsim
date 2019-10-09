@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Default setting form for plagiarism_turnitincheck component
+ * Default setting form for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,15 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir."/formslib.php");
-require_once($CFG->dirroot.'/plagiarism/turnitincheck/classes/tcsettings.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/tssettings.class.php');
 
-class tcdefaultsform extends moodleform {
+class tsdefaultsform extends moodleform {
 
     // Define the form.
     public function definition () {
         $mform =& $this->_form;
 
-        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin = new plagiarism_plugin_turnitinsim();
         $plugin->get_form_elements_module($mform, context_system::instance());
 
         $this->add_action_buttons(true);
@@ -58,7 +58,7 @@ class tcdefaultsform extends moodleform {
      * Save the default settings
      */
     public function save($data) {
-        $settings = new tcsettings();
+        $settings = new tssettings();
         $data->coursemodule = 0;
         $settings->save_module_settings($data);
     }

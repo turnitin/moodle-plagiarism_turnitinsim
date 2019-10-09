@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for plagiarism/turnitincheck/classes/tccallback.class.php.
+ * Unit tests for plagiarism/turnitinsim/classes/tscallback.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,16 +25,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tccallback.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for TurnitinCheck submission class
+ * Tests for TurnitinSim submission class
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_tccallback_class_testcase extends advanced_testcase {
+class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -47,7 +47,7 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism');
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
-        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
 
     /**
@@ -60,20 +60,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_webhook_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_WEBHOOK])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_WEBHOOK])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get webhook.
-        $tccallback = new tccallback( $tcrequest );
+        $tscallback = new tscallback( $tsrequest );
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->get_webhook($mockwebhookid);
+        $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
         $this->assertFalse($result);
@@ -86,20 +86,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_WEBHOOK])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_WEBHOOK])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->will($this->throwException(new Exception()));
 
         // Get webhook.
-        $tccallback = new tccallback($tcrequest);
+        $tscallback = new tscallback($tsrequest);
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->get_webhook($mockwebhookid);
+        $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
         $this->assertTrue($result);
@@ -115,20 +115,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_webhook_different_url.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_WEBHOOK])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_WEBHOOK])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get webhook.
-        $tccallback = new tccallback( $tcrequest );
+        $tscallback = new tscallback( $tsrequest );
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->get_webhook($mockwebhookid);
+        $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook should return false as the URL does not match the current site.
         $this->assertFalse($result);
@@ -144,20 +144,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_webhook_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_WEBHOOK])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_WEBHOOK])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get webhook.
-        $tccallback = new tccallback( $tcrequest );
+        $tscallback = new tscallback( $tsrequest );
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->get_webhook($mockwebhookid);
+        $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook should fail to retrieve as the URL does not match the current site.
         $this->assertTrue($result);
@@ -173,13 +173,13 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/create_webhook_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
@@ -187,8 +187,8 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
 
         // Create webhook.
-        $tccallback = new tccallback( $tcrequest );
-        $tccallback->create_webhook();
+        $tscallback = new tscallback( $tsrequest );
+        $tscallback->create_webhook();
 
         // Test that the webhook has not been created.
         $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
@@ -201,19 +201,19 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->will($this->throwException(new Exception()));
 
         // Create webhook.
-        $tccallback = new tccallback($tcrequest);
-        $tccallback->create_webhook();
+        $tscallback = new tscallback($tsrequest);
+        $tscallback->create_webhook();
 
         // Test that the webhook has not been created.
         $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
@@ -230,13 +230,13 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $jsonresponse = (array)json_decode($response);
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
@@ -244,8 +244,8 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
 
         // Create webhook.
-        $tccallback = new tccallback( $tcrequest );
-        $tccallback->create_webhook();
+        $tscallback = new tscallback( $tsrequest );
+        $tscallback->create_webhook();
 
         // Test that the webhook is created.
         $this->assertEquals($jsonresponse["id"], get_config('plagiarism', 'turnitin_webhook_id'));
@@ -261,20 +261,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/delete_webhook_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_WEBHOOK])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_WEBHOOK])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Delete webhook.
-        $tccallback = new tccallback( $tcrequest );
+        $tscallback = new tscallback( $tsrequest );
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->delete_webhook($mockwebhookid);
+        $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook has not been deleted.
         $this->assertFalse($result);
@@ -287,20 +287,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->will($this->throwException(new Exception()));
 
         // Delete webhook.
-        $tccallback = new tccallback($tcrequest);
+        $tscallback = new tscallback($tsrequest);
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->delete_webhook($mockwebhookid);
+        $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook has not been deleted.
         $this->assertFalse($result);
@@ -316,20 +316,20 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/delete_webhook_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Delete webhook.
-        $tccallback = new tccallback($tcrequest);
+        $tscallback = new tscallback($tsrequest);
         $mockwebhookid = generate_uuid();
-        $result = $tccallback->delete_webhook($mockwebhookid);
+        $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook is deleted.
         $this->assertTrue($result);
@@ -341,8 +341,8 @@ class plagiarism_tccallback_class_testcase extends advanced_testcase {
     public function test_expected_callback_signature_generates_hash() {
         $this->resetAfterTest();
 
-        $tccallback = new tccallback( new tcrequest() );
-        $hash = $tccallback->expected_callback_signature('{"any": "string","but": "usually", "raw": "json"}');
+        $tscallback = new tscallback( new tsrequest() );
+        $hash = $tscallback->expected_callback_signature('{"any": "string","but": "usually", "raw": "json"}');
 
         $this->assertRegExp( "/[0-9a-f]{64}/i", $hash);
     }

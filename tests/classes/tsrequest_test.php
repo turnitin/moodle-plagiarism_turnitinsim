@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for plagiarism/turnitincheck/classes/tccallback.class.php.
+ * Unit tests for plagiarism/turnitinsim/classes/tscallback.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,16 +25,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tccallback.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for TurnitinCheck submission class
+ * Tests for TurnitinSim submission class
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_tcrequest_testcase extends advanced_testcase {
+class plagiarism_tsrequest_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -57,29 +57,29 @@ class plagiarism_tcrequest_testcase extends advanced_testcase {
         $responsefailure = file_get_contents(__DIR__ . '/../fixtures/get_webhook_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_WEBHOOKS])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->exactly(2))
+        $tsrequest->expects($this->exactly(2))
             ->method('send_request')
             ->willReturnOnConsecutiveCalls($responsesuccess, $responsefailure);
 
         // Test connection.
-        $result = $tcrequest->test_connection("url", "key");
+        $result = $tsrequest->test_connection("url", "key");
 
         // Test that the connection was successful.
         $responsesuccessparsed = (array)json_decode($result);
-        $this->assertEquals(HTTP_OK, $responsesuccessparsed['connection_status']);
+        $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
 
         // Test connection when expecting a failure.
-        $result = $tcrequest->test_connection("url", "key");
+        $result = $tsrequest->test_connection("url", "key");
 
         // Test that the connection failed.
         $responsefailedparsed = (array)json_decode($result);
-        $this->assertEquals(HTTP_BAD_REQUEST, $responsefailedparsed['connection_status']);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsefailedparsed['connection_status']);
     }
 
     /**
@@ -93,15 +93,15 @@ class plagiarism_tcrequest_testcase extends advanced_testcase {
         // Test that a supported language is returned.
         $SESSION->lang = 'de';
 
-        $tcrequest = new tcrequest();
-        $lang = $tcrequest->get_language();
+        $tsrequest = new tsrequest();
+        $lang = $tsrequest->get_language();
         $this->assertEquals('de', $lang->langcode);
         $this->assertEquals('de-DE', $lang->localecode);
 
         // Test that English is returned for an unsupported language.
         $SESSION->lang = 'fr';
 
-        $lang = $tcrequest->get_language();
+        $lang = $tsrequest->get_language();
         $this->assertEquals('en', $lang->langcode);
         $this->assertEquals('en-US', $lang->localecode);
     }

@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Backup code for plagiarism/turnitincheck.
+ * Backup code for plagiarism/turnitinsim.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
+class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
 
     protected function define_module_plugin_structure() {
         $plugin = $this->get_plugin_element();
@@ -33,9 +33,9 @@ class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
         $plugin->add_child($pluginelement);
 
         // Add module config elements.
-        $mods = new backup_nested_element('turnitincheck_mods');
+        $mods = new backup_nested_element('turnitinsim_mods');
         $mod = new backup_nested_element(
-            'turnitincheck_mod',
+            'turnitinsim_mod',
             array('id'),
             array(
                 'turnitinenabled', 'reportgeneration', 'queuedrafts', 'addtoindex',
@@ -44,13 +44,13 @@ class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
         );
         $pluginelement->add_child($mods);
         $mods->add_child($mod);
-        $mod->set_source_table('plagiarism_turnitincheck_mod', array('cm' => backup::VAR_PARENTID));
+        $mod->set_source_table('plagiarism_turnitinsim_mod', array('cm' => backup::VAR_PARENTID));
 
         // Add submission and user elements if required.
         if ($this->get_setting_value('userinfo')) {
-            $submissions = new backup_nested_element('turnitincheck_subs');
+            $submissions = new backup_nested_element('turnitinsim_subs');
             $submission = new backup_nested_element(
-                'turnitincheck_sub',
+                'turnitinsim_sub',
                 array('id'),
                 array(
                     'userid', 'turnitinid', 'status', 'identifier', 'itemid', 'type', 'submitted_time',
@@ -65,7 +65,7 @@ class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
                 'SELECT PTS.userid, PTS.turnitinid, PTS.status, PTS.identifier, PTS.itemid, PTS.type,
                 PTS.submitted_time, PTS.to_generate, PTS.generation_time, PTS.overall_score, PTS.requested_time,
                 PTS.errormessage, F.contenthash
-                FROM {plagiarism_turnitincheck_sub} PTS
+                FROM {plagiarism_turnitinsim_sub} PTS
                 LEFT JOIN {files} F
                 ON PTS.identifier = F.pathnamehash
                 WHERE PTS.cm = ? ',
@@ -73,9 +73,9 @@ class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
             );
 
             // Backup users who have submitted to this module.
-            $users = new backup_nested_element('turnitincheck_usrs');
+            $users = new backup_nested_element('turnitinsim_usrs');
             $user = new backup_nested_element(
-                'turnitincheck_usr',
+                'turnitinsim_usr',
                 array('id'),
                 array('userid', 'turnitinid')
             );
@@ -83,8 +83,8 @@ class backup_plagiarism_turnitincheck_plugin extends backup_plagiarism_plugin {
             $users->add_child($user);
             $user->set_source_sql(
                 'SELECT PTU.id, PTU.userid, PTU.turnitinid
-                FROM {plagiarism_turnitincheck_usr} PTU
-                JOIN {plagiarism_turnitincheck_sub} PTS
+                FROM {plagiarism_turnitinsim_usr} PTU
+                JOIN {plagiarism_turnitinsim_sub} PTS
                 ON PTS.userid = PTU.userid
                 WHERE PTS.cm = ? ',
                 array(backup::VAR_PARENTID)

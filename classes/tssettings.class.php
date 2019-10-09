@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin module settings form for plagiarism_turnitincheck component
+ * Plugin module settings form for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tcsettings {
+class tssettings {
 
-    public $tcrequest;
+    public $tsrequest;
 
-    public function __construct( tcrequest $tcrequest = null ) {
-        $this->tcrequest = ($tcrequest) ? $tcrequest : new tcrequest();
+    public function __construct(tsrequest $tsrequest = null ) {
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
     }
 
     /**
@@ -41,90 +41,90 @@ class tcsettings {
         global $PAGE;
 
         if ($context == 'module') {
-            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitincheck'));
+            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitinsim'));
         }
 
         // Require JS modules.
         if ($modulename == 'mod_assign') {
-            $PAGE->requires->js_call_amd('plagiarism_turnitincheck/set_report_generation', 'set_report_generation');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/set_report_generation', 'set_report_generation');
         }
 
-        $mform->addElement('checkbox', 'turnitinenabled', get_string('turnitinpluginenabled', 'plagiarism_turnitincheck'));
+        $mform->addElement('checkbox', 'turnitinenabled', get_string('turnitinpluginenabled', 'plagiarism_turnitinsim'));
 
         // TODO: Change create elements to loop & add further exclude options depending on features-enabled (INT-11451).
 
         // Exclude Options.
         // Exclude Bibliography.
-        $label = get_string('excludebiblio', 'plagiarism_turnitincheck');
+        $label = get_string('excludebiblio', 'plagiarism_turnitinsim');
         $excludes[] = $mform->createElement('checkbox', 'excludebiblio', null, $label);
 
         // Exclude Quotes.
-        $label = get_string('excludequotes', 'plagiarism_turnitincheck');
+        $label = get_string('excludequotes', 'plagiarism_turnitinsim');
         $excludes[] = $mform->createElement('checkbox', 'excludequotes', null, $label);
 
         // Group exclude options together.
-        $mform->addGroup($excludes, 'excludeoptions', get_string('excludeoptions', 'plagiarism_turnitincheck'), '<br />');
-        $mform->addHelpButton('excludeoptions', 'excludeoptions', 'plagiarism_turnitincheck');
+        $mform->addGroup($excludes, 'excludeoptions', get_string('excludeoptions', 'plagiarism_turnitinsim'), '<br />');
+        $mform->addHelpButton('excludeoptions', 'excludeoptions', 'plagiarism_turnitinsim');
         $mform->disabledIf('excludeoptions', 'turnitinenabled', 'notchecked');
 
         // Indexing options.
         // Add to Index.
-        $label = get_string('addtoindex', 'plagiarism_turnitincheck');
+        $label = get_string('addtoindex', 'plagiarism_turnitinsim');
         $indexes[] = $mform->createElement('checkbox', 'addtoindex', null, $label);
 
         // Group index options together.
-        $mform->addGroup($indexes, 'indexoptions', get_string('indexoptions', 'plagiarism_turnitincheck'), '<br />');
-        $mform->addHelpButton('indexoptions', 'indexoptions', 'plagiarism_turnitincheck');
+        $mform->addGroup($indexes, 'indexoptions', get_string('indexoptions', 'plagiarism_turnitinsim'), '<br />');
+        $mform->addHelpButton('indexoptions', 'indexoptions', 'plagiarism_turnitinsim');
         $mform->disabledIf('indexoptions', 'turnitinenabled', 'notchecked');
 
         // If this is an assignment we will offer report generation options. Otherwise default to immediate.
         if ($modulename == 'mod_assign' || $context == 'defaults') {
 
             // Immediate.
-            $label = get_string('reportgen0', 'plagiarism_turnitincheck');
-            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINCHECK_REPORT_GEN_IMMEDIATE);
+            $label = get_string('reportgen0', 'plagiarism_turnitinsim');
+            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINSIM_REPORT_GEN_IMMEDIATE);
 
             // Immediate and Due Date.
-            $label = get_string('reportgen1', 'plagiarism_turnitincheck');
+            $label = get_string('reportgen1', 'plagiarism_turnitinsim');
             $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label,
-            TURNITINCHECK_REPORT_GEN_IMMEDIATE_AND_DUEDATE);
+            TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE);
 
             // Due Date.
-            $label = get_string('reportgen2', 'plagiarism_turnitincheck');
-            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINCHECK_REPORT_GEN_DUEDATE);
+            $label = get_string('reportgen2', 'plagiarism_turnitinsim');
+            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINSIM_REPORT_GEN_DUEDATE);
 
             // Group Report Gen options together.
-            $mform->addGroup($reportgen, 'reportgenoptions', get_string('reportgenoptions', 'plagiarism_turnitincheck'), '<br />');
-            $mform->addHelpButton('reportgenoptions', 'reportgenoptions', 'plagiarism_turnitincheck');
+            $mform->addGroup($reportgen, 'reportgenoptions', get_string('reportgenoptions', 'plagiarism_turnitinsim'), '<br />');
+            $mform->addHelpButton('reportgenoptions', 'reportgenoptions', 'plagiarism_turnitinsim');
             $mform->disabledIf('reportgenoptions', 'duedate[enabled]', 'notchecked');
             $mform->disabledIf('reportgenoptions', 'turnitinenabled', 'notchecked');
         } else {
-            $mform->addElement('hidden', 'reportgeneration', TURNITINCHECK_REPORT_GEN_IMMEDIATE);
+            $mform->addElement('hidden', 'reportgeneration', TURNITINSIM_REPORT_GEN_IMMEDIATE);
             $mform->setType('reportgeneration', PARAM_RAW);
         }
 
         // Access options.
         // Students view.
-        $label = get_string('accessstudents', 'plagiarism_turnitincheck');
+        $label = get_string('accessstudents', 'plagiarism_turnitinsim');
         $access[] = $mform->createElement('checkbox', 'accessstudents', null, $label);
 
         // Group index options together.
-        $mform->addGroup($access, 'accessoptions', get_string('accessoptions', 'plagiarism_turnitincheck'), '<br />');
-        $mform->addHelpButton('accessoptions', 'accessoptions', 'plagiarism_turnitincheck');
+        $mform->addGroup($access, 'accessoptions', get_string('accessoptions', 'plagiarism_turnitinsim'), '<br />');
+        $mform->addHelpButton('accessoptions', 'accessoptions', 'plagiarism_turnitinsim');
         $mform->disabledIf('accessoptions', 'turnitinenabled', 'notchecked');
 
         // Send submission drafts to Turnitin setting.
         if ($mform->elementExists('submissiondrafts') || $context != 'module') {
-            $mform->addElement('checkbox', 'queuedrafts', get_string('queuedrafts', 'plagiarism_turnitincheck'));
-            $mform->addHelpButton('queuedrafts', 'queuedrafts', 'plagiarism_turnitincheck');
+            $mform->addElement('checkbox', 'queuedrafts', get_string('queuedrafts', 'plagiarism_turnitinsim'));
+            $mform->addHelpButton('queuedrafts', 'queuedrafts', 'plagiarism_turnitinsim');
             $mform->disabledIf('queuedrafts', 'submissiondrafts', 'eq', 0);
             $mform->disabledIf('queuedrafts', 'turnitinenabled', 'notchecked');
         }
 
         // Show link to guides.
         $link = html_writer::link(
-            TURNITINCHECK_HELP_LINK,
-            get_string('settingslearnmore', 'plagiarism_turnitincheck'),
+            TURNITINSIM_HELP_LINK,
+            get_string('settingslearnmore', 'plagiarism_turnitinsim'),
             array('target' => '_blank')
         );
         $mform->addElement('html', html_writer::tag('div', $link));
@@ -144,7 +144,7 @@ class tcsettings {
         $settings->cm = (int)$data->coursemodule;
         $settings->turnitinenabled = (!empty($data->turnitinenabled)) ? (int)$data->turnitinenabled : 0;
         $settings->reportgeneration = (!empty($data->reportgenoptions['reportgeneration'])) ?
-            (int)$data->reportgenoptions['reportgeneration'] : TURNITINCHECK_REPORT_GEN_IMMEDIATE;
+            (int)$data->reportgenoptions['reportgeneration'] : TURNITINSIM_REPORT_GEN_IMMEDIATE;
         $settings->queuedrafts = (!empty($data->queuedrafts)) ? (int)$data->queuedrafts : 0;
         $settings->addtoindex = (!empty($data->indexoptions['addtoindex'])) ? (int)$data->indexoptions['addtoindex'] : 0;
         $settings->excludebiblio = (!empty($data->excludeoptions['excludebiblio'])) ?
@@ -154,11 +154,11 @@ class tcsettings {
         $settings->accessstudents = (!empty($data->accessoptions['accessstudents'])) ?
             (int)$data->accessoptions['accessstudents'] : 0;
 
-        if ($modsettings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => $settings->cm))) {
+        if ($modsettings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $settings->cm))) {
             $settings->id = $modsettings->id;
-            $DB->update_record('plagiarism_turnitincheck_mod', $settings);
+            $DB->update_record('plagiarism_turnitinsim_mod', $settings);
         } else {
-            $DB->insert_record('plagiarism_turnitincheck_mod', $settings);
+            $DB->insert_record('plagiarism_turnitinsim_mod', $settings);
         }
     }
 
@@ -170,21 +170,21 @@ class tcsettings {
 
         // Make request to get the enabled features on the account.
         try {
-            $endpoint = ENDPOINT_GET_FEATURES_ENABLED;
-            $response = $this->tcrequest->send_request($endpoint, json_encode(array()), 'GET');
+            $endpoint = TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED;
+            $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
             $responsedata = json_decode($response);
 
             // Latest version retrieved.
-            if ($responsedata->httpstatus == HTTP_OK) {
-                mtrace(get_string('taskoutputenabledfeaturesretrieved', 'plagiarism_turnitincheck'));
+            if ($responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+                mtrace(get_string('taskoutputenabledfeaturesretrieved', 'plagiarism_turnitinsim'));
                 return $responsedata;
             }
 
-            mtrace(get_string('taskoutputenabledfeaturesnotretrieved', 'plagiarism_turnitincheck'));
+            mtrace(get_string('taskoutputenabledfeaturesnotretrieved', 'plagiarism_turnitinsim'));
             return $responsedata;
 
         } catch (Exception $e) {
-            $this->tcrequest->handle_exception($e, 'taskoutputenabledfeaturesretrievalfailure');
+            $this->tsrequest->handle_exception($e, 'taskoutputenabledfeaturesretrievalfailure');
             return $responsedata;
         }
     }

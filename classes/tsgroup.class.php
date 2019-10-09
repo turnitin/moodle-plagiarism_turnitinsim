@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Group class for plagiarism_turnitincheck component
+ * Group class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tcgroup {
+class tsgroup {
 
     public $groupid;
     public $turnitinid;
@@ -35,7 +35,7 @@ class tcgroup {
         $this->set_groupid($groupid);
 
         // Get group details.
-        if ($group = $DB->get_record('plagiarism_turnitincheck_grp', array('groupid' => $groupid))) {
+        if ($group = $DB->get_record('plagiarism_turnitinsim_grp', array('groupid' => $groupid))) {
             $this->set_turnitinid($group->turnitinid);
         }
 
@@ -58,7 +58,7 @@ class tcgroup {
         $group->groupid = $this->get_groupid();
         $group->turnitinid = $turnitinid;
 
-        $DB->insert_record('plagiarism_turnitincheck_grp', $group);
+        $DB->insert_record('plagiarism_turnitinsim_grp', $group);
 
         return $turnitinid;
     }

@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Submission class for plagiarism_turnitincheck component
+ * Submission class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-use plagiarism_turnitincheck\message\receipt_instructor;
-use plagiarism_turnitincheck\message\receipt_student;
+use plagiarism_turnitinsim\message\receipt_instructor;
+use plagiarism_turnitinsim\message\receipt_student;
 
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcassign.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcforum.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcworkshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsassign.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsforum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsworkshop.class.php');
 
-class tcsubmission {
+class tssubmission {
 
     public $id;
     public $cm;
@@ -49,17 +49,17 @@ class tcsubmission {
     public $requestedtime;
     public $overallscore;
     public $errormessage;
-    public $tcrequest;
+    public $tsrequest;
 
-    public function __construct( tcrequest $tcrequest = null, $id = null) {
+    public function __construct(tsrequest $tsrequest = null, $id = null) {
         global $DB;
 
         $this->setid($id);
-        $this->tcrequest = ($tcrequest) ? $tcrequest : new tcrequest();
-        $this->plagiarism_plugin_turnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
+        $this->plagiarism_plugin_turnitinsim = new plagiarism_plugin_turnitinsim();
 
         if (!empty($id)) {
-            $submission = $DB->get_record('plagiarism_turnitincheck_sub', array('id' => $id));
+            $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => $id));
 
             $this->setcm($submission->cm);
             $this->setuserid($submission->userid);
@@ -86,9 +86,9 @@ class tcsubmission {
         global $DB;
 
         if (!empty($this->id)) {
-            $DB->update_record('plagiarism_turnitincheck_sub', $this);
+            $DB->update_record('plagiarism_turnitinsim_sub', $this);
         } else {
-            $id = $DB->insert_record('plagiarism_turnitincheck_sub', $this);
+            $id = $DB->insert_record('plagiarism_turnitinsim_sub', $this);
             $this->setid($id);
         }
 
@@ -100,16 +100,16 @@ class tcsubmission {
      */
     public function calculate_generation_time($generated = false) {
         $cm = get_coursemodule_from_id('', $this->getcm());
-        $plagiarismsettings = $this->plagiarism_plugin_turnitincheck->get_settings($cm->id);
+        $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
 
         // Create module object.
-        $moduleclass = 'tc'.$cm->modname;
+        $moduleclass =  'ts'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         $duedate = $moduleobject->get_due_date($cm->instance);
 
         // If the report has already generated then only proceed if report speed is 1.
-        if ($generated && $plagiarismsettings->reportgeneration != TURNITINCHECK_REPORT_GEN_IMMEDIATE_AND_DUEDATE) {
+        if ($generated && $plagiarismsettings->reportgeneration != TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE) {
             $this->settogenerate(0);
             return;
         }
@@ -118,18 +118,18 @@ class tcsubmission {
         switch ($plagiarismsettings->reportgeneration) {
 
             // Generate Immediately.
-            case TURNITINCHECK_REPORT_GEN_IMMEDIATE:
+            case TURNITINSIM_REPORT_GEN_IMMEDIATE:
                 $this->settogenerate(1);
                 $this->setgenerationtime(time());
                 break;
 
             // Generate Immediately, and on Due Date (only applicable to assignments).
-            case TURNITINCHECK_REPORT_GEN_IMMEDIATE_AND_DUEDATE:
+            case TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE:
 
                 // If submission hasn't been processed yet then generate immediately.
                 $immediatestatuses = array(
-                    TURNITINCHECK_SUBMISSION_STATUS_QUEUED,
-                    TURNITINCHECK_SUBMISSION_STATUS_UPLOADED
+                    TURNITINSIM_SUBMISSION_STATUS_QUEUED,
+                    TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 );
 
                 // Set the report generation time.
@@ -149,7 +149,7 @@ class tcsubmission {
                 break;
 
             // Generate on Due Date (only applicable to assignments).
-            case TURNITINCHECK_REPORT_GEN_DUEDATE:
+            case TURNITINSIM_REPORT_GEN_DUEDATE:
                 $this->settogenerate(1);
                 if ($duedate > time()) {
                     $this->setgenerationtime($duedate);
@@ -175,11 +175,11 @@ class tcsubmission {
              return;
         }
 
-        // Create tcuser object so we get turnitin id.
-        $tcuser = new tcuser($user->id);
+        // Create tsuser object so we get turnitin id.
+        $tsuser = new tsuser($user->id);
 
         return array(
-            'id' => $tcuser->get_turnitinid(),
+            'id' => $tsuser->get_turnitinid(),
             'family_name' => $user->lastname,
             'given_name' => $user->firstname,
             'email' => $user->email
@@ -202,7 +202,7 @@ class tcsubmission {
         $assignment = array(
             'id'   => $cm->id,
             'name' => $cm->name,
-            'type' => TURNITINCHECK_GROUP_TYPE_ASSIGNMENT
+            'type' => TURNITINSIM_GROUP_TYPE_ASSIGNMENT
         );
 
         // Add course metadata.
@@ -215,7 +215,7 @@ class tcsubmission {
         // Get all the instructors in the course.
         $instructors = get_enrolled_users(
             context_module::instance($cm->id),
-            'plagiarism/turnitincheck:viewfullreport',
+            'plagiarism/turnitinsim:viewfullreport',
             0, 'u.id, u.firstname, u.lastname, u.email', 'u.id'
         );
 
@@ -263,12 +263,12 @@ class tcsubmission {
      */
     public function get_owner() {
         if (!empty($this->getgroupid())) {
-            $tcgroup = new tcgroup($this->getgroupid());
-            return $tcgroup->get_turnitinid();
+            $tsgroup = new tsgroup($this->getgroupid());
+            return $tsgroup->get_turnitinid();
         }
 
-        $tcauthor = new tcuser($this->getuserid());
-        return $tcauthor->get_turnitinid();
+        $tsauthor = new tsuser($this->getuserid());
+        return $tsauthor->get_turnitinid();
     }
 
     /**
@@ -276,13 +276,13 @@ class tcsubmission {
      */
     public function create_submission_in_turnitin() {
 
-        $tcsubmitter = new tcuser($this->getsubmitter());
+        $tssubmitter = new tsuser($this->getsubmitter());
         $filedetails = $this->get_file_details();
 
         // Initialise request with owner and submitter.
         $request = array(
             'owner' => $this->get_owner(),
-            'submitter' => $tcsubmitter->get_turnitinid()
+            'submitter' => $tssubmitter->get_turnitinid()
         );
 
         // Add submission title to request.
@@ -299,20 +299,20 @@ class tcsubmission {
         $request['metadata']['owners'] = $this->create_owners_metadata();
 
         // Add EULA acceptance details to submission if the submitter has accepted it.
-        $language = $this->tcrequest->get_language();
-        $locale = ($tcsubmitter->get_lasteulaacceptedlang()) ? $tcsubmitter->get_lasteulaacceptedlang() : $language->localecode;
+        $language = $this->tsrequest->get_language();
+        $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language->localecode;
 
-        if (!empty($tcsubmitter->get_lasteulaaccepted())) {
+        if (!empty($tssubmitter->get_lasteulaaccepted())) {
             $request['eula'] = array(
-                'accepted_timestamp' => gmdate("Y-m-d\TH:i:s\Z", ($tcsubmitter->get_lasteulaacceptedtime())),
+                'accepted_timestamp' => gmdate("Y-m-d\TH:i:s\Z", ($tssubmitter->get_lasteulaacceptedtime())),
                 'language' => $locale,
-                'version' => $tcsubmitter->get_lasteulaaccepted()
+                'version' => $tssubmitter->get_lasteulaaccepted()
             );
         }
 
         // Make request to create submission record in Turnitin.
         try {
-            $response = $this->tcrequest->send_request(ENDPOINT_CREATE_SUBMISSION, json_encode($request), 'POST');
+            $response = $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION, json_encode($request), 'POST');
             $responsedata = json_decode($response);
 
             $this->handle_create_submission_response($responsedata);
@@ -320,7 +320,7 @@ class tcsubmission {
         } catch (Exception $e) {
 
             // This should only ever fail due to a failed connection to Turnitin so we will leave the paper as queued.
-            $this->tcrequest->handle_exception($e, 'taskoutputfailedconnection');
+            $this->tsrequest->handle_exception($e, 'taskoutputfailedconnection');
         }
     }
 
@@ -332,28 +332,28 @@ class tcsubmission {
     public function handle_create_submission_response($params) {
 
         switch ($params->httpstatus) {
-            case HTTP_CREATED:
-                // Handle a HTTP_CREATED repsonse.
+            case TURNITINSIM_HTTP_CREATED:
+                // Handle a TURNITINSIM_HTTP_CREATED repsonse.
                 $this->setturnitinid($params->id);
                 $this->setstatus($params->status);
                 $this->setsubmittedtime(strtotime($params->created_time));
 
-                mtrace(get_string('taskoutputsubmissioncreated', 'plagiarism_turnitincheck', $params->id));
+                mtrace(get_string('taskoutputsubmissioncreated', 'plagiarism_turnitinsim', $params->id));
 
                 break;
 
-            case HTTP_UNAVAILABLE_FOR_LEGAL_REASONS:
-                // Handle a HTTP_UNAVAILABLE_FOR_LEGAL_REASONS response for user who have not accepted the EULA.
-                $this->setstatus(TURNITINCHECK_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
+            case TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS:
+                // Handle a TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS response for user who have not accepted the EULA.
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $this->setsubmittedtime(time());
 
-                mtrace(get_string('taskoutputsubmissionnotcreatedeula', 'plagiarism_turnitincheck'));
+                mtrace(get_string('taskoutputsubmissionnotcreatedeula', 'plagiarism_turnitinsim'));
 
                 break;
 
             default:
-                $this->setstatus(TURNITINCHECK_SUBMISSION_STATUS_ERROR);
-                mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitincheck'));
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
                 break;
         }
 
@@ -376,7 +376,7 @@ class tcsubmission {
             $cm = get_coursemodule_from_id('', $this->getcm());
 
             // Create module object.
-            $moduleclass = 'tc'.$cm->modname;
+            $moduleclass =  'ts'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             // Add text content to request.
@@ -393,20 +393,20 @@ class tcsubmission {
             'Content-Disposition: inline; filename="'.$filename.'"'
         );
 
-        $this->tcrequest->add_additional_headers($additionalheaders);
+        $this->tsrequest->add_additional_headers($additionalheaders);
 
         // Make request to add file to submission.
         try {
-            $endpoint = ENDPOINT_UPLOAD_SUBMISSION;
+            $endpoint = TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION;
             $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
-            $response = $this->tcrequest->send_request($endpoint, $request, 'PUT', 'submission');
+            $response = $this->tsrequest->send_request($endpoint, $request, 'PUT', 'submission');
             $responsedata = json_decode($response);
 
             // Handle response from the API.
             $this->handle_upload_response($responsedata, $filename);
         } catch (Exception $e) {
 
-            $this->tcrequest->handle_exception($e, 'taskoutputfailedupload', $this->getturnitinid());
+            $this->tsrequest->handle_exception($e, 'taskoutputfailedupload', $this->getturnitinid());
         }
     }
 
@@ -417,18 +417,18 @@ class tcsubmission {
      */
     public function handle_upload_response($params, $filename) {
         // Update submission status.
-        mtrace( get_string('taskoutputfileuploaded', 'plagiarism_turnitincheck', $this->getturnitinid()));
+        mtrace( get_string('taskoutputfileuploaded', 'plagiarism_turnitinsim', $this->getturnitinid()));
         if (!empty($params->httpstatus)) {
-            $status = ($params->httpstatus == HTTP_ACCEPTED) ?
-                TURNITINCHECK_SUBMISSION_STATUS_UPLOADED : TURNITINCHECK_SUBMISSION_STATUS_ERROR;
+            $status = ($params->httpstatus == TURNITINSIM_HTTP_ACCEPTED) ?
+                TURNITINSIM_SUBMISSION_STATUS_UPLOADED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
         } else {
-            $status = (!empty($params->status) && $params->status == TURNITINCHECK_SUBMISSION_STATUS_COMPLETE) ?
-                TURNITINCHECK_SUBMISSION_STATUS_UPLOADED : TURNITINCHECK_SUBMISSION_STATUS_ERROR;
+            $status = (!empty($params->status) && $params->status == TURNITINSIM_SUBMISSION_STATUS_COMPLETE) ?
+                TURNITINSIM_SUBMISSION_STATUS_UPLOADED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
         }
         $this->setstatus($status);
 
         // Save error message if request has errored, otherwise send digital receipts.
-        if ($status == TURNITINCHECK_SUBMISSION_STATUS_ERROR) {
+        if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
             $this->seterrormessage($params->message);
         } else {
             $this->send_digital_receipts($filename);
@@ -472,7 +472,7 @@ class tcsubmission {
         // Get Instructors.
         $instructors = get_enrolled_users(
             context_module::instance($cm->id),
-            'plagiarism/turnitincheck:viewfullreport',
+            'plagiarism/turnitinsim:viewfullreport',
             groups_get_activity_group($cm),
             'u.id'
         );
@@ -486,12 +486,12 @@ class tcsubmission {
     public function request_turnitin_report_generation() {
 
         // Get module settings.
-        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
         $cm = get_coursemodule_from_id('', $this->getcm());
 
         // Create module helper object.
-        $moduleclass = 'tc'.$cm->modname;
+        $moduleclass =  'ts'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Configure request body array.
@@ -508,7 +508,7 @@ class tcsubmission {
         $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
         $searchrepositories = $features->similarity->generation_settings->search_repositories;
         $request['generation_settings'] = array('search_repositories' => $searchrepositories);
-        $request['generation_settings']['auto_exclude_self_matching_scope'] = TURNITINCHECK_REPORT_GEN_EXCLUDE_SELF_GROUP;
+        $request['generation_settings']['auto_exclude_self_matching_scope'] = TURNITINSIM_REPORT_GEN_EXCLUDE_SELF_GROUP;
 
         // View Settings.
         $request['view_settings'] = array(
@@ -518,19 +518,19 @@ class tcsubmission {
 
         // Make request to generate report.
         try {
-            $endpoint = ENDPOINT_SIMILARITY_REPORT;
+            $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
             $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
-            $response = $this->tcrequest->send_request($endpoint, json_encode($request), 'PUT');
+            $response = $this->tsrequest->send_request($endpoint, json_encode($request), 'PUT');
             $responsedata = json_decode($response);
 
             // Update submission status.
             mtrace('Turnitin Originality Report requested for: '.$this->getturnitinid());
 
-            $status = ($responsedata->httpstatus == HTTP_ACCEPTED) ?
-                TURNITINCHECK_SUBMISSION_STATUS_REQUESTED : TURNITINCHECK_SUBMISSION_STATUS_ERROR;
+            $status = ($responsedata->httpstatus == TURNITINSIM_HTTP_ACCEPTED) ?
+                TURNITINSIM_SUBMISSION_STATUS_REQUESTED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
             $this->setstatus($status);
             // Save error message if request has errored.
-            if ($status == TURNITINCHECK_SUBMISSION_STATUS_ERROR) {
+            if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
                 $this->seterrormessage($responsedata->message);
             }
             $this->setrequestedtime(time());
@@ -539,7 +539,7 @@ class tcsubmission {
 
         } catch (Exception $e) {
 
-            $this->tcrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
+            $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
         }
     }
 
@@ -550,15 +550,15 @@ class tcsubmission {
 
         // Make request to get report score.
         try {
-            $endpoint = ENDPOINT_SIMILARITY_REPORT;
+            $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
             $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
-            $response = $this->tcrequest->send_request($endpoint, json_encode(array()), 'GET');
+            $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
             $responsedata = json_decode($response);
 
             $this->handle_similarity_response($responsedata);
         } catch (Exception $e) {
 
-            $this->tcrequest->handle_exception($e, 'taskoutputfailedscorerequest', $this->getturnitinid());
+            $this->tsrequest->handle_exception($e, 'taskoutputfailedscorerequest', $this->getturnitinid());
         }
     }
 
@@ -613,7 +613,7 @@ class tcsubmission {
 
                 if (empty($assignsubmission->userid)) {
                     // Group submission.
-                    return $DB->get_record('plagiarism_turnitincheck_sub', array('itemid' => $itemid,
+                    return $DB->get_record('plagiarism_turnitinsim_sub', array('itemid' => $itemid,
                         'cm' => $linkarray['cmid'], 'identifier' => $identifier));
                 } else {
                     // Submitted on behalf of student.
@@ -626,12 +626,12 @@ class tcsubmission {
 
             // If user id is empty this must be a group submission.
             if (empty($linkarray['userid'])) {
-                return $DB->get_record('plagiarism_turnitincheck_sub', array('identifier' => $identifier,
+                return $DB->get_record('plagiarism_turnitinsim_sub', array('identifier' => $identifier,
                     'type' => 'content', 'cm' => $linkarray['cmid']));
             }
         }
 
-        return $DB->get_record('plagiarism_turnitincheck_sub', array('userid' => $linkarray['userid'],
+        return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier));
     }
 
@@ -676,12 +676,12 @@ class tcsubmission {
         global $DB, $USER;
 
         // Make request to get cloud viewer launch url.
-        $endpoint = ENDPOINT_CV_LAUNCH;
+        $endpoint = TURNITINSIM_ENDPOINT_CV_LAUNCH;
         $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
 
         // Build request.
-        $lang = $this->tcrequest->get_language();
-        $viewinguser = new tcuser($USER->id);
+        $lang = $this->tsrequest->get_language();
+        $viewinguser = new tsuser($USER->id);
         $request = array(
             "locale" => $lang->langcode,
             "viewer_user_id" => $viewinguser->get_turnitinid()
@@ -697,10 +697,10 @@ class tcsubmission {
         }
 
         // Send correct user role in request.
-        if (has_capability('plagiarism/turnitincheck:viewfullreport', context_module::instance($this->getcm()))) {
-            $request['viewer_default_permission_set'] = TURNITINCHECK_ROLE_INSTRUCTOR;
+        if (has_capability('plagiarism/turnitinsim:viewfullreport', context_module::instance($this->getcm()))) {
+            $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_INSTRUCTOR;
         } else {
-            $request['viewer_default_permission_set'] = TURNITINCHECK_ROLE_LEARNER;
+            $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_LEARNER;
         }
 
         // Override viewer permissions depending on admin options.
@@ -711,11 +711,11 @@ class tcsubmission {
 
         // Make request to get Cloud Viewer URL.
         try {
-            $response = $this->tcrequest->send_request($endpoint, json_encode($request), 'POST');
+            $response = $this->tsrequest->send_request($endpoint, json_encode($request), 'POST');
             return $response;
         } catch (Exception $e) {
 
-            $this->tcrequest->handle_exception($e, 'taskoutputfailedcvlaunchurl', $this->getturnitinid());
+            $this->tsrequest->handle_exception($e, 'taskoutputfailedcvlaunchurl', $this->getturnitinid());
         }
     }
 

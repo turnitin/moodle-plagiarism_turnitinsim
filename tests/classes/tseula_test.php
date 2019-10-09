@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/tceula.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/tseula.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,15 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for TurnitinCheck submission class
+ * Tests for TurnitinSim submission class
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_turnitincheck_eula_class_testcase extends advanced_testcase {
+class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -46,7 +46,7 @@ class plagiarism_turnitincheck_eula_class_testcase extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism');
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
-        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
 
     /**
@@ -59,19 +59,19 @@ class plagiarism_turnitincheck_eula_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_failure.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_LATEST_EULA])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get latest EULA version.
-        $tceula = new tceula( $tcrequest );
-        $result = $tceula->get_latest_version();
+        $tseula = new tseula( $tsrequest );
+        $result = $tseula->get_latest_version();
 
         // Test that the EULA version has not been retrieved.
         $this->assertFalse(isset($result->version));
@@ -84,19 +84,19 @@ class plagiarism_turnitincheck_eula_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_LATEST_EULA])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->will($this->throwException(new Exception()));
 
         // Get the latest EULA version.
-        $tceula = new tceula($tcrequest);
-        $result = $tceula->get_latest_version();
+        $tseula = new tseula($tsrequest);
+        $result = $tseula->get_latest_version();
 
         // Test that the latest EULA version has not been retrieved.
         $this->assertFalse(isset($result->version));
@@ -112,19 +112,19 @@ class plagiarism_turnitincheck_eula_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
 
         // Mock API request class.
-        $tcrequest = $this->getMockBuilder(tcrequest::class)
+        $tsrequest = $this->getMockBuilder(tsrequest::class)
             ->setMethods(['send_request'])
-            ->setConstructorArgs([ENDPOINT_GET_LATEST_EULA])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
         // Mock API send request method.
-        $tcrequest->expects($this->once())
+        $tsrequest->expects($this->once())
             ->method('send_request')
             ->willReturn($response);
 
         // Get the latest EULA version.
-        $tceula = new tceula( $tcrequest );
-        $result = $tceula->get_latest_version();
+        $tseula = new tseula( $tsrequest );
+        $result = $tseula->get_latest_version();
 
         // Test that the latest EULA version has been retrieved.
         $this->assertTrue(isset($result->version));

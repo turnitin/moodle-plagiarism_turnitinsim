@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for forum module class for plagiarism_turnitincheck component
+ * Tests for forum module class for plagiarism_turnitinsim component
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/modules/tcforum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsforum.class.php');
 
-class tcforum_test extends advanced_testcase {
+class tsforum_test extends advanced_testcase {
 
     const TEST_FORUM_TEXT = 'This is a test forum post';
 
@@ -92,8 +92,8 @@ class tcforum_test extends advanced_testcase {
         $record->message = self::TEST_FORUM_TEXT;
         $post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
 
-        $tcforum = new tcforum();
-        $result = $tcforum->get_onlinetext($post->id);
+        $tsforum = new tsforum();
+        $result = $tsforum->get_onlinetext($post->id);
 
         $this->assertEquals($result, self::TEST_FORUM_TEXT);
     }
@@ -126,12 +126,12 @@ class tcforum_test extends advanced_testcase {
         $post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
 
         // Get itemid.
-        $tcforum = new tcforum();
+        $tsforum = new tsforum();
         $params = new stdClass();
         $params->moduleid = $forum->id;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_FORUM_TEXT;
-        $result = $tcforum->get_itemid($params);
+        $result = $tsforum->get_itemid($params);
 
         $this->assertEquals($result, $post->id);
     }
@@ -148,12 +148,12 @@ class tcforum_test extends advanced_testcase {
         $forum = $this->getDataGenerator()->create_module('forum', $record);
 
         // Get itemid.
-        $tcforum = new tcforum();
+        $tsforum = new tsforum();
         $params = new stdClass();
         $params->moduleid = $forum->id;
         $params->userid = $this->student1->id;
         $params->onlinetext = self::TEST_FORUM_TEXT;
-        $result = $tcforum->get_itemid($params);
+        $result = $tsforum->get_itemid($params);
 
         $this->assertEquals($result, 0);
     }
@@ -165,13 +165,13 @@ class tcforum_test extends advanced_testcase {
         $this->resetAfterTest();
 
         // Test that get author returns student2 as the author.
-        $tcforum = new tcforum();
-        $response = $tcforum->get_author($this->student1->id, $this->student2->id, 0, 0);
+        $tsforum = new tsforum();
+        $response = $tsforum->get_author($this->student1->id, $this->student2->id, 0, 0);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
-        $tcforum = new tcforum();
-        $response = $tcforum->get_author($this->student1->id, 0, 0, 0);
+        $tsforum = new tsforum();
+        $response = $tsforum->get_author($this->student1->id, 0, 0, 0);
         $this->assertEquals($this->student1->id, $response);
     }
 
@@ -181,8 +181,8 @@ class tcforum_test extends advanced_testcase {
     public function test_is_submission_draft() {
         $this->resetAfterTest();
 
-        $tcforum = new tcforum();
-        $response = $tcforum->is_submission_draft(0);
+        $tsforum = new tsforum();
+        $response = $tsforum->is_submission_draft(0);
         $this->assertEquals(false, $response);
     }
 
@@ -192,8 +192,8 @@ class tcforum_test extends advanced_testcase {
     public function test_get_due_date() {
         $this->resetAfterTest();
 
-        $tcforum = new tcforum();
-        $response = $tcforum->get_due_date(0);
+        $tsforum = new tsforum();
+        $response = $tsforum->get_due_date(0);
         $this->assertEquals(0, $response);
     }
 
@@ -206,8 +206,8 @@ class tcforum_test extends advanced_testcase {
         // Login as instructor.
         $this->setUser($this->instructor);
 
-        $tcforum = new tcforum();
-        $response = $tcforum->show_other_posts_links($this->course->id, $this->instructor->id);
+        $tsforum = new tsforum();
+        $response = $tsforum->show_other_posts_links($this->course->id, $this->instructor->id);
         $this->assertEquals(true, $response);
     }
 
@@ -220,8 +220,8 @@ class tcforum_test extends advanced_testcase {
         // Login as student.
         $this->setUser($this->student1);
 
-        $tcforum = new tcforum();
-        $response = $tcforum->show_other_posts_links($this->course->id, $this->student2->id);
+        $tsforum = new tsforum();
+        $response = $tsforum->show_other_posts_links($this->course->id, $this->student2->id);
         $this->assertEquals(false, $response);
     }
 }

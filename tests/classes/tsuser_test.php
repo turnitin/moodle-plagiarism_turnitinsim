@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitincheck/classes/tcgroup.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/tsuser.class.php.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,39 +25,30 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tcgroup.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tsuser.class.php');
 
 /**
- * Tests for TurnitinCheck group class.
+ * Tests for TurnitinSim user class.
  *
- * @package turnitincheck
+ * @package turnitinsim
  */
-class plagiarism_turnitincheck_group_class_testcase extends advanced_testcase {
+class plagiarism_turnitinsim_user_class_testcase extends advanced_testcase {
 
     /**
-     * Test that group constructor creates a turnitinid in the correct format.
+     * Test that user constructor creates a turnitinid in the correct format.
      */
     public function test_constructor_creates_turnitinid() {
         $this->resetAfterTest();
 
-        // Create a course.
-        $this->course = $this->getDataGenerator()->create_course();
-
         // Create new student.
-        $this->student1 = $this->getDataGenerator()->create_user();
+        $student1 = self::getDataGenerator()->create_user();
 
-        // Create group.
-        $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
-
-        // Enrol students in group.
-        groups_add_member($group, $this->student1);
-
-        // Create new tcgroup which should create a Turnitin id.
-        $tcgroup = new tcgroup($group->id);
+        // Create new tsuser which should create a Turnitin id.
+        $tsuser = new tsuser($student1->id);
 
         // Turnitinid should match reg ex.
         $format = "/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-        $turnitinid = $tcgroup->get_turnitinid();
+        $turnitinid = $tsuser->get_turnitinid();
         $this->assertRegExp($format, $turnitinid);
     }
 

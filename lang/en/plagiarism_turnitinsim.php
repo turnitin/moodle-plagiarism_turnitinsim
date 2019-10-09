@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for plagiarism_turnitincheck component, language 'en'
+ * Strings for plagiarism_turnitinsim component, language 'en'
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -57,7 +57,7 @@ $string['messageprovider:get_webhook_failure'] = 'Turnitin webhook check failure
 $string['messageprovider:new_eula'] = 'Turnitin new EULA release';
 $string['neweula:subject'] = 'Turnitin new EULA released';
 $string['neweula:message'] = 'Turnitin have released a new EULA, for further information please click <a href="{$a}">here</a>.';
-$string['pluginname'] = 'TurnitinCheck plagiarism plugin';
+$string['pluginname'] = 'TurnitinSim plagiarism plugin';
 $string['pluginsetup'] = 'Setup';
 $string['queuedrafts'] = 'Process draft submissions';
 $string['queuedrafts_help'] = 'Please note that draft submissions will not be indexed in Turnitin for checking against';
@@ -103,8 +103,8 @@ $string['submissiondisplayerror:corruptfile_help'] = 'The uploaded file appears 
 $string['submissiondisplayerror:eulanotaccepted'] = 'EULA not accepted';
 $string['submissiondisplayerror:eulanotaccepted_help'] = 'The Turnitin EULA needs to be accepted by the submitter before the submission can be checked for Similarity.';
 $string['resubmittoturnitin'] = 'Resubmit to Turnitin';
-$string['taskadminupdate'] = 'Update local configuration for TurnitinCheck Plagiarism Plugin';
-$string['taskgetreportscores'] = 'Fetch Report Scores for TurnitinCheck Plagiarism Plugin';
+$string['taskadminupdate'] = 'Update local configuration for TurnitinSim Plagiarism Plugin';
+$string['taskgetreportscores'] = 'Fetch Report Scores for TurnitinSim Plagiarism Plugin';
 $string['taskoutputenabledfeaturesretrieved'] = 'Turnitin enabled features retrieved';
 $string['taskoutputenabledfeaturesnotretrieved'] = 'Turnitin enabled features could not be retrieved';
 $string['taskoutputenabledfeaturesretrievalfailure'] = 'Turnitin enabled features call failed';
@@ -129,25 +129,25 @@ $string['taskoutputwebhookdeletefailure'] = 'Webhook could not be deleted. Pleas
 $string['taskoutputwebhookretrieved'] = 'Webhook {$a} retrieved. Webhook is active.';
 $string['taskoutputwebhooknotretrieved'] = 'Webhook {$a} could not be retrieved. A new webhook will be created';
 $string['taskoutputwebhookretrievalfailure'] = 'Webhook {$a} retrieval call failed.';
-$string['tasksendqueuedsubmissions'] = 'Send Queued Files from the TurnitinCheck Plagiarism Plugin';
-$string['turnitincheck'] = 'TurnitinCheck plagiarism plugin';
-$string['turnitincheck:enable'] = 'Enable TurnitinCheck';
-$string['turnitincheck:viewfullreport'] = 'View Originality Report';
+$string['tasksendqueuedsubmissions'] = 'Send Queued Files from the TurnitinSim Plagiarism Plugin';
+$string['turnitinsim'] = 'TurnitinSim plagiarism plugin';
+$string['turnitinsim:enable'] = 'Enable TurnitinSim';
+$string['turnitinsim:viewfullreport'] = 'View Originality Report';
 $string['turnitinapikey'] = 'Turnitin API Key';
 $string['turnitinapiurl'] = 'Turnitin API URL';
-$string['turnitincheckinternet'] = 'Check against Internet content';
-$string['turnitincheckprivate'] = 'Check against Private content';
+$string['turnitinsiminternet'] = 'Check against Internet content';
+$string['turnitinsimprivate'] = 'Check against Private content';
 $string['turnitinconfig'] = 'Plugin Configuration';
 $string['turnitinenablelogging'] = 'Enable Diagnostic Mode';
-$string['turnitinfeatures'] = 'TurnitinCheck features';
-$string['turnitinfeatures::header'] = 'TurnitinCheck features';
+$string['turnitinfeatures'] = 'TurnitinSim features';
+$string['turnitinfeatures::header'] = 'TurnitinSim features';
 $string['turnitinfeatures::moreinfo'] = 'For more information on the enabled features and packages available from Turnitin please see <a href="http://www.turnitin.com" target="_blank">http://www.turnitin.com</a>.';
 $string['turnitinfeatures::repositories'] = 'Repositories checked against: ';
 $string['turnitinfeatures::viewoptions'] = 'Cloud Viewer options: ';
 $string['turnitinhideidentity'] = 'Hide Student\'s Identity from Turnitin';
-$string['turnitinmodenabled'] = 'Enable TurnitinCheck for {$a}';
+$string['turnitinmodenabled'] = 'Enable TurnitinSim for {$a}';
 $string['turnitinpluginenabled'] = 'Enable Turnitin';
-$string['turnitinpluginsettings'] = 'TurnitinCheck plagiarism plugin settings';
+$string['turnitinpluginsettings'] = 'TurnitinSim plagiarism plugin settings';
 $string['turnitinviewerviewfullsource'] = 'Allow instructors within your institution to view the full text of submissions for internal matches';
 $string['turnitinviewermatchsubinfo'] = 'Allow instructors within your institution to view submission information for internal matches';
 $string['viewerpermissionferpa'] = 'The following permissions impact how data can be shared across your institution. This data is the exclusive responsibility of your institution so when setting these permissions, consider whether they fully comply with your institution’s policies regarding student records.';
@@ -160,24 +160,24 @@ $string['connecttest'] = 'Test Turnitin Connection';
 $string['connecttestsuccess'] = 'Connection test successful';
 $string['connecttestfailed'] = 'Connection test failed.';
 
-$string['privacy:metadata:plagiarism_turnitincheck_sub'] = 'Information that links a Moodle submission to a Turnitin submission.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:userid'] = 'The ID of the user who has made a submission.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:turnitinid'] = 'The ID used by Turnitin to reference the submission.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:overall_score'] = 'The overall similarity score of the submission.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:submitted_time'] = 'A timestamp indicating when the user\'s submission was sent to Turnitin.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:identifier'] = 'A hash used by Moodle to identify the file submitted.';
-$string['privacy:metadata:plagiarism_turnitincheck_sub:itemid'] = 'Id that identifies the submission for the relevant module type.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub'] = 'Information that links a Moodle submission to a Turnitin submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:userid'] = 'The ID of the user who has made a submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:turnitinid'] = 'The ID used by Turnitin to reference the submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:overall_score'] = 'The overall similarity score of the submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:submitted_time'] = 'A timestamp indicating when the user\'s submission was sent to Turnitin.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:identifier'] = 'A hash used by Moodle to identify the file submitted.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:itemid'] = 'Id that identifies the submission for the relevant module type.';
 
-$string['privacy:metadata:plagiarism_turnitincheck_usr'] = 'Information that links a Moodle user to a Turnitin user.';
-$string['privacy:metadata:plagiarism_turnitincheck_usr:userid'] = 'The ID of the user who has made a submission.';
-$string['privacy:metadata:plagiarism_turnitincheck_usr:turnitinid'] = 'The ID used by Turnitin to reference the user.';
-$string['privacy:metadata:plagiarism_turnitincheck_usr:lasteulaaccepted'] = 'The last version of the Turnitin EULA accepted by the user.';
-$string['privacy:metadata:plagiarism_turnitincheck_usr:lasteulaacceptedtime'] = 'A timestamp indicating when user last accepted the Turnitin EULA.';
-$string['privacy:metadata:plagiarism_turnitincheck_usr:lasteulaacceptedlang'] = 'The langauge in which the user last accepted the Turnitin EULA.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr'] = 'Information that links a Moodle user to a Turnitin user.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr:userid'] = 'The ID of the user who has made a submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr:turnitinid'] = 'The ID used by Turnitin to reference the user.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaaccepted'] = 'The last version of the Turnitin EULA accepted by the user.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedtime'] = 'A timestamp indicating when user last accepted the Turnitin EULA.';
+$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedlang'] = 'The langauge in which the user last accepted the Turnitin EULA.';
 
-$string['privacy:metadata:plagiarism_turnitincheck_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
-$string['privacy:metadata:plagiarism_turnitincheck_client:firstname'] = 'The user\'s first name is sent to Turnitin on a Cloud Viewer launch so that the user can be identified.';
-$string['privacy:metadata:plagiarism_turnitincheck_client:lastname'] = 'The user\'s last name is sent to Turnitin on a Cloud Viewer launch so that the user can be identified.';
-$string['privacy:metadata:plagiarism_turnitincheck_client:submission_title'] = 'The title of the submission is sent to Turntin so that it is identifiable.';
-$string['privacy:metadata:plagiarism_turnitincheck_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
-$string['privacy:metadata:plagiarism_turnitincheck_client:submission_content'] = 'Please be aware that the content of a file/submission is sent to Turnitin for processing.';
+$string['privacy:metadata:plagiarism_turnitinsim_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
+$string['privacy:metadata:plagiarism_turnitinsim_client:firstname'] = 'The user\'s first name is sent to Turnitin on a Cloud Viewer launch so that the user can be identified.';
+$string['privacy:metadata:plagiarism_turnitinsim_client:lastname'] = 'The user\'s last name is sent to Turnitin on a Cloud Viewer launch so that the user can be identified.';
+$string['privacy:metadata:plagiarism_turnitinsim_client:submission_title'] = 'The title of the submission is sent to Turntin so that it is identifiable.';
+$string['privacy:metadata:plagiarism_turnitinsim_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
+$string['privacy:metadata:plagiarism_turnitinsim_client:submission_content'] = 'Please be aware that the content of a file/submission is sent to Turnitin for processing.';

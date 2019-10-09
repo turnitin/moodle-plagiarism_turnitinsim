@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitincheck @plagiarism_turnitincheck_forum
+@plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_forum
 Feature: Plagiarism plugin works with a Moodle forum
   In order to allow students to send forum posts to Turnitin
   As a user
@@ -16,13 +16,13 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > TurnitinCheck plagiarism plugin" in site administration
-    And I configure TurnitinCheck credentials
+    And I navigate to "Plugins > Plagiarism > TurnitinSim plagiarism plugin" in site administration
+    And I configure TurnitinSim credentials
     And I set the following fields to these values:
-      | Enable TurnitinCheck for Forum | 1 |
+      | Enable TurnitinSim for Forum | 1 |
     And I press "Save changes"
     # Check that features enabled are displayed.
-    Then I should see "TurnitinCheck features"
+    Then I should see "TurnitinSim features"
     And I should see "Repositories checked against"
     # Create Forum.
     And I am on "Course 1" course homepage with editing mode on
@@ -57,37 +57,37 @@ Feature: Plagiarism plugin works with a Moodle forum
     And I reply "Forum post 1" post from "Test forum" forum with:
       | Subject    | Reply with attachment                                                                                                       |
       | Message    | This is the body of the forum reply that will be submitted to Turnitin. It will be sent to Turnitin for Originality Checking |
-      | Attachment | plagiarism/turnitincheck/tests/fixtures/testfile.txt                                                                                |
+      | Attachment | plagiarism/turnitinsim/tests/fixtures/testfile.txt                                                                                |
     Then I should see "Reply with attachment"
     And I should see "testfile.txt"
-    And I should see "Queued" in the "div.turnitincheck_links" "css_element"
+    And I should see "Queued" in the "div.turnitinsim_links" "css_element"
     And I log out
     # Admin runs scheduled task to submit post and file to Turnitin.
     And I log in as "admin"
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     And I am on "Course 1" course homepage
     And I follow "Test forum"
     And I follow "Forum post 1"
-    Then I should see "Pending" in the "div.turnitincheck_links" "css_element"
+    Then I should see "Pending" in the "div.turnitinsim_links" "css_element"
     And I log out
     # Student can see post has been sent to Turnitin.
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test forum"
     And I follow "Forum post 1"
-    Then I should see "Pending" in the "div.turnitincheck_links" "css_element"
+    Then I should see "Pending" in the "div.turnitinsim_links" "css_element"
     And I log out
     # Admin runs scheduled task to request an originality report.
     And I log in as "admin"
     And I wait "10" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\get_reports"
+    And I run the scheduled task "plagiarism_turnitinsim\task\get_reports"
     # Admin runs scheduled task to request originality report score.
     And I wait "20" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\get_reports"
+    And I run the scheduled task "plagiarism_turnitinsim\task\get_reports"
     # Login as student and a score should be visible.
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test forum"
     And I follow "Forum post 1"
-    Then I should see "%" in the "div.turnitincheck_links" "css_element"
+    Then I should see "%" in the "div.turnitinsim_links" "css_element"

@@ -16,13 +16,13 @@
 /**
  * Javascript controller for the defaulting report generation to immediate if due date is disabled in settings.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module plagiarism_turnitincheck/set_report_generation
+ * @module plagiarism_turnitinsim/set_report_generation
  */
 
 define(['jquery'], function($) {

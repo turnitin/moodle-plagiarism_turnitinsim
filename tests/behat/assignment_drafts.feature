@@ -1,4 +1,4 @@
-@plugin @plagiarism @plagiarism_turnitincheck @plagiarism_turnitincheck_assignment @plagiarism_turnitincheck_assignment_drafts
+@plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_assignment @plagiarism_turnitinsim_assignment_drafts
 Feature: Plagiarism plugin works with a Moodle Assignment
   In order to allow students to send assignment submissions to Turnitin
   As a user
@@ -21,10 +21,10 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
     And I press "Save changes"
-    And I navigate to "Plugins > Plagiarism > TurnitinCheck plagiarism plugin" in site administration
-    And I configure TurnitinCheck credentials
+    And I navigate to "Plugins > Plagiarism > TurnitinSim plagiarism plugin" in site administration
+    And I configure TurnitinSim credentials
     And I set the following fields to these values:
-      | Enable TurnitinCheck for Assign | 1 |
+      | Enable TurnitinSim for Assign | 1 |
     And I press "Save changes"
     # Create Assignment.
     And I am on "Course 1" course homepage with editing mode on
@@ -46,14 +46,14 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     And I press "Add submission"
     And I click on "I accept the Turnitin EULA" "button"
-    And I upload "plagiarism/turnitincheck/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+    And I upload "plagiarism/turnitinsim/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I press "Save changes"
     Then I should see "Not graded"
     And I should see "Queued"
     And I log out
     # Admin runs scheduled task to send submission to Turnitin.
     And I log in as "admin"
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     And I am on "Course 1" course homepage
     And I follow "Test assignment name"
     When I navigate to "View all submissions" in current page administration
@@ -68,10 +68,10 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     # Admin runs scheduled task to request an originality report.
     And I log in as "admin"
     And I wait "10" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\get_reports"
+    And I run the scheduled task "plagiarism_turnitinsim\task\get_reports"
     # Admin runs scheduled task to request originality report score.
     And I wait "20" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\get_reports"
+    And I run the scheduled task "plagiarism_turnitinsim\task\get_reports"
     And I log out
     # Open the Cloud Viewer as instructor1.
     And I log in as "instructor1"
@@ -98,7 +98,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     And I press "Add submission"
     And I click on "I accept the Turnitin EULA" "button"
-    And I upload "plagiarism/turnitincheck/tests/fixtures/testfile.txt" file to "File submissions" filemanager
+    And I upload "plagiarism/turnitinsim/tests/fixtures/testfile.txt" file to "File submissions" filemanager
     And I press "Save changes"
     Then I should see "Not graded"
     And I should see "Not Sent"
@@ -109,7 +109,7 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     When I navigate to "View all submissions" in current page administration
     Then "student2 student2" row "File submissions" column of "generaltable" table should not contain "Queued"
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     #Student finalises submission.
     And I log out
     And I log in as "student2"
@@ -125,13 +125,13 @@ Feature: Plagiarism plugin works with a Moodle Assignment
     And I follow "Test assignment name"
     When I navigate to "View all submissions" in current page administration
     Then "student2 student2" row "File submissions" column of "generaltable" table should contain "Queued"
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     # Admin runs scheduled task to request an originality report.
     And I wait "10" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     # Admin runs scheduled task to request originality report score.
     And I wait "20" seconds
-    And I run the scheduled task "plagiarism_turnitincheck\task\send_submissions"
+    And I run the scheduled task "plagiarism_turnitinsim\task\send_submissions"
     And I log out
     # Open the Cloud Viewer as instructor1.
     And I log in as "instructor1"

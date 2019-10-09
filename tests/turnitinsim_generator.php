@@ -17,14 +17,14 @@
 /**
  * Generator for Turnitin tests.
  *
- * @package    plagiarism_turnitincheck
+ * @package    plagiarism_turnitinsim
  * @copyright  2018 John McGettrick
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class turnitincheck_generator extends advanced_testcase {
+class turnitinsim_generator extends advanced_testcase {
 
     public function test_generator() {
         return true;
@@ -108,7 +108,7 @@ class turnitincheck_generator extends advanced_testcase {
         $plagiarismfile->submitter = $student->id;
 
         for ($i = 0; $i < $numsubmissions; $i++) {
-            $DB->insert_record('plagiarism_turnitincheck_sub', $plagiarismfile);
+            $DB->insert_record('plagiarism_turnitinsim_sub', $plagiarismfile);
         }
 
         $this->setUser($student);

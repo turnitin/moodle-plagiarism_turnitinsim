@@ -15,25 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Restore code for plagiarism/turnitincheck.
+ * Restore code for plagiarism/turnitinsim.
  *
- * @package   plagiarism_turnitincheck
+ * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin {
+class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
 
     /**
      * Return the paths of the module data along with the function used for restoring that data.
      */
     protected function define_module_plugin_structure() {
         $paths = array();
-        $paths[] = new restore_path_element('turnitincheck_mods', $this->get_pathfor('turnitincheck_mods/turnitincheck_mod'));
-        $paths[] = new restore_path_element('turnitincheck_subs', $this->get_pathfor('turnitincheck_subs/turnitincheck_sub'));
-        $paths[] = new restore_path_element('turnitincheck_usrs', $this->get_pathfor('turnitincheck_usrs/turnitincheck_usr'));
+        $paths[] = new restore_path_element('turnitinsim_mods', $this->get_pathfor('turnitinsim_mods/turnitinsim_mod'));
+        $paths[] = new restore_path_element('turnitinsim_subs', $this->get_pathfor('turnitinsim_subs/turnitinsim_sub'));
+        $paths[] = new restore_path_element('turnitinsim_usrs', $this->get_pathfor('turnitinsim_usrs/turnitinsim_usr'));
 
         return $paths;
     }
@@ -42,7 +42,7 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
      * Restore the Turnitin settings for this module.
      * This will only be done if the module is from the same site from where it was backed up.
      */
-    public function process_turnitincheck_mods($data) {
+    public function process_turnitinsim_mods($data) {
         global $DB;
 
         if ($this->task->is_samesite()) {
@@ -50,7 +50,7 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
             $data = (object)$data;
             $data->cm = $this->task->get_moduleid();
 
-            $DB->insert_record('plagiarism_turnitincheck_mod', $data);
+            $DB->insert_record('plagiarism_turnitinsim_mod', $data);
         }
     }
 
@@ -59,14 +59,14 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
      * This will only be done if the module is from the same site from where it was backed up
      * and if the Turnitin submission does not currently exist in the database.
      */
-    public function process_turnitincheck_subs($data) {
+    public function process_turnitinsim_subs($data) {
         global $DB;
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
 
             $params = array('turnitinid' => $data->turnitinid, 'cm' => $this->task->get_moduleid());
-            $recordexists = (!empty($data->turnitinid)) ? $DB->record_exists('plagiarism_turnitincheck_sub', $params) : false;
+            $recordexists = (!empty($data->turnitinid)) ? $DB->record_exists('plagiarism_turnitinsim_sub', $params) : false;
 
             // At this point Moodle has not restored the necessary submission files so we can not relink them.
             // Unfortunately this means we have to store data in the session and
@@ -74,7 +74,7 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
             if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();
 
-                $_SESSION['tcrestore'][] = $data;
+                $_SESSION[ 'tsrestore'][] = $data;
             }
         }
     }
@@ -84,16 +84,16 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
      * This will only be done if the module is from the same site from where it was backed up
      * and if the Turnitin user id does not currently exist in the database.
      */
-    public function process_turnitincheck_usrs($data) {
+    public function process_turnitinsim_usrs($data) {
         global $DB;
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
             $recordexists = (!empty($data->turnitinid)) ?
-                $DB->record_exists('plagiarism_turnitincheck_usr', array('turnitinid' => $data->turnitinid)) : false;
+                $DB->record_exists('plagiarism_turnitinsim_usr', array('turnitinid' => $data->turnitinid)) : false;
 
             if (!$recordexists) {
-                $DB->insert_record('plagiarism_turnitincheck_usr', $data);
+                $DB->insert_record('plagiarism_turnitinsim_usr', $data);
             }
         }
     }
@@ -104,9 +104,9 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
     public function after_restore_module() {
         global $DB;
 
-        foreach ($_SESSION['tcrestore'] as $data) {
+        foreach ($_SESSION[ 'tsrestore'] as $data) {
             // Get new itemid for files.
-            if ($data->type == TURNITINCHECK_SUBMISSION_TYPE_FILE) {
+            if ($data->type == TURNITINSIM_SUBMISSION_TYPE_FILE) {
                 $filerecord = $DB->get_records_select(
                     'files',
                     'contenthash = ? AND pathnamehash != ? AND itemid != ?',
@@ -124,11 +124,11 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
             }
 
             // Get new itemid for text content.
-            if ($data->type == TURNITINCHECK_SUBMISSION_TYPE_CONTENT) {
+            if ($data->type == TURNITINSIM_SUBMISSION_TYPE_CONTENT) {
 
                 $cm = get_coursemodule_from_id('', $data->cm);
                 // Create module object and get the online text.
-                $moduleclass = 'tc'.$cm->modname;
+                $moduleclass =  'ts'.$cm->modname;
                 $moduleobject = new $moduleclass;
 
                 $onlinetext = $moduleobject->get_onlinetext($data->itemid);
@@ -142,9 +142,9 @@ class restore_plagiarism_turnitincheck_plugin extends restore_plagiarism_plugin 
                 $data->itemid = $moduleobject->get_itemid($cm->instance, $data->userid);
             }
 
-            $DB->insert_record('plagiarism_turnitincheck_sub', $data);
+            $DB->insert_record('plagiarism_turnitinsim_sub', $data);
         }
 
-        unset($_SESSION['tcrestore']);
+        unset($_SESSION[ 'tsrestore']);
     }
 }
