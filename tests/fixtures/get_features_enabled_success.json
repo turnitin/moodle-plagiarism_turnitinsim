@@ -1,0 +1,28 @@
+{
+  "similarity": {
+    "viewer_modes": {
+      "match_overview": true,
+      "all_sources": false
+    },
+    "generation_settings": {
+      "search_repositories": [
+        "INTERNET",
+        "PUBLICATION",
+        "SUBMITTED_WORK"
+      ],
+      "submission_auto_excludes": true
+    },
+    "view_settings": {
+      "exclude_bibliography": true,
+      "exclude_quotes": true,
+      "exclude_abstract": false,
+      "exclude_methods": false,
+      "exclude_small_sources": false,
+      "exclude_small_matches": false,
+      "exclude_internet": true,
+      "exclude_publications": true,
+      "exclude_submitted_works": true
+    }
+  },
+  "httpstatus": 200
+}

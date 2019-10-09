@@ -1,0 +1,216 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Plugin setup form for plagiarism_turnitincheck component
+ *
+ * @package   plagiarism_turnitincheck
+ * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir."/formslib.php");
+require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tctask.class.php');
+
+class tcsetupform extends moodleform {
+
+    // Define the form.
+    public function definition() {
+        $mform =& $this->_form;
+
+        $mform->addElement('header', 'turnitinconfig', get_string('turnitinconfig', 'plagiarism_turnitincheck'));
+
+        // Loop through all modules that support Plagiarism.
+        $mods = core_component::get_plugin_list('mod');
+        foreach ($mods as $mod => $modpath) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                $mform->addElement('advcheckbox',
+                    'turnitinmodenabled'.$mod,
+                    get_string('turnitinmodenabled', 'plagiarism_turnitincheck', ucfirst($mod)),
+                    '',
+                    null,
+                    array(0, 1)
+                );
+            }
+        }
+
+        // API URL.
+        $mform->addElement('text', 'turnitinapiurl', get_string('turnitinapiurl', 'plagiarism_turnitincheck'));
+        $mform->setType('turnitinapiurl', PARAM_URL);
+
+        // API Key.
+        $mform->addElement('password', 'turnitinapikey', get_string('turnitinapikey', 'plagiarism_turnitincheck'));
+        $mform->setType('turnitinapikey', PARAM_TEXT);
+
+        // Test Connection.
+        $mform->addElement('button', 'connection_test', get_string("connecttest", 'plagiarism_turnitincheck'));
+
+        // Toggle Logging.
+        $mform->addElement(
+            'advcheckbox',
+            'turnitinenablelogging',
+            get_string('turnitinenablelogging', 'plagiarism_turnitincheck'),
+            '',
+            null,
+            array(0, 1)
+        );
+
+        // Toggle Student Data Privacy.
+        $mform->addElement(
+            'advcheckbox',
+            'turnitinhideidentity',
+            get_string('turnitinhideidentity', 'plagiarism_turnitincheck'),
+            '',
+            null,
+            array(0, 1)
+        );
+
+        // Toggle Viewer Permission whether instructors can view full source of matches.
+        $label = get_string('turnitinviewerviewfullsource', 'plagiarism_turnitincheck');
+        $permissions[] = $mform->createElement('checkbox', 'turnitinviewerviewfullsource', null, $label);
+
+        // Toggle Viewer Permission whether instructors can view match submission info.
+        $label = get_string('turnitinviewermatchsubinfo', 'plagiarism_turnitincheck');
+        $permissions[] = $mform->createElement('checkbox', 'turnitinviewermatchsubinfo', null, $label);
+
+        // Show FERPA statemnet.
+        $ferpastatement = html_writer::tag(
+            'div',
+            get_string('viewerpermissionferpa', 'plagiarism_turnitincheck'),
+            array('class' => 'turnitincheck_ferpa')
+        );
+
+        $mform->addElement('html', $ferpastatement);
+
+        // Group viewer permissions together.
+        $mform->addGroup(
+            $permissions,
+            'permissionoptions',
+            get_string('viewerpermissionoptions', 'plagiarism_turnitincheck'),
+            '<br />'
+        );
+
+        $this->add_action_buttons(false);
+    }
+
+    /**
+     * Display the form, saving the contents of the output buffer overriding Moodle's
+     * display function that prints to screen when called
+     *
+     * @return the form as an object to print to screen at our convenience
+     */
+    public function display() {
+        ob_start();
+        parent::display();
+        $form = ob_get_contents();
+        ob_end_clean();
+
+        return $form;
+    }
+
+    /**
+     * Save the plugin config data
+     */
+    public function save($data) {
+        $useplugin = 0;
+
+        // Save whether the plugin is enabled for individual modules.
+        $mods = core_component::get_plugin_list('mod');
+        foreach ($mods as $mod => $modpath) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                $property = "turnitinmodenabled" . $mod;
+                ${ "turnitinmodenabled" . "$mod" } = (!empty($data->$property)) ? $data->$property : 0;
+                if (${ "turnitinmodenabled" . "$mod" }) {
+                    $useplugin = 1;
+                }
+            }
+        }
+
+        $turnitinapiurl = (!empty($data->turnitinapiurl)) ? $data->turnitinapiurl : '';
+        $turnitinapikey = (!empty($data->turnitinapikey)) ? $data->turnitinapikey : '';
+        $turnitinenablelogging = (!empty($data->turnitinenablelogging)) ? $data->turnitinenablelogging : 0;
+        $turnitinhideidentity = (!empty($data->turnitinhideidentity)) ? $data->turnitinhideidentity : 0;
+        $turnitinviewerviewfullsource = (!empty($data->permissionoptions['turnitinviewerviewfullsource'])) ? 1 : 0;
+        $turnitinviewermatchsubinfo = (!empty($data->permissionoptions['turnitinviewermatchsubinfo'])) ? 1 : 0;
+
+        set_config('turnitincheck_use', $useplugin, 'plagiarism');
+        // Loop through all modules that support Plagiarism.
+        $mods = core_component::get_plugin_list('mod');
+        foreach ($mods as $mod => $modpath) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                set_config('turnitinmodenabled'.$mod, ${ "turnitinmodenabled" . "$mod" }, 'plagiarism');
+            }
+        }
+        set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism');
+        set_config('turnitinapikey', $turnitinapikey, 'plagiarism');
+        set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism');
+        set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism');
+        set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism');
+        set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism');
+    }
+
+    /**
+     * Display the features enabled in Turnitin.
+     */
+    public function display_features() {
+        global $CFG, $OUTPUT;
+
+        // Only display features if plugin is configured.
+        $turnitinapiurl = get_config('plagiarism', 'turnitinapiurl');
+        $turnitinapikey = get_config('plagiarism', 'turnitinapikey');
+        if (empty($turnitinapiurl) && empty($turnitinapikey)) {
+            return;
+        }
+
+        // Check that we have features enabled stored locally.
+        $features = get_config('plagiarism', 'turnitin_features_enabled');
+
+        // If we don't then retrieve them and overwrite mtrace so it doesn't output to screen.
+        $CFG->mtrace_wrapper = 'plagiarism_turnitincheck_mtrace';
+        if (empty($features)) {
+            $tctask = new tctask();
+            $tctask->check_enabled_features();
+            $features = get_config('plagiarism', 'turnitin_features_enabled');
+        }
+
+        // Display some of the features available from Turnitin and whether they are enabled.
+        $enabledfeatures = html_writer::tag('h4', get_string('turnitinfeatures::header', 'plagiarism_turnitincheck'));
+        $features = json_decode($features, true);
+
+        // Display Search Repositories.
+        $repolist = html_writer::tag('dt', get_string('turnitinfeatures::repositories', 'plagiarism_turnitincheck'));
+        foreach ($features['similarity']['generation_settings']['search_repositories'] as $repo) {
+            $repolist .= html_writer::tag('dd', ucwords(strtolower(str_replace('_', ' ', $repo))));
+        }
+        $enabledfeatures .= html_writer::tag('dl', $repolist, array('class' => 'turnitincheck_featurelist'));
+
+        // Display View Options.
+        $settinglist = html_writer::tag('dt', get_string('turnitinfeatures::viewoptions', 'plagiarism_turnitincheck'));
+        foreach ($features['similarity']['view_settings'] as $setting => $enabled) {
+            $icon = ($enabled) ? 'option-yes' : 'option-no';
+            $icon = $OUTPUT->pix_icon($icon, '', 'plagiarism_turnitincheck', array('class' => 'turnitincheck_optionicon'));
+            $settinglist .= html_writer::tag('dd', $icon.ucwords(str_replace('_', ' ', $setting)));
+        }
+        $enabledfeatures .= html_writer::tag('dl', $settinglist, array('class' => 'turnitincheck_featurelist'));
+
+        $enabledfeatures .= html_writer::tag('p', get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitincheck'));
+
+        return html_writer::tag('div', $enabledfeatures, array('class' => 'turnitincheck_features'));
+    }
+}

@@ -1,0 +1,93 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Group class for plagiarism_turnitincheck component
+ *
+ * @package   plagiarism_turnitincheck
+ * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+class tcgroup {
+
+    public $groupid;
+    public $turnitinid;
+
+    public function __construct($groupid) {
+        global $DB;
+
+        $this->set_groupid($groupid);
+
+        // Get group details.
+        if ($group = $DB->get_record('plagiarism_turnitincheck_grp', array('groupid' => $groupid))) {
+            $this->set_turnitinid($group->turnitinid);
+        }
+
+        // If there is no group record then we will create one.
+        if (empty($this->get_turnitinid())) {
+            $turnitinid = $this->create_turnitinid();
+            $this->set_turnitinid($turnitinid);
+        }
+    }
+
+    /**
+     * Create a Turnitin id and save it for this user.
+     */
+    public function create_turnitinid() {
+        global $DB;
+
+        $turnitinid = generate_uuid();
+
+        $group = new stdClass();
+        $group->groupid = $this->get_groupid();
+        $group->turnitinid = $turnitinid;
+
+        $DB->insert_record('plagiarism_turnitincheck_grp', $group);
+
+        return $turnitinid;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function get_groupid() {
+        return $this->groupid;
+    }
+
+    /**
+     * @param mixed $groupid
+     */
+    public function set_groupid($groupid) {
+        $this->groupid = $groupid;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function get_turnitinid() {
+        return $this->turnitinid;
+    }
+
+    /**
+     * @param mixed $turnitinid
+     */
+    public function set_turnitinid($turnitinid) {
+        $this->turnitinid = $turnitinid;
+    }
+}

@@ -1,0 +1,38 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Javascript controller for the defaulting report generation to immediate if due date is disabled in settings.
+ *
+ * @package   plagiarism_turnitincheck
+ * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/**
+ * @module plagiarism_turnitincheck/set_report_generation
+ */
+
+define(['jquery'], function($) {
+    return {
+        set_report_generation: function() {
+            $(document).on('click', 'input[name="duedate[enabled]"]', function() {
+                if (!$(this).is(":checked")) {
+                    $('select[name=reportgeneration]')[0].selectedIndex = 0;
+                }
+            });
+        }
+    };
+});

@@ -1,0 +1,1120 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Unit tests for (some of) plagiarism/turnitincheck/lib.php.
+ *
+ * @package   plagiarism_turnitincheck
+ * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/turnitincheck/lib.php');
+require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/forms/tcsetupform.class.php');
+
+/**
+ * Tests for lib methods
+ *
+ * @package turnitincheck
+ */
+class plagiarism_turnitincheck_lib_testcase extends advanced_testcase {
+
+    const EULA_VERSION_1 = 'EULA1';
+    const EULA_URL = 'http://test.turnitin.com';
+
+    public function get_module_that_supports_plagiarism() {
+        $mods = core_component::get_plugin_list('mod');
+
+        foreach ($mods as $mod => $modpath) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                return $mod;
+            }
+        }
+    }
+
+    /**
+     * Set config for use in the tests.
+     */
+    public function setup() {
+        global $DB;
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
+        set_config('turnitinapikey', 1234, 'plagiarism');
+        set_config('turnitinenablelogging', 0, 'plagiarism');
+
+        // Init. plugin class.
+        $this->plugin = new plagiarism_plugin_turnitincheck();
+
+        // Create a course.
+        $this->course = $this->getDataGenerator()->create_course();
+
+        // Create a basic assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $this->assign = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $this->cm = get_coursemodule_from_instance('assign', $this->assign->id);
+
+        // Create student user.
+        $this->student1 = self::getDataGenerator()->create_user();
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+
+        // Create tcuser entry for student1.
+        $this->student1tc = new tcuser($this->student1->id);
+
+        // Enrol user on course.
+        $this->getDataGenerator()->enrol_user($this->student1->id,
+            $this->course->id,
+            $studentrole->id
+        );
+
+        // Create instructor and enrol on course.
+        $this->instructor = $this->getDataGenerator()->create_user();
+        $instructorrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        $this->getDataGenerator()->enrol_user($this->instructor->id,
+            $this->course->id,
+            $instructorrole->id
+        );
+
+        // Assign capability to instructor to view full reports at course level.
+        $context = context_course::instance($this->course->id);
+        assign_capability('plagiarism/turnitincheck:viewfullreport', CAP_ALLOW, $instructorrole->id, $context->id);
+        role_assign($instructorrole->id, $this->instructor->id, $context->id);
+        accesslib_clear_all_caches_for_unit_testing();
+
+        // Set EULA data.
+        set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism');
+        set_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
+        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
+    }
+
+    /**
+     * Save Form elements
+     */
+    public function test_save_form_elements() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create data object for new assignment.
+        $data = new stdClass();
+        $data->modulename = 'assign';
+        $data->coursemodule = 1;
+        $data->turnitinenabled = 1;
+
+        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin->save_form_elements($data);
+
+        // Check settings are not saved.
+        $settings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => $data->coursemodule));
+
+        $this->assertEmpty($settings);
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        $plugin->save_form_elements($data);
+
+        // Check settings are saved.
+        $settings = $DB->get_record('plagiarism_turnitincheck_mod', array('cm' => $data->coursemodule));
+
+        $this->assertEquals(1, $settings->turnitinenabled);
+    }
+
+    /**
+     * Test that get_links returns an empty div if there is no submission.
+     */
+    public function test_get_links_no_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1);
+        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+
+        // Log instructor in.
+        $this->setUser($this->instructor);
+
+        // Do not provide a file in linkarray.
+        $linkarray = array(
+            'cmid' => $this->cm->id,
+            'file' => array()
+        );
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals('<div class="turnitincheck_links"></div>', $plagiarismturnitincheck->get_links($linkarray));
+    }
+
+    /**
+     * Test that get_links does not display the report if a student is not allowed to view reports.
+     */
+    public function test_get_links_student_view_reports() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 0);
+        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+
+        // Log instructor in.
+        $this->setUser($this->student1);
+
+        // Do not provide a file in linkarray.
+        $linkarray = array(
+            'cmid' => $this->cm->id,
+            'file' => array()
+        );
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals('', $plagiarismturnitincheck->get_links($linkarray));
+    }
+
+    /**
+     * Test that get_links returns a not sent message if the submission was not sent.
+     */
+    public function test_get_links_submission_not_sent() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Get course module data.
+        $context = context_module::instance($this->cm->id);
+        $assign = new assign($context, $this->cm, $this->course);
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
+        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+
+        // Log student1 in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $this->cm->id,
+            "userid" => $this->student1->id,
+            "file" => $file,
+            "objectid" => $submission->id
+        );
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $plagiarismturnitincheck->get_links($linkarray);
+
+        $this->assertContains(
+            get_string('submissiondisplaystatus:notsent', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+    }
+
+    /**
+     * Test that a valid file passed to submit handler gets queued.
+     */
+    public function test_get_links_with_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Get course module data.
+        $context = context_module::instance($this->cm->id);
+        $assign = new assign($context, $this->cm, $this->course);
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
+        $DB->insert_record('plagiarism_turnitincheck_mod', $modsettings);
+
+        // Log student1 in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $this->cm->id,
+            "userid" => $this->student1->id,
+            "file" => $file,
+            "objectid" => $submission->id
+        );
+
+        // Create a TurnitinCheck submission record that is queued for sending to Turnitin.
+        $tcsubmission = new tcsubmission( new tcrequest() );
+        $tcsubmission->setcm($this->cm->id);
+        $tcsubmission->setuserid($this->student1->id);
+        $tcsubmission->setsubmitter($this->student1->id);
+        $tcsubmission->setidentifier($file->get_pathnamehash());
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
+        $tcsubmission->setsubmittedtime(time());
+        $tcsubmission->setoverallscore(100);
+        $tcsubmission->settype(TURNITINCHECK_SUBMISSION_TYPE_FILE);
+        $tcsubmission->settogenerate(1);
+        $tcsubmission->update();
+
+        // The HTML returned should contain the queued status and a Tii icon.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+
+        $this->assertContains(
+            '<span>'.get_string( 'submissiondisplaystatus:queued', 'plagiarism_turnitincheck').'</span>',
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+        $this->assertContains('tii_icon', $plagiarismturnitincheck->get_links($linkarray));
+
+        // Change submission status to Uploaded and verify that pending is displayed.
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_UPLOADED);
+        $tcsubmission->update();
+        $this->assertContains(
+            '<span>'.get_string( 'submissiondisplaystatus:pending', 'plagiarism_turnitincheck').'</span>',
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Change submission status to Uploaded and verify that not sent is displayed.
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_NOT_SENT);
+        $tcsubmission->update();
+        $this->assertContains(
+            '<span>'.get_string( 'submissiondisplaystatus:notsent', 'plagiarism_turnitincheck').'</span>',
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Change submission status to Requested and verify that pending is displayed.
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_REQUESTED);
+        $tcsubmission->update();
+        $this->assertContains(
+            '<span>'.get_string( 'submissiondisplaystatus:pending', 'plagiarism_turnitincheck').'</span>',
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Change submission status to Eula not accpetd and verify that the error message is displayed.
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
+        $tcsubmission->update();
+        $this->assertContains(
+            get_string( 'submissiondisplaystatus:awaitingeula', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Change submission status to a non constant and verify that the default is displayed.
+        $tcsubmission->setstatus('nonconstantstring');
+        $tcsubmission->update();
+        $this->assertContains(
+            get_string( 'submissiondisplaystatus:unknown', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray));
+
+        // Change submission status to Error and verify that the error message is displayed.
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_ERROR);
+        $tcsubmission->seterrormessage(TURNITINCHECK_SUBMISSION_STATUS_TOO_MUCH_TEXT);
+        $tcsubmission->update();
+        $this->assertContains(
+            get_string( 'submissiondisplayerror:toomuchtext', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Change error message to generic and verify that it is displayed.
+        $tcsubmission->seterrormessage('random_string_that_is_not_a_constant');
+        $tcsubmission->update();
+        $this->assertContains(
+            get_string( 'submissiondisplayerror:generic', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Log instructor in and check they see a resubmit link.
+        $this->setUser($this->instructor);
+        $this->assertContains(
+            get_string( 'resubmittoturnitin', 'plagiarism_turnitincheck'),
+            $plagiarismturnitincheck->get_links($linkarray)
+        );
+
+        // Check score is displayed if complete and correct css class applied.
+        $score = 50;
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_COMPLETE);
+        $tcsubmission->setoverallscore($score);
+        $tcsubmission->update();
+        $this->assertContains($score.'%', $plagiarismturnitincheck->get_links($linkarray));
+        $this->assertContains('or_score_colour_' . round($score, -1), $plagiarismturnitincheck->get_links($linkarray));
+    }
+
+    /*
+     * Test that a resubmit link is rendered correctly.
+     */
+    public function test_render_resubmit_link() {
+        $this->resetAfterTest();
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $submissionid = 1;
+        $this->assertContains('pp_resubmit_id_'.$submissionid, $plagiarismturnitincheck->render_resubmit_link($submissionid));
+    }
+
+    /**
+     * Test that is_plugin_active returns false if the plugin is not enabled for this module type.
+     */
+    public function test_is_plugin_active_not_enabled_for_mod_type() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertFalse($plagiarismturnitincheck->is_plugin_active($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_active returns false if the plugin is not enabled.
+     */
+    public function test_is_plugin_active_not_enabled_for_mod() {
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Disable plugin for module.
+        $data = new stdClass();
+        $data->modulename = 'assign';
+        $data->coursemodule = $this->cm->id;
+        $data->turnitinenabled = 0;
+
+        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin->save_form_elements($data);
+
+        $this->assertFalse($plugin->is_plugin_active($this->cm));
+    }
+
+    /*
+     * Test that the EULA is output if the user has not accepted the latest version previously.
+     */
+    public function test_print_disclosure_display_latest() {
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->modulename = 'assign';
+        $data->coursemodule = $this->cm->id;
+        $data->turnitinenabled = 1;
+        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin->save_form_elements($data);
+
+        // Log student in.
+        $this->setUser($this->student1);
+
+        // Get locale.
+        $tcrequest = new tcrequest();
+        $lang = $tcrequest->get_language();
+        $eulaurl = $this->eulaurl."?lang=".$lang->localecode;
+
+        // Verify EULA is output.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertContains(
+            get_string('eulalink', 'plagiarism_turnitincheck', $eulaurl),
+            $plagiarismturnitincheck->print_disclosure($this->cm->id)
+        );
+    }
+
+    /*
+     * Test that the EULA is not output if the user has accepted the latest version previously.
+     */
+    public function test_print_disclosure_not_display_latest() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->modulename = 'assign';
+        $data->coursemodule = $this->cm->id;
+        $data->turnitinenabled = 1;
+        $plugin = new plagiarism_plugin_turnitincheck();
+        $plugin->save_form_elements($data);
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Log student in.
+        $this->setUser($this->student1);
+
+        // Verify EULA is not output.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals('', $plagiarismturnitincheck->print_disclosure($this->cm->id));
+    }
+
+    /**
+     * Test that correct settings are returned.
+     */
+    public function test_get_settings() {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        // Use settings form method to save data for a module.
+        require_once($CFG->dirroot . '/plagiarism/turnitincheck/classes/tcsettings.class.php');
+
+        // Create data object for new assignment.
+        $data = new stdClass();
+        $data->coursemodule = 1;
+        $data->turnitinenabled = 1;
+
+        // Save Module Settings.
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $settings = $plagiarismturnitincheck->get_settings(1, $fields = '*');
+
+        $this->assertEquals(1, $settings->turnitinenabled);
+    }
+
+    /**
+     * Test that submit handler will not process a file for a course module that does not exist.
+     */
+    public function test_submit_handler_no_cmid() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create dummy event data.
+        $cmid = 0;
+        $eventdata = array(
+            'contextinstanceid' => $cmid,
+            'other' => array (
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            )
+        );
+
+        // Handler should always return true despite cm not existing.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be no records in submissions table.
+        $recordcount = $DB->count_records('plagiarism_turnitincheck_sub', array('cm' => $cmid));
+        $this->assertEquals(0, $recordcount);
+    }
+
+    /**
+     * Test that submit handler will not process a file if the plugin is not enabled for this module.
+     */
+    public function test_submit_handler_plugin_not_enabled() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create dummy event data.
+        $eventdata = array(
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            )
+        );
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 0, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+
+        // Handler should always return true despite plugin not being enabled.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be no records in submissions table.
+        $recordcount = $DB->count_records('plagiarism_turnitincheck_sub', array('cm' => $this->assign->cmid));
+        $this->assertEquals(0, $recordcount);
+    }
+
+    /**
+     * Test that a file which doesn't exist gets saved by submit handler.
+     */
+    public function test_submit_handler_empty_file_saved() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => 'HASH THAT DOES NOT EXIST'
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should always return true despite file being empty.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_EMPTY_DELETED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that a valid file passed to submit handler gets queued.
+     */
+    public function test_submit_handler_file_queued_after_accepting_eula() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create test file.
+        $file = create_test_file(0, $usercontext->id, 'user', 'draft');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table awaiting EULA acceptance.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_EULA_NOT_ACCEPTED));
+
+        $this->assertEquals(1, $recordcount);
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Resubmit file.
+        $plagiarismturnitincheck->submission_handler($eventdata);
+
+        // There should now be one queued record.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that a valid file passed to submit handler gets queued.
+     */
+    public function test_submit_handler_file_queued_and_saves_group_id() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Create group.
+        $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
+
+        // Enrol students in group.
+        groups_add_member($group, $this->student1);
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->teamsubmission = 1;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Create assignment submission.
+        $submission = $assign->get_group_submission($this->student1->id, $group->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        // Create test file.
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => $submission->id,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should now be a queued record with the group id stored.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub',
+            'cm = ? AND userid = ? AND groupid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, $group->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that if a user submits the same valid file, it gets queued using the same submission record.
+     */
+    public function test_submit_handler_file_queues_same_file() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Accept EULA for student.
+        $student = $DB->get_record('plagiarism_turnitincheck_usr', array('userid' => $this->student1->id));
+        $student->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $student);
+
+        // Create test file.
+        $file = create_test_file(0, $usercontext->id, 'user', 'draft');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+        $this->assertEquals(1, $recordcount);
+
+        // Resubmit the same file.
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should still be one record in the submissions table.
+        $recordcount = $DB->count_records_select(
+            'plagiarism_turnitincheck_sub',
+            'cm = ? AND userid = ? AND identifier = ?',
+            array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
+        );
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that valid text content passed to submit handler gets queued.
+     */
+    public function test_submit_handler_text_content_queued() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Create dummy event data.
+        $textcontent = "This is text content for unit testing a text submission.";
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'content' => $textcontent,
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'content_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that draft files are queued for sending to Turnitin.
+     */
+    public function test_submit_handler_queues_draft() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create an assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->submissiondrafts = 1;
+        $this->assign = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log student1 in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $this->assign->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $data->status = 'draft';
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => 'assign'
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that draft files are not queued for sending to Turnitin but the final submission is.
+     */
+    public function test_submit_handler_does_not_queue_draft_but_queues_final_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create an assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->submissiondrafts = 1;
+        $this->assign = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Set plugin config.
+        set_config('turnitincheck_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 0;
+
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Log student1 in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Accept EULA for student.
+        $data = $DB->get_record('plagiarism_turnitincheck_usr', ['userid' => $this->student1->id]);
+        $data->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitincheck_usr', $data);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $this->assign->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $data->status = 'draft';
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => 'assign'
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitincheck = new plagiarism_plugin_turnitincheck();
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be a record in the submissions table flagged as not sent as we aren't sending drafts.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_NOT_SENT));
+
+        $this->assertEquals(1, $recordcount);
+
+        // Finalise submission.
+        $data = new stdClass();
+        $data->status = 'submitted';
+        $plugin->save($submission, $data);
+
+        // Handler should return true.
+        $eventdata['eventtype'] = 'assessable_submitted';
+        $this->assertEquals(true, $plagiarismturnitincheck->submission_handler($eventdata));
+
+        // There should be one record in the submissions table as it should be queued.
+        $recordcount = $DB->count_records_select('plagiarism_turnitincheck_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINCHECK_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that the generation time for a submission is set correctly when a module updates.
+     */
+    public function test_module_updated() {
+        $this->resetAfterTest();
+
+        // Log instructor in.
+        $this->setUser($this->instructor);
+
+        // Create an assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $duedate = time() + (60 * 60 * 2);
+        $record->duedate = $duedate;
+        $this->assign = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $this->assign->id);
+
+        // Create data object for cm assignment.
+        $data = new stdClass();
+        $data->coursemodule = $cm->id;
+        $data->turnitinenabled = 1;
+        $data->reportgenoptions['reportgeneration'] = TURNITINCHECK_REPORT_GEN_IMMEDIATE_AND_DUEDATE;
+
+        // Save Module Settings.
+        $form = new tcsettings();
+        $form->save_module_settings($data);
+
+        // Create dummy turnitin submission.
+        $tcsubmission = new tcsubmission( new tcrequest() );
+        $tcsubmission->setcm($cm->id);
+        $tcsubmission->setuserid($this->student1->id);
+        $tcsubmission->setsubmitter($this->student1->id);
+        $tcsubmission->setidentifier('PATHNAMEHASH');
+        $tcsubmission->setstatus(TURNITINCHECK_SUBMISSION_STATUS_QUEUED);
+        $tcsubmission->settogenerate(1);
+        $tcsubmission->setgenerationtime($duedate + 1);
+        $tcsubmission->update();
+
+        // Create dummy event data.
+        $eventdata = array(
+            'objectid' => $cm->id
+        );
+
+        // Mirror triggered event to update module.
+        $this->plugin->module_updated($eventdata);
+
+        // Check submission was updated.
+        $tcsubmission = new tcsubmission( new tcrequest(), $tcsubmission->id );
+        $this->assertEquals($duedate, $tcsubmission->getgenerationtime());
+        $this->assertEquals(1, $tcsubmission->gettogenerate());
+    }
+}

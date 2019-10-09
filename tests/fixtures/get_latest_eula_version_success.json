@@ -1,0 +1,11 @@
+{
+    "version": "v1beta",
+    "valid_from": "2018-05-01T00:00:00Z",
+    "valid_until": null,
+    "url": "https://dev-integrations.turnitin.org/api/v1/eula/v1beta/view",
+    "available_languages": [
+        "en-EN",
+        "de-DE"
+    ],
+    "httpstatus": 200
+}

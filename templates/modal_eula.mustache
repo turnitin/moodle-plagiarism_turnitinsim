@@ -1,0 +1,10 @@
+{{< core/modal }}
+    {{$title}}{{# str }} eulaheader, plagiarism_turnitincheck {{/ str }}{{/title}}
+    {{$body}}
+        <p>{{# str }} eulalinkmodal, plagiarism_turnitincheck {{/ str }}</p>
+    {{/body}}
+    {{$footer}}
+        <button type="button" class="btn btn-danger" data-action="accept-eula">{{# str }} eulaaccept, plagiarism_turnitincheck {{/ str }}</button>
+        <button type="button" class="btn btn-secondary" data-action="cancel">{{#str}} cancel {{/str}}</button>
+    {{/footer}}
+{{/ core/modal }}
