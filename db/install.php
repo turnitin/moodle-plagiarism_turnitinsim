@@ -37,6 +37,8 @@ function xmldb_plagiarism_turnitinsim_install() {
         upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_mod", "plagiarism_turnitinsim_mod");
         upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_sub", "plagiarism_turnitinsim_sub");
         upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_usr", "plagiarism_turnitinsim_users");
+
+        set_config('turnitinsim_use', get_config('plagiarism', 'turnitincheck_use'), 'plagiarism');
     }
 }
 
