@@ -54,7 +54,7 @@ switch ($cmd) {
         $PAGE->set_pagelayout('mypublic');
         $PAGE->set_pagetype('user-profile');
         $PAGE->set_title(get_string('eulaheader', 'plagiarism_turnitinsim'));
-        $PAGE->set_url($_SERVER['REQUEST_URI']);
+        $PAGE->set_url($CFG->wwwroot.TURNITINSIM_EULA);
 
         echo $OUTPUT->header();
 
