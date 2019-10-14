@@ -184,8 +184,12 @@ class tssetupform extends moodleform {
         // If we don't then retrieve them and overwrite mtrace so it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
         if (empty($features)) {
-            $tstask = new tstask();
-            $tstask->check_enabled_features();
+            try {
+                $tstask = new tstask();
+                $tstask->check_enabled_features();
+            } catch (Exception $e) {
+                // Gracefully handle error - do nothing.
+            }
             $features = get_config('plagiarism', 'turnitin_features_enabled');
         }
 

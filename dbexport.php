@@ -64,9 +64,9 @@ if (!is_null($table)) {
     // Use Moodle's dataformatting functions to display a form to download output in different formats.
     $tables = array(
         'plagiarism_turnitinsim_mod',
-        'plagiarism_turnitinsim_usr',
+        'plagiarism_turnitinsim_users',
         'plagiarism_turnitinsim_sub',
-        'plagiarism_turnitinsim_grp'
+        'plagiarism_turnitinsim_group'
     );
 
     foreach ($tables as $table) {

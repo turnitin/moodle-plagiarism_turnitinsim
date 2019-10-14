@@ -1,5 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_forum
-Feature: Plagiarism plugin works with a Moodle forum
+Feature: TurnitinSim Plagiarism plugin works with a Moodle forum
   In order to allow students to send forum posts to Turnitin
   As a user
   I need to create a forum and discussion with the plugin enabled.

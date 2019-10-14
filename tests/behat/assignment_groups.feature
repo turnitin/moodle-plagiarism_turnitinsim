@@ -1,5 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_assignment @plagiarism_turnitinsim_assignment_groups
-Feature: Group assignment submissions
+Feature: TurnitinSim Plagiarism Plugin works with group assignment submissions
   In order to allow students to work collaboratively on an assignment
   As a teacher
   I need to group submissions in groups

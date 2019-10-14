@@ -28,7 +28,7 @@
                 <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade" PREVIOUS="cm"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="plagiarism_turnitinsim_mod" COMMENT="info about modules configured to use Turnitin" NEXT="plagiarism_turnitinsim_usr">
+        <TABLE NAME="plagiarism_turnitinsim_mod" COMMENT="info about modules configured to use Turnitin" NEXT="plagiarism_turnitinsim_users">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="cm"/>
                 <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="turnitinenabled"/>

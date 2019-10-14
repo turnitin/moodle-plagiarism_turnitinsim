@@ -40,7 +40,7 @@ $tsrequest = new tsrequest();
 switch ($action) {
     case "accept_eula":
         // Get current user record.
-        $user = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $USER->id));
+        $user = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $USER->id));
 
         // Update EULA accepted version and timestamp for user.
         $data = new stdClass();
@@ -49,7 +49,7 @@ switch ($action) {
         $data->lasteulaacceptedtime = time();
         $lang = $tsrequest->get_language();
         $data->lasteulaacceptedlang = $lang->localecode;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // If we have a context id then this is an instructor. So we update current submissions.
         if (!empty($contextid)) {

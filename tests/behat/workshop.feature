@@ -1,5 +1,5 @@
 @plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_workshop
-Feature: Plagiarism plugin works with a Moodle Workshop
+Feature: TurnitinSim Plagiarism plugin works with a Moodle Workshop
   In order to allow students to send workshop submissions to Turnitin
   As a user
   I need to create a workshop with the plugin enabled.

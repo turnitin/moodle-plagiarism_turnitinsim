@@ -1,10 +1,10 @@
 @plugin @plagiarism @plagiarism_turnitinsim @plagiarism_turnitinsim_installed
-Feature: Installation succeeds
+Feature: TurnitinSim Plagiarism Plugin Installation succeeds
   In order to use this plugin
   As a user
   I need the installation to work and plagiarism plugins to be enabled
 
-  Scenario:
+  Scenario: The TurnitinSim plugin can be installed.
     Given I log in as "admin"
     And I navigate to "Advanced features" in site administration
     And I set the field "Enable plagiarism plugins" to "1"
