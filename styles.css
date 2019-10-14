@@ -33,14 +33,14 @@
 }
 
 /* EULA */
-.eulacontainer {
+.turnitinsim_eulacontainer {
     border: 1px solid #db4221;
     padding: 10px;
     text-align: center;
     margin-bottom: 10px;
 }
 
-.eulacontainer #pp-eula-accept {
+.turnitinsim_eulacontainer #pp-eula-accept {
     margin-left: 20px;
 }
 
@@ -74,7 +74,7 @@
     clear:both;
 }
 
-.turnitinsim_links .pp_resubmit_link, .turnitinsim_links .tii_status_text_eula, .turnitinsim_links .eula-row-launch {
+.turnitinsim_links .pp_resubmit_link, .turnitinsim_links .turnitinsim_status_text_eula, .turnitinsim_links .eula-row-launch {
     cursor: pointer;
 }
 
@@ -130,19 +130,19 @@
 }
 
 /* Connection Test*/
-.connection-test-success,
-.connection-test-failed {
+.turnitinsim_connection-test-success,
+.turnitinsim_connection-test-failed {
     background-image: none !important;
     color: #FFFFFF !important;
     text-shadow: none !important;
 }
-.connection-test-success button:focus,
-.connection-test-failed button:focus{
+.turnitinsim_connection-test-success button:focus,
+.turnitinsim_connection-test-failed button:focus{
     outline: 0 !important;
 }
-.connection-test-success {
+.turnitinsim_connection-test-success {
     background-color: #51a351 !important;
 }
-.connection-test-failed {
+.turnitinsim_connection-test-failed {
     background-color: #d9534f !important;
 }

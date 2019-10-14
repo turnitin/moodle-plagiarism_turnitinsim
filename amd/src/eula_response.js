@@ -42,13 +42,13 @@ define(['jquery'], function($) {
                     dataType: "text",
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
-                        $('#eulacontainer').hide().html(M.str.plagiarism_turnitinsim.eulaaccepted).fadeIn();
+                        $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.eulaaccepted).fadeIn();
                     }
                 });
             });
 
             $(document).on('click', '#pp-eula-decline', function() {
-                $('#eulacontainer').hide().html(M.str.plagiarism_turnitinsim.euladeclined).fadeIn();
+                $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.euladeclined).fadeIn();
                 $('input[name=submitbutton]').prop('disabled', '');
             });
         }

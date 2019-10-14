@@ -58,8 +58,8 @@ define(['jquery'], function($) {
 
                             // Fade out classes and swap back values.
                             ct.delay(1000).fadeOut("slow", function() {
-                                $(this).removeClass("connection-test-failed");
-                                $(this).removeClass("connection-test-success");
+                                $(this).removeClass("turnitinsim_connection-test-failed");
+                                $(this).removeClass("turnitinsim_connection-test-success");
 
                                 changeString(ct, M.str.plagiarism_turnitinsim.connecttest);
                             }).fadeIn("slow");
