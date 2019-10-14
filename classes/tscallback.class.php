@@ -153,12 +153,7 @@ class tscallback {
      * @return string
      */
     public function generate_secret() {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $secret = '';
-        for ($i = 0; $i < 20; $i++) {
-            $secret .= $characters[rand(0, strlen($characters) - 1)];
-        }
-
-        return $secret;
+        $characters = random_bytes(20);
+        return bin2hex($characters);
     }
 }
