@@ -90,10 +90,10 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
         if ($this->task->is_samesite()) {
             $data = (object)$data;
             $recordexists = (!empty($data->turnitinid)) ?
-                $DB->record_exists('plagiarism_turnitinsim_usr', array('turnitinid' => $data->turnitinid)) : false;
+                $DB->record_exists('plagiarism_turnitinsim_users', array('turnitinid' => $data->turnitinid)) : false;
 
             if (!$recordexists) {
-                $DB->insert_record('plagiarism_turnitinsim_usr', $data);
+                $DB->insert_record('plagiarism_turnitinsim_users', $data);
             }
         }
     }

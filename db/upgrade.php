@@ -98,7 +98,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018050401) {
-        $table = new xmldb_table('plagiarism_turnitinsim_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_users');
 
         $field = new xmldb_field('lasteulaaccepted', XMLDB_TYPE_CHAR, '100', null, false, null, null, 'turnitinid');
 
@@ -130,7 +130,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018051501) {
-        $table = new xmldb_table('plagiarism_turnitinsim_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_users');
         $field = new xmldb_field('lasteulaacceptedlang', XMLDB_TYPE_CHAR, '10', null, false, null, null, 'lasteulaacceptedtime');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -158,7 +158,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         }
 
         // Add group table.
-        $table = new xmldb_table('plagiarism_turnitinsim_grp');
+        $table = new xmldb_table('plagiarism_turnitinsim_group');
 
         // Adding fields.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);

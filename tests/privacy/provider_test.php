@@ -63,8 +63,8 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
         $this->assertArrayHasKey('submitted_time', $privacyfields);
         $this->assertArrayHasKey('overall_score', $privacyfields);
 
-        // Verify plagiarism_turnitinsim_usr data is returned.
-        $this->assertEquals('plagiarism_turnitinsim_usr', $itemcollection[1]->get_name());
+        // Verify plagiarism_turnitinsim_users data is returned.
+        $this->assertEquals('plagiarism_turnitinsim_users', $itemcollection[1]->get_name());
 
         $privacyfields = $itemcollection[1]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);

@@ -483,9 +483,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $plugin->save_form_elements($data);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -677,9 +677,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertEquals(1, $recordcount);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Resubmit file.
         $plagiarismturnitinsim->submission_handler($eventdata);
@@ -758,9 +758,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Handler should return true.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -800,9 +800,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $student = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $this->student1->id));
+        $student = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $this->student1->id));
         $student->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $student);
+        $DB->update_record('plagiarism_turnitinsim_users', $student);
 
         // Create test file.
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
@@ -868,9 +868,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->setUser($this->student1);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Create dummy event data.
         $textcontent = "This is text content for unit testing a text submission.";
@@ -929,9 +929,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $this->assign->id);
@@ -1005,9 +1005,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $this->assign->id);

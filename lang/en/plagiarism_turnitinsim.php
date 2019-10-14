@@ -168,12 +168,12 @@ $string['privacy:metadata:plagiarism_turnitinsim_sub:submitted_time'] = 'A times
 $string['privacy:metadata:plagiarism_turnitinsim_sub:identifier'] = 'A hash used by Moodle to identify the file submitted.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub:itemid'] = 'Id that identifies the submission for the relevant module type.';
 
-$string['privacy:metadata:plagiarism_turnitinsim_usr'] = 'Information that links a Moodle user to a Turnitin user.';
-$string['privacy:metadata:plagiarism_turnitinsim_usr:userid'] = 'The ID of the user who has made a submission.';
-$string['privacy:metadata:plagiarism_turnitinsim_usr:turnitinid'] = 'The ID used by Turnitin to reference the user.';
-$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaaccepted'] = 'The last version of the Turnitin EULA accepted by the user.';
-$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedtime'] = 'A timestamp indicating when user last accepted the Turnitin EULA.';
-$string['privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedlang'] = 'The langauge in which the user last accepted the Turnitin EULA.';
+$string['privacy:metadata:plagiarism_turnitinsim_users'] = 'Information that links a Moodle user to a Turnitin user.';
+$string['privacy:metadata:plagiarism_turnitinsim_users:userid'] = 'The ID of the user who has made a submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_users:turnitinid'] = 'The ID used by Turnitin to reference the user.';
+$string['privacy:metadata:plagiarism_turnitinsim_users:lasteulaaccepted'] = 'The last version of the Turnitin EULA accepted by the user.';
+$string['privacy:metadata:plagiarism_turnitinsim_users:lasteulaacceptedtime'] = 'A timestamp indicating when user last accepted the Turnitin EULA.';
+$string['privacy:metadata:plagiarism_turnitinsim_users:lasteulaacceptedlang'] = 'The langauge in which the user last accepted the Turnitin EULA.';
 
 $string['privacy:metadata:plagiarism_turnitinsim_client'] = 'To successfully make a submission to Turnitin, specific user data needs to be exchanged between Moodle and Turnitin. For more information around Moodle Plugins and GDPR, please visit: https://help.turnitin.com/feedback-studio/moodle/moodle-plugins-and-gdpr.htm';
 $string['privacy:metadata:plagiarism_turnitinsim_client:firstname'] = 'The user\'s first name is sent to Turnitin on a Cloud Viewer launch so that the user can be identified.';
