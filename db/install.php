@@ -30,8 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_plagiarism_turnitinsim_install() {
     global $DB;
 
-    set_config('enableplagiarism', 1);
-
     if ($DB->get_record('config_plugins', array('plugin' => 'plagiarism_turnitincheck'))) {
         upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_grp", "plagiarism_turnitinsim_group");
         upgrade_from_turnitincheck_plugin("plagiarism_turnitincheck_mod", "plagiarism_turnitinsim_mod");
