@@ -153,7 +153,7 @@ class tscallback {
      * @return string
      */
     public function generate_secret() {
-        $characters = random_bytes(20);
-        return bin2hex($characters);
+        $randomstring = random_bytes(20);
+        return bin2hex($randomstring);
     }
 }
