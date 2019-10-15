@@ -59,7 +59,7 @@ switch ($cmd) {
         echo $OUTPUT->header();
 
         // Display EULA link.
-        $plagiarismpluginturnitinsim = new plagiarismpluginturnitinsim();
+        $plagiarismpluginturnitinsim = new plagiarism_plugin_turnitinsim();
         echo $plagiarismpluginturnitinsim->print_disclosure(-1);
 
         echo $OUTPUT->footer();

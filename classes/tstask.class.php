@@ -54,6 +54,15 @@ class tstask {
     public function send_queued_submissions() {
         global $DB;
 
+        // Don't run this if the plugin is not configured.
+        $plugin = new plagiarism_plugin_turnitinsim();
+        if (!$plugin->is_plugin_configured()) {
+            $taskname = get_string('tasksendqueuedsubmissions', 'plagiarism_turnitinsim');
+            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
+
+            return true;
+        }
+
         // Create webhook if necessary.
         $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
         if (empty($webhookid)) {
@@ -98,12 +107,21 @@ class tstask {
     public function get_reports() {
         global $DB;
 
+        // Don't run this if the plugin is not configured.
+        $plugin = new plagiarism_plugin_turnitinsim();
+        if (!$plugin->is_plugin_configured()) {
+            $taskname = get_string('taskgetreportscores', 'plagiarism_turnitinsim');
+            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
+
+            return true;
+        }
+
         // Get submissions to request reports for.
         $submissions = $DB->get_records_select(
             'plagiarism_turnitinsim_sub',
             " ((to_generate = ? AND generation_time <= ?) OR (status = ?)) AND turnitinid IS NOT NULL",
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED)
-            );
+        );
 
         // Request reports be generated or get scores for reports that have been requested.
         $count = 0;
@@ -145,6 +163,15 @@ class tstask {
      * @return bool
      */
     public function admin_update() {
+
+        // Don't run this if the plugin is not configured.
+        $plugin = new plagiarism_plugin_turnitinsim();
+        if (!$plugin->is_plugin_configured()) {
+            $taskname = get_string('taskadminupdate', 'plagiarism_turnitinsim');
+            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
+
+            return true;
+        }
 
         // Update enabled features.
         $this->check_enabled_features();

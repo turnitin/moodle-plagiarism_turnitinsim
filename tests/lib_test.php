@@ -36,7 +36,8 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tssetupform.
 class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
     const EULA_VERSION_1 = 'EULA1';
-    const EULA_URL = 'http://test.turnitin.com';
+    const TURNITINSIM_API_URL = 'http://test.turnitin.com';
+    const TURNITINSIM_API_KEY = '123456';
 
     public function get_module_that_supports_plagiarism() {
         $mods = core_component::get_plugin_list('mod');
@@ -102,8 +103,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set EULA data.
         set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism');
-        set_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
-        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
+        set_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
     }
 
     /**
@@ -426,6 +427,54 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $plugin->save_form_elements($data);
 
         $this->assertFalse($plugin->is_plugin_active($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_configured returns false if the plugin is not configured with API URL and API Key.
+     */
+    public function test_is_plugin_configured_with_no_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_configured returns false if the plugin is not configured correctly with both of API URL or API Key.
+     */
+    public function test_is_plugin_configured_with_partial_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set API URL but not Key.
+        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+
+        // Set API Key but not URL.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism');
+
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_configured returns true if the plugin is configured with API URL and API Key.
+     */
+    public function test_is_plugin_configured_with_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', 'test.com', 'plagiarism');
+        set_config('turnitinapikey', '123456', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertTrue($plagiarismturnitinsim->is_plugin_configured($this->cm));
     }
 
     /*
