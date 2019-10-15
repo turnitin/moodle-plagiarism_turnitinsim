@@ -22,10 +22,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if (!isset($plugin)) {
-    $plugin = new StdClass();
-}
-
 $plugin->version = 2019100701;
 $plugin->release = "v0.0";
 $plugin->requires = 2017051500;
