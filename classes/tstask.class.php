@@ -54,12 +54,9 @@ class tstask {
     public function send_queued_submissions() {
         global $DB;
 
-        // Don't run this if the plugin is not configured.
-        $plugin = new plagiarism_plugin_turnitinsim();
-        if (!$plugin->is_plugin_configured()) {
-            $taskname = get_string('tasksendqueuedsubmissions', 'plagiarism_turnitinsim');
-            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
-
+        // Should this task be run?
+        $taskname = get_string('tasksendqueuedsubmissions', 'plagiarism_turnitinsim');
+        if (!$this->run_task($taskname)) {
             return true;
         }
 
@@ -107,12 +104,9 @@ class tstask {
     public function get_reports() {
         global $DB;
 
-        // Don't run this if the plugin is not configured.
-        $plugin = new plagiarism_plugin_turnitinsim();
-        if (!$plugin->is_plugin_configured()) {
-            $taskname = get_string('taskgetreportscores', 'plagiarism_turnitinsim');
-            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
-
+        // Should this task be run?
+        $taskname = get_string('taskgetreportscores', 'plagiarism_turnitinsim');
+        if (!$this->run_task($taskname)) {
             return true;
         }
 
@@ -164,12 +158,9 @@ class tstask {
      */
     public function admin_update() {
 
-        // Don't run this if the plugin is not configured.
-        $plugin = new plagiarism_plugin_turnitinsim();
-        if (!$plugin->is_plugin_configured()) {
-            $taskname = get_string('taskadminupdate', 'plagiarism_turnitinsim');
-            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
-
+        // Should this task be run?
+        $taskname = get_string('taskadminupdate', 'plagiarism_turnitinsim');
+        if (!$this->run_task($taskname)) {
             return true;
         }
 
@@ -260,6 +251,23 @@ class tstask {
             if ($currentfeatures != $newfeatures && !empty($newfeatures)) {
                 set_config('turnitin_features_enabled', json_encode($response), 'plagiarism');
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the task should be run. Initially this will check if the plugin is configured
+     * and only run if it is but this could be expanded.
+     *
+     * return boolean
+     */
+    public function run_task($taskname = '') {
+        $plugin = new plagiarism_plugin_turnitinsim();
+        if (!$plugin->is_plugin_configured()) {
+            mtrace(get_string('taskoutputpluginnotconfigured', 'plagiarism_turnitinsim', $taskname));
+
+            return false;
         }
 
         return true;

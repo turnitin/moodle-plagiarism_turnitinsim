@@ -34,6 +34,9 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tstask.class.php')
  */
 class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
+    const TURNITINSIM_API_URL = 'http://test.turnitin.com';
+    const TURNITINSIM_API_KEY = '123456';
+
     /**
      * Set config for use in the tests.
      */
@@ -174,4 +177,51 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         $this->assertEquals(TURNITINSIM_REPORT_GEN_SCORE_DELAY_TESTING, $tstask->get_report_gen_score_delay());
     }
 
+    /**
+     * Test that run_task returns false if the plugin is not configured with API URL and API Key.
+     */
+    public function test_run_task_with_plugin_not_configured() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $tstask = new tstask();
+        $this->assertFalse($tstask->run_task());
+    }
+
+    /**
+     * Test that is_plugin_configured returns false if the plugin is not configured correctly with both of API URL or API Key.
+     */
+    public function test_run_task_with_plugin_partially_configured() {
+        $this->resetAfterTest();
+
+        // Set API URL but not Key.
+        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $tstask = new tstask();
+        $this->assertFalse($tstask->run_task());
+
+        // Set API Key but not URL.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism');
+
+        $this->assertFalse($tstask->run_task());
+    }
+
+    /**
+     * Test that is_plugin_configured returns true if the plugin is configured with API URL and API Key.
+     */
+    public function test_run_task_with_plugin_configured() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', 'test.com', 'plagiarism');
+        set_config('turnitinapikey', '123456', 'plagiarism');
+
+        $tstask = new tstask();
+        $this->assertTrue($tstask->run_task());
+    }
 }
