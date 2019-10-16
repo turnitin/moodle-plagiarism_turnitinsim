@@ -308,6 +308,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     }
 
     /**
+     * Check whether the plugin is configured to connect to Turnitin.
+     */
+    public function is_plugin_configured() {
+        $turnitinapiurl = get_config('plagiarism', 'turnitinapiurl');
+        $turnitinapikey = get_config('plagiarism', 'turnitinapikey');
+
+        return (empty($turnitinapiurl) || empty($turnitinapikey)) ? false : true;
+    }
+
+    /**
      * Render a link to resubmit the file to Turnitin.
      *
      * @param $submissionid
