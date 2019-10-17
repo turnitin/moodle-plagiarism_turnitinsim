@@ -61,16 +61,16 @@ $tables = array(
 if (!is_null($table)) {
     if (in_array($table, $tables)) {
 
-    raise_memory_limit(MEMORY_EXTRA);
+        raise_memory_limit(MEMORY_EXTRA);
 
-    $data = $DB->get_records($table, null, 'id ASC');
+        $data = $DB->get_records($table, null, 'id ASC');
 
-    // Use Moodle's dataformatting functions to output the data in the desired format.
-    download_as_dataformat($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
-    exit;
+        // Use Moodle's dataformatting functions to output the data in the desired format.
+        download_as_dataformat($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
+        exit;
 
     } else {
-        $output .= html_writer::tag('div', get_string('invalidtablename', 'plagiarism_turnitinsim'));
+        $output .= html_writer::tag('div', get_string('invalidtablename', 'plagiarism_turnitinsim', $table));
     }
 
 } else {
