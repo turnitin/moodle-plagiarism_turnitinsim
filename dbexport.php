@@ -49,8 +49,18 @@ ob_end_clean();
 
 $exportfile = "export_".$table."_".date('Y-m-d_His');
 
+// Use Moodle's dataformatting functions to display a form to download output in different formats.
+$tables = array(
+    'plagiarism_turnitinsim_mod',
+    'plagiarism_turnitinsim_users',
+    'plagiarism_turnitinsim_sub',
+    'plagiarism_turnitinsim_group'
+);
+
 // If a table has been passed in then export that table data.
 if (!is_null($table)) {
+    if (in_array($table, $tables)) {
+
     raise_memory_limit(MEMORY_EXTRA);
 
     $data = $DB->get_records($table, null, 'id ASC');
@@ -59,26 +69,21 @@ if (!is_null($table)) {
     download_as_dataformat($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
     exit;
 
+    } else {
+        $output .= html_writer::tag('div', get_string('invalidtablename', 'plagiarism_turnitinsim'));
+    }
+
 } else {
 
-    // Use Moodle's dataformatting functions to display a form to download output in different formats.
-    $tables = array(
-        'plagiarism_turnitinsim_mod',
-        'plagiarism_turnitinsim_users',
-        'plagiarism_turnitinsim_sub',
-        'plagiarism_turnitinsim_group'
-    );
-
     foreach ($tables as $table) {
-        $downloadoptions = $OUTPUT->download_dataformat_selector(
+        $downloadoptions .= $OUTPUT->download_dataformat_selector(
             get_string('dbexporttable', 'plagiarism_turnitinsim', $table),
             'dbexport.php',
             'dataformat',
             array('table' => $table)
         );
-
-        $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitinsim_setup_download_links'));
     }
+        $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitinsim_setup_download_links'));
 }
 
 echo $output;
