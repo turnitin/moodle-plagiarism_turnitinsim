@@ -75,6 +75,7 @@ if (!is_null($table)) {
 
 } else {
 
+    $downloadoptions = "";
     foreach ($tables as $table) {
         $downloadoptions .= $OUTPUT->download_dataformat_selector(
             get_string('dbexporttable', 'plagiarism_turnitinsim', $table),
@@ -83,7 +84,8 @@ if (!is_null($table)) {
             array('table' => $table)
         );
     }
-        $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitinsim_setup_download_links'));
+
+    $output .= html_writer::tag('div', $downloadoptions, array('class' => 'turnitinsim_setup_download_links'));
 }
 
 echo $output;
