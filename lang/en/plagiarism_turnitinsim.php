@@ -48,6 +48,7 @@ $string['getwebhookfailure:subject'] = 'Turnitin Webhook Check Failure';
 $string['getwebhookfailure:message'] = 'There may be a problem with the webhook you have registered with Turnitin for the Plagiarism Plugin. The scheduled task to check it has failed to connect to Turnitin. Please check your logs.';
 $string['indexoptions'] = 'Submission Indexing';
 $string['indexoptions_help'] = 'Indexed submissions will be available for comparison in Similarity Reports.';
+$string['invalidtablename'] = 'Table {$a} could not be exported';
 $string['line'] = 'Line';
 $string['loadingcv'] = 'Loading Turnitin Cloud Viewer';
 $string['message'] = 'Message';
