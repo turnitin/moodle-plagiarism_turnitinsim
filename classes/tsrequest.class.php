@@ -39,13 +39,18 @@ class tsrequest {
     public $logger;
 
     public function __construct() {
-        $pluginconfig = get_config('plagiarism');
 
-        $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
-        $this->set_apikey($pluginconfig->turnitinapikey);
-        $this->logger = ($pluginconfig->turnitinenablelogging) ? new tslogger() : false;
+        // Only set attributes if plugin is configured
+        $plugin = new plagiarism_plugin_turnitinsim();
+        if ($plugin->is_plugin_configured()) {
+            $pluginconfig = get_config('plagiarism');
 
-        $this->set_headers();
+            $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
+            $this->set_apikey($pluginconfig->turnitinapikey);
+            $this->logger = ($pluginconfig->turnitinenablelogging) ? new tslogger() : false;
+
+            $this->set_headers();
+        }
     }
 
     /**
