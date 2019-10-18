@@ -876,8 +876,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
 
         // There should be one record in the submissions table.
-        $recordcount = $DB->count_records_select('plagiarism_turnitinsim_sub', 'cm = ? AND userid = ? AND status = ?',
-            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED));
+        $recordcount = $DB->count_records_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+        );
         $this->assertEquals(1, $recordcount);
 
         // Resubmit the same file.
@@ -888,6 +891,102 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
             'plagiarism_turnitinsim_sub',
             'cm = ? AND userid = ? AND identifier = ?',
             array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
+        );
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that if a user submits the same valid file, it doesn't get requeued if already processed unless
+     * the file was modified after the submission time.
+     */
+    public function test_submit_handler_file_requeueing_previously_submitted_files() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tssettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Accept EULA for student.
+        $student = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $this->student1->id));
+        $student->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitinsim_users', $student);
+
+        // Create test file.
+        $file = create_test_file(0, $usercontext->id, 'user', 'draft');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // Check that file was processed.
+        $submission = $DB->get_record_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+        );
+        $this->assertEquals($submission->identifier, $file->get_pathnamehash());
+
+        // Update submission to have a status of completed and submitted time after when file was last modified.
+        $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+        $submission->submitted_time = $file->get_timemodified() + 1;
+        $DB->update_record('plagiarism_turnitinsim_sub', $submission);
+
+        // Resubmit the same file.
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // There should still be one record in the submissions table and it should not have been requeued.
+        $recordcount = $DB->count_records_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND identifier = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id,
+                $file->get_pathnamehash(), TURNITINSIM_SUBMISSION_STATUS_COMPLETE)
+        );
+        $this->assertEquals(1, $recordcount);
+
+        // Update submission to have a status of completed and submitted time before when file was last modified.
+        $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+        $submission->submitted_time = $file->get_timemodified() - 1;
+        $DB->update_record('plagiarism_turnitinsim_sub', $submission);
+
+        // Resubmit the same file.
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // There should still be one record in the submissions table and it should have been requeued.
+        $recordcount = $DB->count_records_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND identifier = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id,
+                $file->get_pathnamehash(), TURNITINSIM_SUBMISSION_STATUS_QUEUED)
         );
         $this->assertEquals(1, $recordcount);
     }

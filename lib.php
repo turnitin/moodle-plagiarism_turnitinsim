@@ -534,24 +534,26 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     $params[] = $groupid;
                 }
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
-
-                if (!empty($submission)) {
-                    $tssubmission->setid($submission->id);
-
-                    // We don't want to re-process existing submissions.
-                    if ($submission->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
-                        continue;
-                    }
-                }
+                $filedetails = $tssubmission->get_file_details();
 
                 // Check that the file exists and is not empty.
-                $filedetails = $tssubmission->get_file_details();
                 if (!$filedetails) {
                     $tssubmission->settogenerate(0);
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
                     $tssubmission->update();
                     continue;
                 }
+
+                if (!empty($submission)) {
+                    $tssubmission->setid($submission->id);
+
+                    // Only re-queue previously submitted files if they have been modified since original submission.
+                    if ($filedetails->get_timemodified() < $submission->submitted_time
+                        && $submission->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+                        continue;
+                    }
+                }
+
                 // Check that the file is not a directory.
                 if ($filedetails->get_filename() === '.') {
                     $tssubmission->settogenerate(0);
