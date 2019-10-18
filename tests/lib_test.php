@@ -964,14 +964,13 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Resubmit the same file.
         $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
 
-        // There should still be one record in the submissions table and it should not have been requeued.
-        $recordcount = $DB->count_records_select(
+        // The submission should not have been requeued.
+        $submission = $DB->get_record_select(
             'plagiarism_turnitinsim_sub',
-            'cm = ? AND userid = ? AND identifier = ? AND status = ?',
-            array($this->assign->cmid, $this->student1->id,
-                $file->get_pathnamehash(), TURNITINSIM_SUBMISSION_STATUS_COMPLETE)
+            'cm = ? AND userid = ? AND identifier = ?',
+            array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
         );
-        $this->assertEquals(1, $recordcount);
+        $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_COMPLETE);
 
         // Update submission to have a status of completed and submitted time before when file was last modified.
         $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
@@ -981,14 +980,13 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Resubmit the same file.
         $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
 
-        // There should still be one record in the submissions table and it should have been requeued.
-        $recordcount = $DB->count_records_select(
+        // The submission should have been requeued.
+        $submission = $DB->get_record_select(
             'plagiarism_turnitinsim_sub',
-            'cm = ? AND userid = ? AND identifier = ? AND status = ?',
-            array($this->assign->cmid, $this->student1->id,
-                $file->get_pathnamehash(), TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+            'cm = ? AND userid = ? AND identifier = ?',
+            array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
         );
-        $this->assertEquals(1, $recordcount);
+        $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
     }
 
     /**
