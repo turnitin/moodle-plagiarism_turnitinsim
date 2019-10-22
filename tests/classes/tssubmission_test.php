@@ -1466,10 +1466,12 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
-     * Test that the similarity overrides are true.
+     * Test that the similarity overrides are true when configured as such.
      */
-    public function test_viewer_permissions_are_true() {
+    public function test_similarity_overrides_are_true() {
         $this->resetAfterTest();
+
+        set_config('turnitinviewersavechanges', 1, 'plagiarism');
 
         // Create assign module.
         $record = new stdClass();
@@ -1485,7 +1487,33 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Verify that viewer permissions are true as the config values are set to true.
         $overrides = $tssubmission->create_similarity_overrides();
-        $this->assertEquals(true, $overrides['modes']['match_overview']);
-        $this->assertEquals(true, $overrides['modes']['all_sources']);
+        $this->assertTrue($overrides['modes']['match_overview']);
+        $this->assertTrue($overrides['modes']['all_sources']);
+        $this->assertTrue($overrides['view_settings']['save_changes']);
     }
+
+    /**
+     * Test that the similarity overrides are false when configured as such.
+     */
+     public function test_similarity_overrides_are_false() {
+         $this->resetAfterTest();
+
+         set_config('turnitinviewersavechanges', 0, 'plagiarism');
+
+         // Create assign module.
+         $record = new stdClass();
+         $record->course = $this->course;
+         $module = $this->getDataGenerator()->create_module('assign', $record);
+
+         // Get course module data.
+         $cm = get_coursemodule_from_instance('assign', $module->id);
+
+         // Create submission object.
+         $tssubmission = new tssubmission();
+         $tssubmission->setcm($cm->id);
+
+         // Verify that viewer permissions are true as the config values are set to true.
+         $overrides = $tssubmission->create_similarity_overrides();
+         $this->assertFalse($overrides['view_settings']['save_changes']);
+     }
 }

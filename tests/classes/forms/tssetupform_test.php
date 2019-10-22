@@ -56,6 +56,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $data->turnitinhideidentity = self::TURNITINSIM_ENABLED;
         $data->permissionoptions['turnitinviewerviewfullsource'] = self::TURNITINSIM_ENABLED;
         $data->permissionoptions['turnitinviewermatchsubinfo'] = self::TURNITINSIM_ENABLED;
+        $data->permissionoptions['turnitinviewersavechanges'] = self::TURNITINSIM_ENABLED;
 
         // Save Module Settings.
         $form = new tssetupform();
@@ -74,6 +75,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinhideidentity);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinviewerviewfullsource);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinviewermatchsubinfo);
+        $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinviewersavechanges);
     }
 
     /**
@@ -100,6 +102,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinhideidentity);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinviewerviewfullsource);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinviewermatchsubinfo);
+        $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinviewersavechanges);
     }
 
     /**

@@ -152,6 +152,7 @@ $string['turnitinpluginenabled'] = 'Enable Turnitin';
 $string['turnitinpluginsettings'] = 'Turnitin Similarity plagiarism plugin settings';
 $string['turnitinviewerviewfullsource'] = 'Allow instructors within your institution to view the full text of submissions for internal matches';
 $string['turnitinviewermatchsubinfo'] = 'Allow instructors within your institution to view submission information for internal matches';
+$string['turnitinviewersavechanges'] = 'Save viewer changes';
 $string['viewerpermissionferpa'] = 'The following permissions impact how data can be shared across your institution. This data is the exclusive responsibility of your institution so when setting these permissions, consider whether they fully comply with your institution’s policies regarding student records.';
 $string['viewerpermissionoptions'] = 'Viewer permissions';
 $string['viewlogs'] = 'Logs';

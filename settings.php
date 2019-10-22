@@ -70,6 +70,7 @@ $pluginconfig = get_config('plagiarism');
 // Some settings are grouped in an array format so we need to set these manually first.
 $pluginconfig->permissionoptions['turnitinviewerviewfullsource'] = (!empty($pluginconfig->turnitinviewerviewfullsource)) ? 1 : 0;
 $pluginconfig->permissionoptions['turnitinviewermatchsubinfo'] = (!empty($pluginconfig->turnitinviewermatchsubinfo)) ? 1 : 0;
+$pluginconfig->permissionoptions['turnitinviewersavechanges'] = (!empty($pluginconfig->turnitinviewersavechanges)) ? 1 : 0;
 
 $tssetupform->set_data($pluginconfig);
 $output .= $tssetupform->display();
