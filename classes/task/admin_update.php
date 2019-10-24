@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 class admin_update extends \core\task\scheduled_task {
 
     public function get_name() {
-        return get_string('taskadminupdate', 'plagiarism_turnitinsim');
+        return \get_string('taskadminupdate', 'plagiarism_turnitinsim');
     }
 
     public function execute() {

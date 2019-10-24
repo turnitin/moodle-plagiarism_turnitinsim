@@ -35,7 +35,7 @@ class tsgroup {
         $this->set_groupid($groupid);
 
         // Get group details.
-        if ($group = $DB->get_record('plagiarism_turnitinsim_grp', array('groupid' => $groupid))) {
+        if ($group = $DB->get_record('plagiarism_turnitinsim_group', array('groupid' => $groupid))) {
             $this->set_turnitinid($group->turnitinid);
         }
 
@@ -58,7 +58,7 @@ class tsgroup {
         $group->groupid = $this->get_groupid();
         $group->turnitinid = $turnitinid;
 
-        $DB->insert_record('plagiarism_turnitinsim_grp', $group);
+        $DB->insert_record('plagiarism_turnitinsim_group', $group);
 
         return $turnitinid;
     }

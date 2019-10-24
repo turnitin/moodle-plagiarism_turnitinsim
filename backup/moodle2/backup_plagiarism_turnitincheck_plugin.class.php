@@ -83,7 +83,7 @@ class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
             $users->add_child($user);
             $user->set_source_sql(
                 'SELECT PTU.id, PTU.userid, PTU.turnitinid
-                FROM {plagiarism_turnitinsim_usr} PTU
+                FROM {plagiarism_turnitinsim_users} PTU
                 JOIN {plagiarism_turnitinsim_sub} PTS
                 ON PTS.userid = PTU.userid
                 WHERE PTS.cm = ? ',

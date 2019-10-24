@@ -643,10 +643,12 @@ class tssubmission {
     public function create_report_viewer_permissions() {
         $turnitinviewerviewfullsource = get_config('plagiarism', 'turnitinviewerviewfullsource');
         $turnitinviewermatchsubinfo = get_config('plagiarism', 'turnitinviewermatchsubinfo');
+        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
-            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) ? true : false
+            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) ? true : false,
+            'may_view_save_viewer_changes' => (!empty($turnitinviewersavechanges)) ? true : false
         );
     }
 
@@ -658,13 +660,15 @@ class tssubmission {
      * @return array
      */
     public function create_similarity_overrides() {
+        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
+
         return array(
             'modes' => array(
                 'match_overview' => true,
                 'all_sources' => true
             ),
             "view_settings" => array(
-                "save_changes" => true
+                "save_changes"  => (!empty($turnitinviewersavechanges)) ? true : false
             )
         );
     }

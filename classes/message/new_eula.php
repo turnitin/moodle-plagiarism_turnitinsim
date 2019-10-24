@@ -47,7 +47,7 @@ class new_eula {
         $eventdata->courseid          = 0;
 
         // Get all users linked to Turnitin.
-        $users = $DB->get_records('plagiarism_turnitinsim_usr');
+        $users = $DB->get_records('plagiarism_turnitinsim_users');
 
         // Send notifications.
         foreach ($users as $user) {

@@ -63,15 +63,15 @@ class provider implements
         );
 
         $collection->add_database_table(
-            'plagiarism_turnitinsim_usr',
+            'plagiarism_turnitinsim_users',
             [
-                'userid' => 'privacy:metadata:plagiarism_turnitinsim_usr:userid',
-                'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_usr:turnitinid',
-                'lasteulaaccepted' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaaccepted',
-                'lasteulaacceptedtime' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedtime',
-                'lasteulaacceptedlang' => 'privacy:metadata:plagiarism_turnitinsim_usr:lasteulaacceptedlang'
+                'userid' => 'privacy:metadata:plagiarism_turnitinsim_users:userid',
+                'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_users:turnitinid',
+                'lasteulaaccepted' => 'privacy:metadata:plagiarism_turnitinsim_users:lasteulaaccepted',
+                'lasteulaacceptedtime' => 'privacy:metadata:plagiarism_turnitinsim_users:lasteulaacceptedtime',
+                'lasteulaacceptedlang' => 'privacy:metadata:plagiarism_turnitinsim_users:lasteulaacceptedlang'
             ],
-            'privacy:metadata:plagiarism_turnitinsim_usr'
+            'privacy:metadata:plagiarism_turnitinsim_users'
         );
 
         $collection->link_external_location('plagiarism_turnitinsim_client', [
@@ -198,6 +198,6 @@ class provider implements
         global $DB;
 
         $DB->delete_records('plagiarism_turnitinsim_sub', ['userid' => $userid]);
-        $DB->delete_records('plagiarism_turnitinsim_usr', ['userid' => $userid]);
+        $DB->delete_records('plagiarism_turnitinsim_users', ['userid' => $userid]);
     }
 }

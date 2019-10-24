@@ -62,6 +62,17 @@ define(['jquery'], function($) {
                     success: function(data) {
                         // Redirect opened window to returned URL.
                         dvWindow.location = data.viewer_url;
+                        this.checkDVClosed(dvWindow);
+                    },
+                    checkDVClosed: function(dvWindow) {
+                        var that = this;
+                        if (dvWindow.closed) {
+                            window.location = window.location;
+                        } else {
+                            setTimeout(function() {
+                                that.checkDVClosed(dvWindow);
+                            }, 500);
+                        }
                     }
                 });
             });

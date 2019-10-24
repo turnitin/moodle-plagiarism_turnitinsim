@@ -36,7 +36,8 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tssetupform.
 class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
     const EULA_VERSION_1 = 'EULA1';
-    const EULA_URL = 'http://test.turnitin.com';
+    const TURNITINSIM_API_URL = 'http://test.turnitin.com';
+    const TURNITINSIM_API_KEY = '123456';
 
     public function get_module_that_supports_plagiarism() {
         $mods = core_component::get_plugin_list('mod');
@@ -102,8 +103,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set EULA data.
         set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism');
-        set_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
-        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::EULA_URL);
+        set_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
     }
 
     /**
@@ -428,6 +429,54 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertFalse($plugin->is_plugin_active($this->cm));
     }
 
+    /**
+     * Test that is_plugin_configured returns false if the plugin is not configured with API URL and API Key.
+     */
+    public function test_is_plugin_configured_with_no_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_configured returns false if the plugin is not configured correctly with both of API URL or API Key.
+     */
+    public function test_is_plugin_configured_with_partial_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set API URL but not Key.
+        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
+        set_config('turnitinapikey', '', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+
+        // Set API Key but not URL.
+        set_config('turnitinapiurl', '', 'plagiarism');
+        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism');
+
+        $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
+    }
+
+    /**
+     * Test that is_plugin_configured returns true if the plugin is configured with API URL and API Key.
+     */
+    public function test_is_plugin_configured_with_credentials_saved() {
+        $this->resetAfterTest();
+
+        // Set plugin as not enabled in config for this module type.
+        set_config('turnitinapiurl', 'test.com', 'plagiarism');
+        set_config('turnitinapikey', '123456', 'plagiarism');
+
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertTrue($plagiarismturnitinsim->is_plugin_configured($this->cm));
+    }
+
     /*
      * Test that the EULA is output if the user has not accepted the latest version previously.
      */
@@ -483,9 +532,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $plugin->save_form_elements($data);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -677,9 +726,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertEquals(1, $recordcount);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Resubmit file.
         $plagiarismturnitinsim->submission_handler($eventdata);
@@ -758,9 +807,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Handler should return true.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -800,9 +849,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $student = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $this->student1->id));
+        $student = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $this->student1->id));
         $student->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $student);
+        $DB->update_record('plagiarism_turnitinsim_users', $student);
 
         // Create test file.
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
@@ -827,8 +876,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
 
         // There should be one record in the submissions table.
-        $recordcount = $DB->count_records_select('plagiarism_turnitinsim_sub', 'cm = ? AND userid = ? AND status = ?',
-            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED));
+        $recordcount = $DB->count_records_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+        );
         $this->assertEquals(1, $recordcount);
 
         // Resubmit the same file.
@@ -841,6 +893,100 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
             array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
         );
         $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that if a user submits the same valid file, it doesn't get requeued if already processed unless
+     * the file was modified after the submission time.
+     */
+    public function test_submit_handler_file_requeueing_previously_submitted_files() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tssettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Accept EULA for student.
+        $student = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $this->student1->id));
+        $student->lasteulaaccepted = self::EULA_VERSION_1;
+        $DB->update_record('plagiarism_turnitinsim_users', $student);
+
+        // Create test file.
+        $file = create_test_file(0, $usercontext->id, 'user', 'draft');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // Check that file was processed.
+        $submission = $DB->get_record_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+        );
+        $this->assertEquals($submission->identifier, $file->get_pathnamehash());
+
+        // Update submission to have a status of completed and submitted time after when file was last modified.
+        $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+        $submission->submitted_time = $file->get_timemodified() + 1;
+        $DB->update_record('plagiarism_turnitinsim_sub', $submission);
+
+        // Resubmit the same file.
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // The submission should not have been requeued.
+        $submission = $DB->get_record_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND identifier = ?',
+            array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
+        );
+        $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_COMPLETE);
+
+        // Update submission to have a status of completed and submitted time before when file was last modified.
+        $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+        $submission->submitted_time = $file->get_timemodified() - 1;
+        $DB->update_record('plagiarism_turnitinsim_sub', $submission);
+
+        // Resubmit the same file.
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // The submission should have been requeued.
+        $submission = $DB->get_record_select(
+            'plagiarism_turnitinsim_sub',
+            'cm = ? AND userid = ? AND identifier = ?',
+            array($this->assign->cmid, $this->student1->id, $file->get_pathnamehash())
+        );
+        $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
     }
 
     /**
@@ -868,9 +1014,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->setUser($this->student1);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Create dummy event data.
         $textcontent = "This is text content for unit testing a text submission.";
@@ -929,9 +1075,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $this->assign->id);
@@ -1005,9 +1151,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $usercontext = context_user::instance($this->student1->id);
 
         // Accept EULA for student.
-        $data = $DB->get_record('plagiarism_turnitinsim_usr', ['userid' => $this->student1->id]);
+        $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
         $data->lasteulaaccepted = self::EULA_VERSION_1;
-        $DB->update_record('plagiarism_turnitinsim_usr', $data);
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
 
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $this->assign->id);

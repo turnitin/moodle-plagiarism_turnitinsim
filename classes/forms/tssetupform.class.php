@@ -89,6 +89,10 @@ class tssetupform extends moodleform {
         $label = get_string('turnitinviewermatchsubinfo', 'plagiarism_turnitinsim');
         $permissions[] = $mform->createElement('checkbox', 'turnitinviewermatchsubinfo', null, $label);
 
+        // Toggle Viewer Permissions whether Save Viewer changes is on.
+        $label = get_string('turnitinviewersavechanges', 'plagiarism_turnitinsim');
+        $permissions[] = $mform->createElement('checkbox', 'turnitinviewersavechanges', null, $label);
+
         // Show FERPA statemnet.
         $ferpastatement = html_writer::tag(
             'div',
@@ -148,6 +152,7 @@ class tssetupform extends moodleform {
         $turnitinhideidentity = (!empty($data->turnitinhideidentity)) ? $data->turnitinhideidentity : 0;
         $turnitinviewerviewfullsource = (!empty($data->permissionoptions['turnitinviewerviewfullsource'])) ? 1 : 0;
         $turnitinviewermatchsubinfo = (!empty($data->permissionoptions['turnitinviewermatchsubinfo'])) ? 1 : 0;
+        $turnitinviewersavechanges = (!empty($data->permissionoptions['turnitinviewersavechanges'])) ? 1 : 0;
 
         set_config('turnitinsim_use', $useplugin, 'plagiarism');
         // Loop through all modules that support Plagiarism.
@@ -163,6 +168,7 @@ class tssetupform extends moodleform {
         set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism');
         set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism');
         set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism');
+        set_config('turnitinviewersavechanges', $turnitinviewersavechanges, 'plagiarism');
     }
 
     /**
@@ -184,8 +190,12 @@ class tssetupform extends moodleform {
         // If we don't then retrieve them and overwrite mtrace so it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
         if (empty($features)) {
-            $tstask = new tstask();
-            $tstask->check_enabled_features();
+            try {
+                $tstask = new tstask();
+                $tstask->check_enabled_features();
+            } catch (Exception $e) {
+                // Gracefully handle error - do nothing.
+            }
             $features = get_config('plagiarism', 'turnitin_features_enabled');
         }
 

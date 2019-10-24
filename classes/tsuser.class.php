@@ -39,7 +39,7 @@ class tsuser {
         $this->set_userid($userid);
 
         // If there is no user record then create one.
-        if ($user = $DB->get_record('plagiarism_turnitinsim_usr', array('userid' => $userid))) {
+        if ($user = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $userid))) {
             $this->set_turnitinid($user->turnitinid);
             $this->set_lasteulaaccepted($user->lasteulaaccepted);
             $this->set_lasteulaacceptedtime($user->lasteulaacceptedtime);
@@ -65,7 +65,7 @@ class tsuser {
         $user->userid = $this->get_userid();
         $user->turnitinid = $turnitinid;
 
-        $DB->insert_record('plagiarism_turnitinsim_usr', $user);
+        $DB->insert_record('plagiarism_turnitinsim_users', $user);
 
         return $turnitinid;
     }

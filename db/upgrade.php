@@ -41,6 +41,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018021501, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018021601) {
@@ -50,6 +51,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018021601, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018030601) {
@@ -59,6 +61,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018030601, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018031801) {
@@ -69,6 +72,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018031801, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018032001) {
@@ -79,6 +83,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018032001, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018032003) {
@@ -95,10 +100,11 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018032003, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018050401) {
-        $table = new xmldb_table('plagiarism_turnitinsim_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_users');
 
         $field = new xmldb_field('lasteulaaccepted', XMLDB_TYPE_CHAR, '100', null, false, null, null, 'turnitinid');
 
@@ -111,6 +117,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018050401, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018051001) {
@@ -127,15 +134,17 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018051001, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018051501) {
-        $table = new xmldb_table('plagiarism_turnitinsim_usr');
+        $table = new xmldb_table('plagiarism_turnitinsim_users');
         $field = new xmldb_field('lasteulaacceptedlang', XMLDB_TYPE_CHAR, '10', null, false, null, null, 'lasteulaacceptedtime');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018051501, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018062601) {
@@ -145,6 +154,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        upgrade_plugin_savepoint(true, 2018062601, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2018080301) {
@@ -158,7 +168,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         }
 
         // Add group table.
-        $table = new xmldb_table('plagiarism_turnitinsim_grp');
+        $table = new xmldb_table('plagiarism_turnitinsim_group');
 
         // Adding fields.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -172,6 +182,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+        upgrade_plugin_savepoint(true, 2018080301, 'plagiarism', 'turnitinsim');
     }
 
     return true;
