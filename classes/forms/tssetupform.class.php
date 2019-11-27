@@ -219,6 +219,13 @@ class tssetupform extends moodleform {
         }
         $enabledfeatures .= html_writer::tag('dl', $settinglist, array('class' => 'turnitinsim_featurelist'));
 
+        $eulastring = (!(bool)$features['tenant']['require_eula']) ? 'eulanotrequired' : 'eularequired';
+        $enabledfeatures .= html_writer::tag(
+            'p',
+            get_string('turnitinfeatures::'.$eulastring, 'plagiarism_turnitinsim'),
+            array('class' => 'bold')
+        );
+
         $enabledfeatures .= html_writer::tag('p', get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'));
 
         return html_writer::tag('div', $enabledfeatures, array('class' => 'turnitinsim_features'));

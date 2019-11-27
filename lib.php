@@ -368,9 +368,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $eulaversion = get_config('plagiarism', 'turnitin_eula_version');
         }
 
-        // Check user has accepted the latest EULA.
+        // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
         $user = new tsuser($USER->id);
-        if ($user->get_lasteulaaccepted() == $eulaversion) {
+        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        if ($user->get_lasteulaaccepted() == $eulaversion || !(bool)$features->tenant->require_eula) {
             return '';
         }
 
@@ -446,6 +447,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Get config settings, module settings and plagiarism settings for this module.
         $plagiarismsettings = $this->get_settings($eventdata['contextinstanceid']);
         $pluginconfig = get_config('plagiarism');
+        $features = json_decode($pluginconfig->turnitin_features_enabled);
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
         $modenabled = "turnitinmodenabled".$eventdata['other']['modulename'];
@@ -572,8 +574,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
 
                 // If the submitter has not accepted the EULA then flag accordingly.
-                if (empty($submitter->get_lasteulaaccepted()) ||
-                    $submitter->get_lasteulaaccepted() < get_config('plagiarism', 'turnitin_eula_version')) {
+                if ((empty($submitter->get_lasteulaaccepted()) ||
+                    $submitter->get_lasteulaaccepted() < get_config('plagiarism', 'turnitin_eula_version')) &&
+                    (bool)$features->tenant->require_eula
+                ) {
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                     $tssubmission->update();
                     continue;

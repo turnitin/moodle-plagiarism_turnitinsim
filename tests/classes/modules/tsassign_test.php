@@ -42,6 +42,10 @@ class tsassign_test extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism');
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
+        // Set the features enabled
+        $featuresenabled = file_get_contents(__DIR__ . '/../../fixtures/get_features_enabled_success.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+
         // Create a course.
         $this->course = $this->getDataGenerator()->create_course();
 
