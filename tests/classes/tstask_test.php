@@ -105,12 +105,16 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
     public function test_check_latest_eula_version() {
         $this->resetAfterTest();
 
+        // Set the features enabled
+        $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+
         // Mock API eula request class and get latest version call.
         $tseula = $this->getMockBuilder(tseula::class)
             ->setMethods(['get_latest_version'])
             ->getMock();
 
-        // Set features enabled.
+        // Set latest EULA version.
         $latesteula = json_decode(file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json'));
 
         // Mock get_latest_version request method.

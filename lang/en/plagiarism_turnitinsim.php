@@ -146,6 +146,8 @@ $string['turnitinfeatures::header'] = 'Turnitin Similarity features';
 $string['turnitinfeatures::moreinfo'] = 'For more information on the enabled features and packages available from Turnitin please see <a href="http://www.turnitin.com" target="_blank">http://www.turnitin.com</a>.';
 $string['turnitinfeatures::repositories'] = 'Repositories checked against: ';
 $string['turnitinfeatures::viewoptions'] = 'Cloud Viewer options: ';
+$string['turnitinfeatures::eularequired'] = 'Acceptance of the Turnitin EULA is required for all users';
+$string['turnitinfeatures::eulanotrequired'] = 'Acceptance of the Turnitin EULA is not required by users';
 $string['turnitinhideidentity'] = 'Hide Student\'s Identity from Turnitin';
 $string['turnitinmodenabled'] = 'Enable Turnitin Similarity for {$a}';
 $string['turnitinpluginenabled'] = 'Enable Turnitin';

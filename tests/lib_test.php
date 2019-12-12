@@ -60,6 +60,10 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism');
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
+        // Set the features enabled
+        $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_success.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+
         // Init. plugin class.
         $this->plugin = new plagiarism_plugin_turnitinsim();
 
@@ -545,6 +549,36 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
     }
 
     /**
+     * Test that the EULA is not output if it is not required at tenant level.
+     */
+    public function test_print_disclosure_eula_not_displayed_if_not_required() {
+        $this->resetAfterTest();
+
+        // Set plugin as enabled in config for this module type.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Set the features enabled
+        $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->modulename = 'assign';
+        $data->coursemodule = $this->cm->id;
+        $data->turnitinenabled = 1;
+        $plugin = new plagiarism_plugin_turnitinsim();
+        $plugin->save_form_elements($data);
+
+        // Log student in.
+        $this->setUser($this->student1);
+
+        // Verify EULA is not output.
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertEquals('', $plagiarismturnitinsim->print_disclosure($this->cm->id));
+    }
+
+    /**
      * Test that correct settings are returned.
      */
     public function test_get_settings() {
@@ -734,6 +768,70 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $plagiarismturnitinsim->submission_handler($eventdata);
 
         // There should now be one queued record.
+        $recordcount = $DB->count_records_select('plagiarism_turnitinsim_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED));
+
+        $this->assertEquals(1, $recordcount);
+    }
+
+    /**
+     * Test that a valid file passed to submit handler gets queued without accepting the EULA as it is not required.
+     */
+    public function test_submit_handler_file_queued_without_requiring_eula() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+
+        // Set the features enabled
+        $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+
+        // Enable plugin for module.
+        $data = new stdClass();
+        $data->coursemodule = $this->assign->cmid;
+        $data->turnitinenabled = 1;
+        $data->queuedrafts = 1;
+
+        $form = new tssettings();
+        $form->save_module_settings($data);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create test file.
+        $file = create_test_file(0, $usercontext->id, 'user', 'draft');
+
+        // Create dummy event data.
+        $eventdata = array(
+            'userid' => $this->student1->id,
+            'relateduserid' => $this->student1->id,
+            'contextinstanceid' => $this->assign->cmid,
+            'other' => array (
+                'pathnamehashes' => array(
+                    0 => $file->get_pathnamehash()
+                ),
+                'modulename' => $this->get_module_that_supports_plagiarism()
+            ),
+            'objectid' => 1,
+            'eventtype' => 'file_uploaded'
+        );
+
+        // Handler should return true.
+        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->assertEquals(true, $plagiarismturnitinsim->submission_handler($eventdata));
+
+        // There should be no records in the submissions table awaiting EULA acceptance.
+        $recordcount = $DB->count_records_select('plagiarism_turnitinsim_sub', 'cm = ? AND userid = ? AND status = ?',
+            array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED));
+
+        $this->assertEquals(0, $recordcount);
+
+        // There should instead be one queued record.
         $recordcount = $DB->count_records_select('plagiarism_turnitinsim_sub', 'cm = ? AND userid = ? AND status = ?',
             array($this->assign->cmid, $this->student1->id, TURNITINSIM_SUBMISSION_STATUS_QUEUED));
 

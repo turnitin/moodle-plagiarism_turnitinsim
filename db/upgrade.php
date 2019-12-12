@@ -158,7 +158,6 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018080301) {
-
         // Add groupid column to submission.
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'submitter');
@@ -183,6 +182,19 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             $dbman->create_table($table);
         }
         upgrade_plugin_savepoint(true, 2018080301, 'plagiarism', 'turnitinsim');
+    }
+
+    if ($oldversion < 2019112701) {
+        // Get the current features enabled.
+        // If require_eula does not exist then set it to true, it will be overwritten
+        // if necessary when the scheduled tasks run.
+        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        if (!property_exists($features, 'tenant')) {
+            $features->tenant->require_eula = true;
+            set_config('turnitin_features_enabled', json_encode($features), 'plagiarism');
+        }
+
+        upgrade_plugin_savepoint(true, 2019112701, 'plagiarism', 'turnitinsim');
     }
 
     return true;

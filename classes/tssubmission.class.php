@@ -299,10 +299,14 @@ class tssubmission {
         $request['metadata']['owners'] = $this->create_owners_metadata();
 
         // Add EULA acceptance details to submission if the submitter has accepted it.
-        $language = $this->tsrequest->get_language();
-        $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language->localecode;
+        $language = $this->tsrequest->get_language()->localecode;
+        $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language;
 
-        if (!empty($tssubmitter->get_lasteulaaccepted())) {
+        // Get the features enabled so we can check if EULAis required for this tenant.
+        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+
+        // Include EULA metadata if necessary.
+        if (!empty($tssubmitter->get_lasteulaaccepted()) || !(bool)$features->tenant->require_eula) {
             $request['eula'] = array(
                 'accepted_timestamp' => gmdate("Y-m-d\TH:i:s\Z", ($tssubmitter->get_lasteulaacceptedtime())),
                 'language' => $locale,
@@ -312,7 +316,11 @@ class tssubmission {
 
         // Make request to create submission record in Turnitin.
         try {
-            $response = $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION, json_encode($request), 'POST');
+            $response = $this->tsrequest->send_request(
+                TURNITINSIM_ENDPOINT_CREATE_SUBMISSION,
+                json_encode($request),
+                'POST'
+            );
             $responsedata = json_decode($response);
 
             $this->handle_create_submission_response($responsedata);
@@ -343,7 +351,7 @@ class tssubmission {
                 break;
 
             case TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS:
-                // Handle a TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS response for user who have not accepted the EULA.
+                // Handle the response for a user who has not accepted the EULA.
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $this->setsubmittedtime(time());
 
