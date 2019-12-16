@@ -209,6 +209,12 @@ class tstask {
         // Reset headers.
         $this->tsrequest->set_headers();
 
+        // Get the features enabled so we can check if EULA is required for this tenant.
+        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        if (!(bool)$features->tenant->require_eula) {
+            return true;
+        }
+
         // Get the latest EULA version.
         $response = $this->tseula->get_latest_version();
         if (!empty($response)) {
@@ -249,7 +255,7 @@ class tstask {
 
             // Update enabled features if necessary.
             if ($currentfeatures != $newfeatures && !empty($newfeatures)) {
-                set_config('turnitin_features_enabled', json_encode($response), 'plagiarism');
+                set_config('turnitin_features_enabled', $newfeatures, 'plagiarism');
             }
         }
 

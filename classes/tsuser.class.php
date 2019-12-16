@@ -59,7 +59,7 @@ class tsuser {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = generate_uuid();
+        $turnitinid = \core\uuid::generate();
 
         $user = new stdClass();
         $user->userid = $this->get_userid();
