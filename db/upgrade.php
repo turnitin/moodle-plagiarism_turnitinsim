@@ -184,7 +184,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080301, 'plagiarism', 'turnitinsim');
     }
 
-    if ($oldversion < 2019112701) {
+    if ($oldversion < 2019121601) {
         // Get the current features enabled.
         // If require_eula does not exist then set it to true, it will be overwritten
         // if necessary when the scheduled tasks run.
