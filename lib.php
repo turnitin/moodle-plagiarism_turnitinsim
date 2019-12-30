@@ -447,7 +447,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Get config settings, module settings and plagiarism settings for this module.
         $plagiarismsettings = $this->get_settings($eventdata['contextinstanceid']);
         $pluginconfig = get_config('plagiarism');
-        $features = json_decode($pluginconfig->turnitin_features_enabled);
+        $features = (!empty($pluginconfig->turnitin_features_enabled)) ?
+            json_decode($pluginconfig->turnitin_features_enabled) : '';
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
         $modenabled = "turnitinmodenabled".$eventdata['other']['modulename'];
