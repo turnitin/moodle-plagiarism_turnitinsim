@@ -25,11 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsworkshop.class.php');
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 
-class tsworkshop_test extends advanced_testcase {
+class workshop_test extends advanced_testcase {
 
     const TEST_WORKSHOP_TEXT = 'Generated content';
 
@@ -72,7 +71,7 @@ class tsworkshop_test extends advanced_testcase {
 
         $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
 
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $result = $tsworkshop->get_onlinetext($submissionid);
 
         $this->assertEquals($result, self::TEST_WORKSHOP_TEXT);
@@ -104,7 +103,7 @@ class tsworkshop_test extends advanced_testcase {
         $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
 
         // Get item id.
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $params = new stdClass();
         $params->moduleid = $workshop->id;
         $params->userid = $this->student1->id;
@@ -127,7 +126,7 @@ class tsworkshop_test extends advanced_testcase {
         $workshop = $this->getDataGenerator()->create_module('workshop', array('course' => $course));
 
         // Get item id.
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $params = new stdClass();
         $params->moduleid = $workshop->id;
         $params->userid = $this->student1->id;
@@ -144,12 +143,12 @@ class tsworkshop_test extends advanced_testcase {
         $this->resetAfterTest(true);
 
         // Test that get author returns student2 as the author.
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->get_author($this->student1->id, $this->student2->id, 0, 0);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->get_author($this->student1->id, 0, 0, 0);
         $this->assertEquals($this->student1->id, $response);
     }
@@ -160,7 +159,7 @@ class tsworkshop_test extends advanced_testcase {
     public function test_is_submission_draft() {
         $this->resetAfterTest();
 
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->is_submission_draft(0);
         $this->assertEquals(false, $response);
     }
@@ -171,7 +170,7 @@ class tsworkshop_test extends advanced_testcase {
     public function test_get_due_date() {
         $this->resetAfterTest();
 
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->get_due_date(0);
         $this->assertEquals(0, $response);
     }
@@ -182,7 +181,7 @@ class tsworkshop_test extends advanced_testcase {
     public function test_show_other_posts_links() {
         $this->resetAfterTest();
 
-        $tsworkshop = new tsworkshop();
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->show_other_posts_links(0, 0);
         $this->assertEquals(true, $response);
     }

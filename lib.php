@@ -142,7 +142,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Check if the logged in user is an instructor.
@@ -474,7 +474,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Set the author, submitter and group (if applicable).
@@ -652,7 +652,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if ($module->reportgeneration != TURNITINSIM_REPORT_GEN_IMMEDIATE) {
 
             // Create module object and get due date.
-            $moduleclass =  'ts'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             $duedate = $moduleobject->get_due_date($cm->instance);

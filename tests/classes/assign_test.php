@@ -24,10 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsassign.class.php');
-
-class tsassign_test extends advanced_testcase {
+class assign_test extends advanced_testcase {
 
     const TEST_ASSIGN_TEXT = 'This is text content for unit testing a text submission.';
 
@@ -112,7 +109,7 @@ class tsassign_test extends advanced_testcase {
         $plugin = $assign->get_submission_plugin_by_type('onlinetext');
         $plugin->save($submission, $data);
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $result = $tsassign->get_onlinetext($submission->id);
 
         $this->assertEquals($result, self::TEST_ASSIGN_TEXT);
@@ -158,7 +155,7 @@ class tsassign_test extends advanced_testcase {
         $plugin->save($submission, $data);
 
         // Get itemid.
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $params = new stdClass();
         $params->moduleid = $cm->instance;
         $params->userid = $this->student1->id;
@@ -182,7 +179,7 @@ class tsassign_test extends advanced_testcase {
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Get itemid.
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $params = new stdClass();
         $params->moduleid = $cm->instance;
         $params->userid = $this->student1->id;
@@ -228,17 +225,17 @@ class tsassign_test extends advanced_testcase {
         $plugin->save($submission, $data);
 
         // Test that get author returns student2 as the author.
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_author($this->student1->id, $this->student2->id, $cm, 0);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_author($this->student1->id, 0, $cm, 0);
         $this->assertEquals($this->student1->id, $response);
 
         // Test that get author returns student2 as the author.
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_author($this->instructor->id, 0, $cm, $submission->id);
         $this->assertEquals($this->student1->id, $response);
 
@@ -257,7 +254,7 @@ class tsassign_test extends advanced_testcase {
         groups_add_member($group, $this->student1);
         groups_add_member($group, $this->student2);
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return the first student id.
@@ -277,7 +274,7 @@ class tsassign_test extends advanced_testcase {
         groups_add_member($group, $this->instructor);
         groups_add_member($group, $this->student1);
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return the student id and not the instructor id.
@@ -296,7 +293,7 @@ class tsassign_test extends advanced_testcase {
         // Enrol instructor and student in group.
         groups_add_member($group, $this->instructor);
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->get_first_group_author($this->course->id, $group->id);
 
         // Test should return 0.
@@ -328,7 +325,7 @@ class tsassign_test extends advanced_testcase {
         $submission->latest = 0;
         $submission->id = $DB->insert_record('assign_submission', $submission);
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->is_submission_draft($submission->id);
 
         // Test should return true that the submission is a draft.
@@ -349,7 +346,7 @@ class tsassign_test extends advanced_testcase {
      */
     public function test_get_due_date() {
         $this->resetAfterTest();
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
 
         // Log instructor in.
         $this->setUser($this->instructor);
@@ -379,7 +376,7 @@ class tsassign_test extends advanced_testcase {
     public function test_show_other_posts_links() {
         $this->resetAfterTest();
 
-        $tsassign = new tsassign();
+        $tsassign = new plagiarism_turnitinsim_assign();
         $response = $tsassign->show_other_posts_links(0, 0);
         $this->assertEquals(true, $response);
     }

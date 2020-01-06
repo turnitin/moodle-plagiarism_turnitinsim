@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsassign {
+class plagiarism_turnitinsim_assign {
 
     /**
      * Get the text from the database for the submission.

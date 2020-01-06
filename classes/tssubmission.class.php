@@ -27,10 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 use plagiarism_turnitinsim\message\receipt_instructor;
 use plagiarism_turnitinsim\message\receipt_student;
 
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsassign.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsforum.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsworkshop.class.php');
-
 class tssubmission {
 
     public $id;
@@ -103,7 +99,7 @@ class tssubmission {
         $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         $duedate = $moduleobject->get_due_date($cm->instance);
@@ -384,7 +380,7 @@ class tssubmission {
             $cm = get_coursemodule_from_id('', $this->getcm());
 
             // Create module object.
-            $moduleclass =  'ts'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             // Add text content to request.
@@ -499,7 +495,7 @@ class tssubmission {
         $cm = get_coursemodule_from_id('', $this->getcm());
 
         // Create module helper object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Configure request body array.
