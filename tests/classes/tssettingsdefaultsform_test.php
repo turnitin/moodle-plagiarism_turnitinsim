@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tsdefaultsform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/defaults_form.class.php');
 
 /**
  * Tests for default settings form.
@@ -63,7 +63,7 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
         $data->accessoptions['accessstudents'] = 1;
 
         // Save Module Settings.
-        $form = new tsdefaultsform();
+        $form = new plagiarism_turnitinsim_defaults_form();
         $form->save($data);
 
         // Check settings have been saved.
@@ -85,7 +85,7 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Save Module Settings.
-        $form = new tsdefaultsform();
+        $form = new plagiarism_turnitinsim_defaults_form();
         $output = $form->display();
 
         $this->assertContains('</form>', $output);

@@ -28,7 +28,7 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 
 // Require classes.
-require_once(__DIR__ . '/classes/forms/tssetupform.class.php');
+require_once(__DIR__ . '/classes/setup_form.class.php');
 
 global $PAGE;
 
@@ -46,7 +46,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 $output = $OUTPUT->header();
 
-$tssetupform = new tssetupform('');
+$tssetupform = new plagiarism_turnitinsim_setup_form('');
 // Save posted form data.
 if (($data = $tssetupform->get_data()) && confirm_sesskey()) {
     $tssetupform->save($data);

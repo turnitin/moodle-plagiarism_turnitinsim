@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
+
 class assign_test extends advanced_testcase {
 
     const TEST_ASSIGN_TEXT = 'This is text content for unit testing a text submission.';
@@ -40,7 +43,7 @@ class assign_test extends advanced_testcase {
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
         // Set the features enabled
-        $featuresenabled = file_get_contents(__DIR__ . '/../../fixtures/get_features_enabled_success.json');
+        $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
 
         // Create a course.

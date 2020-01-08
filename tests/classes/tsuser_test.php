@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tsuser.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/user.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tsuser.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/user.class.php');
 
 /**
  * Tests for TurnitinSim user class.
@@ -44,7 +44,7 @@ class plagiarism_turnitinsim_user_class_testcase extends advanced_testcase {
         $student1 = self::getDataGenerator()->create_user();
 
         // Create new tsuser which should create a Turnitin id.
-        $tsuser = new tsuser($student1->id);
+        $tsuser = new plagiarism_turnitinsim_user($student1->id);
 
         // Turnitinid should match reg ex.
         $format = "/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";

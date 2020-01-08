@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 
@@ -42,7 +43,7 @@ class workshop_test extends advanced_testcase {
         set_config('turnitinenablelogging', 0, 'plagiarism');
 
         // Set the features enabled
-        $featuresenabled = file_get_contents(__DIR__ . '/../../fixtures/get_features_enabled_success.json');
+        $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
 
         $this->student1 = $this->getDataGenerator()->create_user();

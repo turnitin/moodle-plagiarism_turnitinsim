@@ -24,7 +24,7 @@
 
 require_once(__DIR__.'/../../config.php');
 require_once(__DIR__.'/lib.php');
-require_once(__DIR__.'/classes/tsrequest.class.php');
+require_once(__DIR__.'/classes/request.class.php');
 
 $cmd = optional_param('cmd', 'eularedirect', PARAM_ALPHAEXT);
 
@@ -38,7 +38,7 @@ switch ($cmd) {
         }
 
         // Get EULA Link.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
         $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
 

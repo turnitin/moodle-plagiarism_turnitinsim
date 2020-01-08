@@ -27,7 +27,11 @@ defined('MOODLE_INTERNAL') || die();
 use plagiarism_turnitinsim\message\receipt_instructor;
 use plagiarism_turnitinsim\message\receipt_student;
 
-class tssubmission {
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
+
+class plagiarism_turnitinsim_submission {
 
     public $id;
     public $cm;
@@ -47,11 +51,11 @@ class tssubmission {
     public $errormessage;
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null, $id = null) {
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null, $id = null) {
         global $DB;
 
         $this->setid($id);
-        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
         $this->plagiarism_plugin_turnitinsim = new plagiarism_plugin_turnitinsim();
 
         if (!empty($id)) {
@@ -99,7 +103,7 @@ class tssubmission {
         $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
 
         // Create module object.
-        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         $duedate = $moduleobject->get_due_date($cm->instance);
@@ -172,7 +176,7 @@ class tssubmission {
         }
 
         // Create tsuser object so we get turnitin id.
-        $tsuser = new tsuser($user->id);
+        $tsuser = new plagiarism_turnitinsim_user($user->id);
 
         return array(
             'id' => $tsuser->get_turnitinid(),
@@ -259,11 +263,11 @@ class tssubmission {
      */
     public function get_owner() {
         if (!empty($this->getgroupid())) {
-            $tsgroup = new tsgroup($this->getgroupid());
+            $tsgroup = new plagiarism_turnitinsim_group($this->getgroupid());
             return $tsgroup->get_turnitinid();
         }
 
-        $tsauthor = new tsuser($this->getuserid());
+        $tsauthor = new plagiarism_turnitinsim_user($this->getuserid());
         return $tsauthor->get_turnitinid();
     }
 
@@ -272,7 +276,7 @@ class tssubmission {
      */
     public function create_submission_in_turnitin() {
 
-        $tssubmitter = new tsuser($this->getsubmitter());
+        $tssubmitter = new plagiarism_turnitinsim_user($this->getsubmitter());
         $filedetails = $this->get_file_details();
 
         // Initialise request with owner and submitter.
@@ -380,7 +384,7 @@ class tssubmission {
             $cm = get_coursemodule_from_id('', $this->getcm());
 
             // Create module object.
-            $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             // Add text content to request.
@@ -495,7 +499,7 @@ class tssubmission {
         $cm = get_coursemodule_from_id('', $this->getcm());
 
         // Create module helper object.
-        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Configure request body array.
@@ -689,7 +693,7 @@ class tssubmission {
 
         // Build request.
         $lang = $this->tsrequest->get_language();
-        $viewinguser = new tsuser($USER->id);
+        $viewinguser = new plagiarism_turnitinsim_user($USER->id);
         $request = array(
             "locale" => $lang->langcode,
             "viewer_user_id" => $viewinguser->get_turnitinid()

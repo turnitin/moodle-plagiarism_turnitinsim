@@ -26,11 +26,11 @@ use plagiarism_turnitinsim\message\get_webhook_failure;
 
 defined('MOODLE_INTERNAL') || die();
 
-class tscallback {
+class plagiarism_turnitinsim_callback {
 
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null ) {
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = $tsrequest;
     }
 

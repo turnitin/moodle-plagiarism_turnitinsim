@@ -26,9 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir."/formslib.php");
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tstask.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 
-class tssetupform extends moodleform {
+class plagiarism_turnitinsim_setup_form extends moodleform {
 
     // Define the form.
     public function definition() {
@@ -191,7 +191,7 @@ class tssetupform extends moodleform {
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
         if (empty($features)) {
             try {
-                $tstask = new tstask();
+                $tstask = new plagiarism_turnitinsim_task();
                 $tstask->check_enabled_features();
             } catch (Exception $e) {
                 // Gracefully handle error - do nothing.

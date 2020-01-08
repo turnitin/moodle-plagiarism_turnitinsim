@@ -27,7 +27,7 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 // Require classes.
-require_once(__DIR__ . '/classes/forms/tssetupform.class.php');
+require_once(__DIR__ . '/classes/setup_form.class.php');
 
 // Restrict access to admins only.
 require_login();

@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 /**
  * Get report Scores from Turnitin.
  */
-class tsrequest {
+class plagiarism_turnitinsim_request {
 
     public $headers;
     public $apiurl;
@@ -47,7 +47,7 @@ class tsrequest {
 
             $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
             $this->set_apikey($pluginconfig->turnitinapikey);
-            $this->logger = ($pluginconfig->turnitinenablelogging) ? new tslogger() : false;
+            $this->logger = ($pluginconfig->turnitinenablelogging) ? new plagiarism_turnitinsim_logger() : false;
 
             $this->set_headers();
         }

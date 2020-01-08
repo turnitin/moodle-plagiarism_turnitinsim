@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 use Katzgrau\KLogger;
 
-class tslogger extends Katzgrau\KLogger\Logger {
+class plagiarism_turnitinsim_logger extends Katzgrau\KLogger\Logger {
 
     const LOG_DIR = '/turnitinsim/logs/';
     const KEEPLOGS = 10;

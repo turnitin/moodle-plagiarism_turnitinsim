@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tstask.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/task.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tstask.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 
 /**
  * Tests for TurnitinSim user class.
@@ -59,7 +59,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock settings class and get_enabled_features method.
-        $tssettings = $this->getMockBuilder(tssettings::class)
+        $tssettings = $this->getMockBuilder(plagiarism_turnitinsim_settings::class)
             ->setMethods(['get_enabled_features'])
             ->getMock();
 
@@ -73,7 +73,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
         $params = new stdClass();
         $params->tssettings = $tssettings;
-        $tstask = new tstask($params);
+        $tstask = new plagiarism_turnitinsim_task($params);
         $this->assertTrue($tstask->admin_update());
     }
 
@@ -84,7 +84,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API callback request class and send call.
-        $tscallback = $this->getMockBuilder(tscallback::class)
+        $tscallback = $this->getMockBuilder(plagiarism_turnitinsim_callback::class)
             ->setMethods(['create_webhook'])
             ->getMock();
 
@@ -95,7 +95,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
         $params = new stdClass();
         $params->tscallback = $tscallback;
-        $tstask = new tstask($params);
+        $tstask = new plagiarism_turnitinsim_task($params);
         $this->assertTrue($tstask->test_webhook());
     }
 
@@ -110,7 +110,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
 
         // Mock API eula request class and get latest version call.
-        $tseula = $this->getMockBuilder(tseula::class)
+        $tseula = $this->getMockBuilder(plagiarism_turnitinsim_eula::class)
             ->setMethods(['get_latest_version'])
             ->getMock();
 
@@ -124,7 +124,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
         $params = new stdClass();
         $params->tseula = $tseula;
-        $tstask = new tstask($params);
+        $tstask = new plagiarism_turnitinsim_task($params);
         $this->assertTrue($tstask->check_latest_eula_version());
 
         // Check version and url are set in config.
@@ -142,7 +142,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock settings class and get_enabled_features method.
-        $tssettings = $this->getMockBuilder(tssettings::class)
+        $tssettings = $this->getMockBuilder(plagiarism_turnitinsim_settings::class)
             ->setMethods(['get_enabled_features'])
             ->getMock();
 
@@ -156,7 +156,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
         $params = new stdClass();
         $params->tssettings = $tssettings;
-        $tstask = new tstask($params);
+        $tstask = new plagiarism_turnitinsim_task($params);
         $this->assertTrue($tstask->check_enabled_features());
 
         // Check features were set in config.
@@ -169,7 +169,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
      */
     public function test_get_report_gen_score_and_request_delay() {
         $this->resetAfterTest();
-        $tstask = new tstask();
+        $tstask = new plagiarism_turnitinsim_task();
 
         // Verify that normal delays are returned.
         $this->assertEquals(TURNITINSIM_REPORT_GEN_SCORE_DELAY, $tstask->get_report_gen_score_delay());
@@ -191,7 +191,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         set_config('turnitinapiurl', '', 'plagiarism');
         set_config('turnitinapikey', '', 'plagiarism');
 
-        $tstask = new tstask();
+        $tstask = new plagiarism_turnitinsim_task();
         $this->assertFalse($tstask->run_task());
     }
 
@@ -205,7 +205,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
         set_config('turnitinapikey', '', 'plagiarism');
 
-        $tstask = new tstask();
+        $tstask = new plagiarism_turnitinsim_task();
         $this->assertFalse($tstask->run_task());
 
         // Set API Key but not URL.
@@ -225,7 +225,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         set_config('turnitinapiurl', 'test.com', 'plagiarism');
         set_config('turnitinapikey', '123456', 'plagiarism');
 
-        $tstask = new tstask();
+        $tstask = new plagiarism_turnitinsim_task();
         $this->assertTrue($tstask->run_task());
     }
 }

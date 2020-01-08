@@ -35,7 +35,7 @@ if (!confirm_sesskey()) {
 $action = required_param('action', PARAM_ALPHAEXT);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 
-$tsrequest = new tsrequest();
+$tsrequest = new plagiarism_turnitinsim_request();
 
 switch ($action) {
     case "accept_eula":

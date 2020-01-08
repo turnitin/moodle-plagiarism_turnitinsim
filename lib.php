@@ -29,14 +29,14 @@ if (!defined('MOODLE_INTERNAL')) {
 // Get global class.
 require_once( $CFG->dirroot . '/plagiarism/lib.php' );
 require_once( __DIR__ . '/utilities/constants.php' );
-require_once( __DIR__ . '/classes/tssettings.class.php' );
-require_once( __DIR__ . '/classes/tssubmission.class.php' );
-require_once( __DIR__ . '/classes/tsuser.class.php' );
-require_once( __DIR__ . '/classes/tsgroup.class.php' );
-require_once( __DIR__ . '/classes/tsrequest.class.php' );
-require_once( __DIR__ . '/classes/tslogger.class.php' );
-require_once( __DIR__ . '/classes/tseula.class.php' );
-require_once( __DIR__ . '/classes/tstask.class.php' );
+require_once( __DIR__ . '/classes/settings.class.php' );
+require_once( __DIR__ . '/classes/submission.class.php' );
+require_once( __DIR__ . '/classes/user.class.php' );
+require_once( __DIR__ . '/classes/group.class.php' );
+require_once( __DIR__ . '/classes/request.class.php' );
+require_once( __DIR__ . '/classes/logger.class.php' );
+require_once( __DIR__ . '/classes/eula.class.php' );
+require_once( __DIR__ . '/classes/task.class.php' );
 
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
@@ -54,7 +54,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         $location = ($context == context_system::instance()) ? 'defaults' : 'module';
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->add_settings_to_module($mform, $location, $modulename);
 
         if ($modsettings = $this->get_settings( $cmid )) {
@@ -99,7 +99,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             return;
         }
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
     }
 
@@ -142,7 +142,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Check if the logged in user is an instructor.
@@ -163,7 +163,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $showresubmitlink = false;
 
             // Get turnitin submission details.
-            $plagiarismfile = tssubmission::get_submission_details($linkarray);
+            $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
             // The links for forum posts get shown to all users.
             // Return if the logged in user shouldn't see OR scores. E.g. forum posts.
@@ -173,7 +173,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             // Render the OR score or current submission status.
             if ($plagiarismfile) {
-                $submission = new tssubmission(new tsrequest(), $plagiarismfile->id);
+                $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
 
                 switch ($submission->getstatus()) {
                     case TURNITINSIM_SUBMISSION_STATUS_QUEUED:
@@ -204,7 +204,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
                         // Allow a modal to be launched with a EULA link and ability to accept.
-                        $tsrequest = new tsrequest();
+                        $tsrequest = new plagiarism_turnitinsim_request();
                         $lang = $tsrequest->get_language();
                         $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
@@ -363,13 +363,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Overwrite mtrace so when EULA is checked it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
         if (empty($eulaversion)) {
-            $tstask = new tstask();
+            $tstask = new plagiarism_turnitinsim_task();
             $tstask->check_latest_eula_version();
             $eulaversion = get_config('plagiarism', 'turnitin_eula_version');
         }
 
         // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
-        $user = new tsuser($USER->id);
+        $user = new plagiarism_turnitinsim_user($USER->id);
         $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
         if ($user->get_lasteulaaccepted() == $eulaversion || !(bool)$features->tenant->require_eula) {
             return '';
@@ -381,7 +381,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eula_response');
 
         // Link to open the Turnitin EULA in a new tab.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
         $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
         $eulastring = ($cmid > -1) ? 'eulalink' : 'eulalinkgeneric';
@@ -474,13 +474,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Set the author, submitter and group (if applicable).
         $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
-        $submitter = new tsuser($eventdata['userid']);
+        $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Get the item ID.
         $itemid = (!empty($eventdata['objectid'])) ? $eventdata['objectid'] : null;
@@ -495,7 +495,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             );
 
             foreach ($submissions as $submission) {
-                $tssubmission = new tssubmission(new tsrequest(), $submission->id);
+                $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $submission->id);
 
                 $statusarray = array(
                     TURNITINSIM_SUBMISSION_STATUS_NOT_SENT,
@@ -520,7 +520,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Queue files to submit to Turnitin.
         if (!empty($eventdata['other']['pathnamehashes'])) {
             foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
-                $tssubmission = new tssubmission(new tsrequest());
+                $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
                 $tssubmission->setcm($cm->id);
                 $tssubmission->setuserid($author);
                 $tssubmission->setgroupid($groupid);
@@ -595,7 +595,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Queue text content to submit to Turnitin.
         if (!empty($eventdata['other']['content'])) {
-            $tssubmission = new tssubmission(new tsrequest());
+            $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
             $tssubmission->setcm($cm->id);
             $tssubmission->setuserid($author);
             $tssubmission->setgroupid($groupid);
@@ -652,7 +652,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if ($module->reportgeneration != TURNITINSIM_REPORT_GEN_IMMEDIATE) {
 
             // Create module object and get due date.
-            $moduleclass = 'plagiarism_turnitin_'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             $duedate = $moduleobject->get_due_date($cm->instance);

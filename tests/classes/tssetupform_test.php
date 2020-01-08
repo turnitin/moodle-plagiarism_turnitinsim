@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/forms/tssetupform.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/setup_form.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tssetupform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
 
 /**
  * Tests for settings form.
@@ -59,7 +59,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $data->permissionoptions['turnitinviewersavechanges'] = self::TURNITINSIM_ENABLED;
 
         // Save Module Settings.
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $form->save($data);
 
         // Check settings have been saved.
@@ -85,7 +85,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Save Module Settings with empty data object.
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $data = new stdClass();
         $form->save($data);
 
@@ -109,7 +109,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
      * Test that display outputs an HTML form.
      */
     public function test_display() {
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display();
 
         $this->assertContains('</form>', $output);
@@ -122,7 +122,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
      * Test that displayed features returns empty output if the plugin is not configured.
      */
     public function test_display_features_not_configured() {
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display_features();
 
         $this->assertEmpty($output);
@@ -140,14 +140,14 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $data->turnitinapikey = self::TEST_API_KEY;
 
         // Save Module Settings.
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $form->save($data);
 
         // Get features enabled in config.
-        $featuresenabled = file_get_contents(__DIR__ . '/../../fixtures/get_features_enabled_success.json');
+        $featuresenabled = file_get_contents(__DIR__.'/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
 
-        $form = new tssetupform();
+        $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display_features();
 
         $this->assertContains(get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'), $output);

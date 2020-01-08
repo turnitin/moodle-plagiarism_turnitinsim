@@ -27,24 +27,24 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php');
 
 use plagiarism_turnitinsim\message\new_eula;
 
 /**
  * Scheduled tasks.
  */
-class tstask {
+class plagiarism_turnitinsim_task {
 
     public $tsrequest;
     public $tscallback;
     public $tssettings;
 
     public function __construct( $params = null ) {
-        $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new tsrequest();
-        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new tscallback($this->tsrequest);
-        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new tssettings($this->tsrequest);
-        $this->tseula = (!empty($params->tseula)) ? $params->tseula : new tseula();
+        $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new plagiarism_turnitinsim_request();
+        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
+        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
+        $this->tseula = (!empty($params->tseula)) ? $params->tseula : new plagiarism_turnitinsim_eula();
     }
 
     /**
@@ -63,7 +63,7 @@ class tstask {
         // Create webhook if necessary.
         $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
         if (empty($webhookid)) {
-            $this->tscallback = new tscallback($this->tsrequest);
+            $this->tscallback = new plagiarism_turnitinsim_callback($this->tsrequest);
             $this->tscallback->create_webhook();
         }
 
@@ -78,7 +78,7 @@ class tstask {
             // Reset headers.
             $this->tsrequest->set_headers();
 
-            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
+            $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
@@ -121,7 +121,7 @@ class tstask {
         $count = 0;
         foreach ($submissions as $submission) {
 
-            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
+            $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             // Request Originality Report to be generated if it hasn't already, this should have been done by the
             // webhook callback so ignore anything submitted to Turnitin in the 2 minutes.

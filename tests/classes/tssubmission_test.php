@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tssubmission.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/submission.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -108,7 +108,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEmpty($submission);
 
         // Create new submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm(1);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -149,7 +149,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and check response.
@@ -164,12 +164,12 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and get Turnitin id.
         $userentry = $tssubmission->build_user_array_entry($this->student1);
-        $tsuser = new tsuser($this->student1->id);
+        $tsuser = new plagiarism_turnitinsim_user($this->student1->id);
 
         // Check user array returns correct details.
         $this->assertEquals($this->student1->lastname, $userentry['family_name']);
@@ -184,7 +184,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_create_group_metadata_no_cm() {
         $this->resetAfterTest();
 
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm(-1);
         $this->assertFalse($tssubmission->create_group_metadata());
     }
@@ -201,13 +201,13 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         groups_add_member($group->id, $this->student2->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setgroupid($group->id);
 
         // Build user entry and get Turnitin id.
         $owners = $tssubmission->create_owners_metadata();
-        $tsuser1 = new tsuser($this->student1->id);
-        $tsuser2 = new tsuser($this->student2->id);
+        $tsuser1 = new plagiarism_turnitinsim_user($this->student1->id);
+        $tsuser2 = new plagiarism_turnitinsim_user($this->student2->id);
 
         // Check user array returns correct details.
         $this->assertContains($this->student1->lastname, $owners[0]['family_name']);
@@ -228,12 +228,12 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
 
         // Build user entry and get Turnitin id.
         $owners = $tssubmission->create_owners_metadata();
-        $tsuser = new tsuser($this->student1->id);
+        $tsuser = new plagiarism_turnitinsim_user($this->student1->id);
 
         // Check user array returns correct details.
         $this->assertEquals($this->student1->lastname, $owners[0]['family_name']);
@@ -249,7 +249,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
 
         // Build user entry and get Turnitin id.
         $owners = $tssubmission->create_owners_metadata();
@@ -265,11 +265,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
 
         $owner = $tssubmission->get_owner();
-        $tsuser = new tsuser($this->student1->id);
+        $tsuser = new plagiarism_turnitinsim_user($this->student1->id);
 
         // Check owner is the user.
         $this->assertEquals($tsuser->get_turnitinid(), $owner);
@@ -285,12 +285,12 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setgroupid($group->id);
 
         // Build user entry and get Turnitin id.
         $owner = $tssubmission->get_owner();
-        $tsgroup = new tsgroup($group->id);
+        $tsgroup = new plagiarism_turnitinsim_group($group->id);
 
         // Check owner is the group.
         $this->assertEquals($tsgroup->get_turnitinid(), $owner);
@@ -312,7 +312,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         $metadata = $tssubmission->create_group_metadata();
@@ -328,7 +328,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Verify instructor is in metadata.
         $instructor = $DB->get_record('user', array('id' => $this->instructor->id));
-        $instructor->tsdetails = new tsuser($this->instructor->id);
+        $instructor->tsdetails = new plagiarism_turnitinsim_user($this->instructor->id);
 
         $this->assertEquals($metadata['group_context']['owners'][0]['id'], $instructor->tsdetails->get_turnitinid());
         $this->assertEquals($metadata['group_context']['owners'][0]['family_name'], $instructor->lastname);
@@ -342,7 +342,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_get_file_details_with_non_existent_file() {
         $this->resetAfterTest();
 
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setidentifier('HASH FOR FILE THAT WONT EXIST');
 
         $this->assertFalse($tssubmission->get_file_details());
@@ -360,7 +360,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
-        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setidentifier($file->get_pathnamehash());
 
         $file = $tssubmission->get_file_details();
@@ -377,7 +377,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $response = file_get_contents(__DIR__ . '/../fixtures/create_submission_success.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
@@ -394,7 +394,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm(1);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -415,7 +415,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $response = file_get_contents(__DIR__ . '/../fixtures/create_submission_success.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
@@ -454,7 +454,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $plugin->save($submission, $data);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -477,7 +477,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $uploadresponse = file_get_contents(__DIR__ . '/../fixtures/upload_file_to_submission_success.json');
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -492,7 +492,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
             ->willReturn($uploadresponse);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -535,7 +535,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $jsonresponse = (array)json_decode($uploadresponse);
 
         // Mock API update submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -556,7 +556,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $file = create_test_file(0, $usercontext->id, 'user', 'draft');
 
         // Create submission object with status created and an invalid Turnitin Id to simulate a not found error.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm(1);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -583,7 +583,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $uploadresponse = file_get_contents(__DIR__ . '/../fixtures/upload_file_to_submission_success.json');
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -598,7 +598,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
             ->willReturn($uploadresponse);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -655,7 +655,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $reportgenresponse = file_get_contents(__DIR__ . '/../fixtures/request_report_generation_success.json');
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -700,11 +700,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $data->checkprivate = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -732,7 +732,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -775,11 +775,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -809,7 +809,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -852,11 +852,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -885,7 +885,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->getMock();
 
@@ -928,11 +928,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create submission object.
-        $tssubmission = new tssubmission($tsrequest);
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -996,7 +996,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1006,7 +1006,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->userid, $this->student1->id);
         $this->assertEquals($result->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
@@ -1064,7 +1064,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         );
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->userid, $this->student1->id);
         $this->assertEquals($result->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
@@ -1118,7 +1118,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1128,7 +1128,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
@@ -1187,7 +1187,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1197,7 +1197,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
@@ -1208,7 +1208,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertEquals($result->generation_time, $duedate);
@@ -1265,7 +1265,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission(new tsrequest());
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1275,7 +1275,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertEquals($result->generation_time, $duedate);
@@ -1292,7 +1292,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Compare submission details.
-        $result = tssubmission::get_submission_details($linkarray);
+        $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
         $this->assertEquals($result->to_generate, 1);
         $this->assertLessThanOrEqual($result->generation_time, time());
@@ -1317,7 +1317,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $this->course);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
 
@@ -1346,7 +1346,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $this->course);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
 
@@ -1380,7 +1380,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         // Test that the submission is anonymous if hide identities is on.
@@ -1404,7 +1404,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         // Test that the submission is anonymous if hide identities is on.
@@ -1429,7 +1429,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
@@ -1456,7 +1456,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are false as the config values are set to false.
@@ -1482,7 +1482,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         // Create submission object.
-        $tssubmission = new tssubmission();
+        $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
@@ -1509,7 +1509,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
          $cm = get_coursemodule_from_instance('assign', $module->id);
 
          // Create submission object.
-         $tssubmission = new tssubmission();
+         $tssubmission = new plagiarism_turnitinsim_submission();
          $tssubmission->setcm($cm->id);
 
          // Verify that viewer permissions are true as the config values are set to true.

@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tssetupform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
 
 /**
  * Tests for lib methods
@@ -83,7 +83,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         // Create tsuser entry for student1.
-        $this->student1ts = new tsuser($this->student1->id);
+        $this->student1ts = new plagiarism_turnitinsim_user($this->student1->id);
 
         // Enrol user on course.
         $this->getDataGenerator()->enrol_user($this->student1->id,
@@ -293,7 +293,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setcm($this->cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -503,7 +503,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->setUser($this->student1);
 
         // Get locale.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
         $eulaurl = $this->eulaurl."?lang=".$lang->localecode;
 
@@ -587,7 +587,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Use settings form method to save data for a module.
-        require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tssettings.class.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php');
 
         // Create data object for new assignment.
         $data = new stdClass();
@@ -595,7 +595,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -677,7 +677,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create dummy event data.
@@ -724,7 +724,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -796,7 +796,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -862,7 +862,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -939,7 +939,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1012,7 +1012,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1105,7 +1105,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1165,7 +1165,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log student1 in.
@@ -1241,7 +1241,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 0;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log student1 in.
@@ -1334,11 +1334,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->reportgenoptions['reportgeneration'] = TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create dummy turnitin submission.
-        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1357,7 +1357,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->plugin->module_updated($eventdata);
 
         // Check submission was updated.
-        $tssubmission = new tssubmission( new tsrequest(), $tssubmission->id );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $tssubmission->id );
         $this->assertEquals($duedate, $tssubmission->getgenerationtime());
         $this->assertEquals(1, $tssubmission->gettogenerate());
     }

@@ -37,7 +37,7 @@ if (!confirm_sesskey()) {
 
 switch ($action) {
     case "request_cv_launch":
-        $tssubmission = new tssubmission( new tsrequest(), $submissionid);
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submissionid);
         echo $tssubmission->request_cv_launch_url();
 
         break;

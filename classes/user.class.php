@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsuser {
+class plagiarism_turnitinsim_user {
 
     public $userid;
     public $turnitinid;

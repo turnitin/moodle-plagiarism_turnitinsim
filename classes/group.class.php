@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsgroup {
+class plagiarism_turnitinsim_group {
 
     public $groupid;
     public $turnitinid;
@@ -52,7 +52,7 @@ class tsgroup {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = generate_uuid();
+        $turnitinid = \core\uuid::generate();
 
         $group = new stdClass();
         $group->groupid = $this->get_groupid();
