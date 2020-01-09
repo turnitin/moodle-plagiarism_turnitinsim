@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
@@ -43,9 +44,9 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         global $CFG;
 
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
@@ -72,7 +73,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
@@ -98,7 +99,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback($tsrequest);
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
@@ -127,7 +128,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook should return false as the URL does not match the current site.
@@ -156,7 +157,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->get_webhook($mockwebhookid);
 
         // Test that the webhook should fail to retrieve as the URL does not match the current site.
@@ -184,14 +185,14 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Test that the webhook does not exist.
-        $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
+        $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
 
         // Create webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
         $tscallback->create_webhook();
 
         // Test that the webhook has not been created.
-        $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
+        $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
     }
 
     /**
@@ -216,7 +217,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         $tscallback->create_webhook();
 
         // Test that the webhook has not been created.
-        $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
+        $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
     }
 
     /**
@@ -241,14 +242,14 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Test that the webhook does not exist.
-        $this->assertFalse(get_config('plagiarism', 'turnitin_webhook_id'));
+        $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
 
         // Create webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
         $tscallback->create_webhook();
 
         // Test that the webhook is created.
-        $this->assertEquals($jsonresponse["id"], get_config('plagiarism', 'turnitin_webhook_id'));
+        $this->assertEquals($jsonresponse["id"], get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
     }
 
     /**
@@ -273,7 +274,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Delete webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook has not been deleted.
@@ -299,7 +300,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Delete webhook.
         $tscallback = new plagiarism_turnitinsim_callback($tsrequest);
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook has not been deleted.
@@ -328,7 +329,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Delete webhook.
         $tscallback = new plagiarism_turnitinsim_callback($tsrequest);
-        $mockwebhookid = \core\uuid::generate();
+        $mockwebhookid = (new handle_deprecation)->create_uuid();
         $result = $tscallback->delete_webhook($mockwebhookid);
 
         // Test that the webhook is deleted.

@@ -45,17 +45,17 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         global $CFG, $DB;
 
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         // Set webhook details so tests don't create one.
-        set_config('turnitin_webhook_id', 1, 'plagiarism');
-        set_config('turnitin_webhook_secret', 'secret', 'plagiarism');
+        set_config('turnitin_webhook_id', 1, 'plagiarism_turnitinsim');
+        set_config('turnitin_webhook_secret', 'secret', 'plagiarism_turnitinsim');
 
         // Set features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Overwrite mtrace.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
@@ -970,7 +970,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
@@ -1034,7 +1034,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
@@ -1092,7 +1092,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINSIM_REPORT_GEN_IMMEDIATE);
@@ -1160,7 +1160,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1,
@@ -1239,7 +1239,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINSIM_REPORT_GEN_DUEDATE);
@@ -1369,7 +1369,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_is_submission_anonymous_hide_identities_on() {
         $this->resetAfterTest();
 
-        set_config('turnitinhideidentity', 1, 'plagiarism');
+        set_config('turnitinhideidentity', 1, 'plagiarism_turnitinsim');
 
         // Create assign module.
         $record = new stdClass();
@@ -1393,7 +1393,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_is_submission_anonymous_hide_identities_off() {
         $this->resetAfterTest();
 
-        set_config('turnitinhideidentity', 0, 'plagiarism');
+        set_config('turnitinhideidentity', 0, 'plagiarism_turnitinsim');
 
         // Create assign module.
         $record = new stdClass();
@@ -1417,8 +1417,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_viewer_permissions_are_true_if_enabled() {
         $this->resetAfterTest();
 
-        set_config('turnitinviewerviewfullsource', 1, 'plagiarism');
-        set_config('turnitinviewermatchsubinfo', 1, 'plagiarism');
+        set_config('turnitinviewerviewfullsource', 1, 'plagiarism_turnitinsim');
+        set_config('turnitinviewermatchsubinfo', 1, 'plagiarism_turnitinsim');
 
         // Create assign module.
         $record = new stdClass();
@@ -1444,8 +1444,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_viewer_permissions_false_if_not_enabled() {
         $this->resetAfterTest();
 
-        set_config('turnitinviewerviewfullsource', 0, 'plagiarism');
-        set_config('turnitinviewermatchsubinfo', 0, 'plagiarism');
+        set_config('turnitinviewerviewfullsource', 0, 'plagiarism_turnitinsim');
+        set_config('turnitinviewermatchsubinfo', 0, 'plagiarism_turnitinsim');
 
         // Create assign module.
         $record = new stdClass();
@@ -1471,7 +1471,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_similarity_overrides_are_true() {
         $this->resetAfterTest();
 
-        set_config('turnitinviewersavechanges', 1, 'plagiarism');
+        set_config('turnitinviewersavechanges', 1, 'plagiarism_turnitinsim');
 
         // Create assign module.
         $record = new stdClass();
@@ -1498,7 +1498,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
      public function test_similarity_overrides_are_false() {
          $this->resetAfterTest();
 
-         set_config('turnitinviewersavechanges', 0, 'plagiarism');
+         set_config('turnitinviewersavechanges', 0, 'plagiarism_turnitinsim');
 
          // Create assign module.
          $record = new stdClass();

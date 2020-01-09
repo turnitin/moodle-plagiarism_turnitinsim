@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+
 class plagiarism_turnitinsim_user {
 
     public $userid;
@@ -59,7 +61,7 @@ class plagiarism_turnitinsim_user {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = \core\uuid::generate();
+        $turnitinid = (new handle_deprecation)->create_uuid();
 
         $user = new stdClass();
         $user->userid = $this->get_userid();

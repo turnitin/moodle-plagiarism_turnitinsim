@@ -39,9 +39,9 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
      */
     public function setup() {
         // Set API details in config.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
     }
 
     /**

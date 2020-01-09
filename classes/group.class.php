@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+
 class plagiarism_turnitinsim_group {
 
     public $groupid;
@@ -50,9 +52,9 @@ class plagiarism_turnitinsim_group {
      * Create a Turnitin id and save it for this user.
      */
     public function create_turnitinid() {
-        global $DB;
+        global $CFG, $DB;
 
-        $turnitinid = \core\uuid::generate();
+        $turnitinid = (new handle_deprecation)->create_uuid();
 
         $group = new stdClass();
         $group->groupid = $this->get_groupid();

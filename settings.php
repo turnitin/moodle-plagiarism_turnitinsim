@@ -65,7 +65,7 @@ ob_end_clean();
 $output .= $tssetupform->display_features();
 
 // Display plugin settings form with saved configuration.
-$pluginconfig = get_config('plagiarism');
+$pluginconfig = get_config('plagiarism_turnitinsim');
 
 // Some settings are grouped in an array format so we need to set these manually first.
 $pluginconfig->permissionoptions['turnitinviewerviewfullsource'] = (!empty($pluginconfig->turnitinviewerviewfullsource)) ? 1 : 0;

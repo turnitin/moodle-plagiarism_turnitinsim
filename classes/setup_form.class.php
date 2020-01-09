@@ -159,16 +159,16 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         $mods = core_component::get_plugin_list('mod');
         foreach ($mods as $mod => $modpath) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                set_config('turnitinmodenabled'.$mod, ${ "turnitinmodenabled" . "$mod" }, 'plagiarism');
+                set_config('turnitinmodenabled'.$mod, ${ "turnitinmodenabled" . "$mod" }, 'plagiarism_turnitinsim');
             }
         }
-        set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism');
-        set_config('turnitinapikey', $turnitinapikey, 'plagiarism');
-        set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism');
-        set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism');
-        set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism');
-        set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism');
-        set_config('turnitinviewersavechanges', $turnitinviewersavechanges, 'plagiarism');
+        set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', $turnitinapikey, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism_turnitinsim');
+        set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism_turnitinsim');
+        set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism_turnitinsim');
+        set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism_turnitinsim');
+        set_config('turnitinviewersavechanges', $turnitinviewersavechanges, 'plagiarism_turnitinsim');
     }
 
     /**
@@ -178,14 +178,14 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         global $CFG, $OUTPUT;
 
         // Only display features if plugin is configured.
-        $turnitinapiurl = get_config('plagiarism', 'turnitinapiurl');
-        $turnitinapikey = get_config('plagiarism', 'turnitinapikey');
+        $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
+        $turnitinapikey = get_config('plagiarism_turnitinsim', 'turnitinapikey');
         if (empty($turnitinapiurl) && empty($turnitinapikey)) {
             return;
         }
 
         // Check that we have features enabled stored locally.
-        $features = get_config('plagiarism', 'turnitin_features_enabled');
+        $features = get_config('plagiarism_turnitinsim', 'turnitin_features_enabled');
 
         // If we don't then retrieve them and overwrite mtrace so it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
@@ -196,7 +196,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
             } catch (Exception $e) {
                 // Gracefully handle error - do nothing.
             }
-            $features = get_config('plagiarism', 'turnitin_features_enabled');
+            $features = get_config('plagiarism_turnitinsim', 'turnitin_features_enabled');
         }
 
         // Display some of the features available from Turnitin and whether they are enabled.

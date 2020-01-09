@@ -56,13 +56,13 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         global $DB;
 
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_success.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Init. plugin class.
         $this->plugin = new plagiarism_plugin_turnitinsim();
@@ -106,9 +106,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         accesslib_clear_all_caches_for_unit_testing();
 
         // Set EULA data.
-        set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism');
-        set_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
-        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism_turnitinsim');
+        set_config('plagiarism_turnitinsim', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        $this->eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
     }
 
     /**
@@ -135,7 +135,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         $plugin->save_form_elements($data);
 
@@ -155,7 +155,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1);
@@ -184,7 +184,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 0);
@@ -217,7 +217,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
@@ -266,7 +266,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
@@ -405,7 +405,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as not enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_active($this->cm));
@@ -419,7 +419,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Disable plugin for module.
         $data = new stdClass();
@@ -440,8 +440,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set plugin as not enabled in config for this module type.
-        set_config('turnitinapiurl', '', 'plagiarism');
-        set_config('turnitinapikey', '', 'plagiarism');
+        set_config('turnitinapiurl', '', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
@@ -454,15 +454,15 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set API URL but not Key.
-        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
-        set_config('turnitinapikey', '', 'plagiarism');
+        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
 
         // Set API Key but not URL.
-        set_config('turnitinapiurl', '', 'plagiarism');
-        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism');
+        set_config('turnitinapiurl', '', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism_turnitinsim');
 
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
     }
@@ -474,8 +474,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set plugin as not enabled in config for this module type.
-        set_config('turnitinapiurl', 'test.com', 'plagiarism');
-        set_config('turnitinapikey', '123456', 'plagiarism');
+        set_config('turnitinapiurl', 'test.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '123456', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertTrue($plagiarismturnitinsim->is_plugin_configured($this->cm));
@@ -489,7 +489,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -525,7 +525,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -556,11 +556,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -648,7 +648,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 0, 'plagiarism');
-        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism_turnitinsim');
 
         // Handler should always return true despite plugin not being enabled.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -669,7 +669,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -716,7 +716,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -784,11 +784,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -848,7 +848,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Create group.
         $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
@@ -931,7 +931,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1004,7 +1004,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1097,7 +1097,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1157,7 +1157,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1233,7 +1233,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();

@@ -46,7 +46,7 @@ $params = (object)json_decode($requeststring, true);
 // Generate expected secret.
 $expectedsecret = $tscallback->expected_callback_signature($requeststring);
 
-$pluginconfig = get_config('plagiarism');
+$pluginconfig = get_config('plagiarism_turnitinsim');
 
 // Log out webhook request.
 if ($pluginconfig->turnitinenablelogging) {

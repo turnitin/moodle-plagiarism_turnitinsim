@@ -40,7 +40,7 @@ switch ($cmd) {
         // Get EULA Link.
         $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
-        $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
         header('Location: '.$eulaurl);
         exit;

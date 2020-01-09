@@ -303,7 +303,7 @@ class plagiarism_turnitinsim_submission {
         $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language;
 
         // Get the features enabled so we can check if EULAis required for this tenant.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
 
         // Include EULA metadata if necessary.
         if (!empty($tssubmitter->get_lasteulaaccepted()) || !(bool)$features->tenant->require_eula) {
@@ -513,7 +513,7 @@ class plagiarism_turnitinsim_submission {
 
         // Generation Settings.
         // Configure repositories to search.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         $searchrepositories = $features->similarity->generation_settings->search_repositories;
         $request['generation_settings'] = array('search_repositories' => $searchrepositories);
         $request['generation_settings']['auto_exclude_self_matching_scope'] = TURNITINSIM_REPORT_GEN_EXCLUDE_SELF_GROUP;
@@ -649,9 +649,9 @@ class plagiarism_turnitinsim_submission {
      * @return array
      */
     public function create_report_viewer_permissions() {
-        $turnitinviewerviewfullsource = get_config('plagiarism', 'turnitinviewerviewfullsource');
-        $turnitinviewermatchsubinfo = get_config('plagiarism', 'turnitinviewermatchsubinfo');
-        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
+        $turnitinviewerviewfullsource = get_config('plagiarism_turnitinsim', 'turnitinviewerviewfullsource');
+        $turnitinviewermatchsubinfo = get_config('plagiarism_turnitinsim', 'turnitinviewermatchsubinfo');
+        $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
@@ -668,7 +668,7 @@ class plagiarism_turnitinsim_submission {
      * @return array
      */
     public function create_similarity_overrides() {
-        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
+        $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
             'modes' => array(
@@ -747,7 +747,7 @@ class plagiarism_turnitinsim_submission {
         $identitiesrevealed = !empty($moduledata->revealidentities);
 
         // Return true if hide identities is on, otherwise go by module blind marking settings.
-        $turnitinhideidentity = get_config('plagiarism', 'turnitinhideidentity');
+        $turnitinhideidentity = get_config('plagiarism_turnitinsim', 'turnitinhideidentity');
         if ($turnitinhideidentity) {
             $anon = true;
         } else {

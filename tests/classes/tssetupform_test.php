@@ -63,9 +63,10 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $form->save($data);
 
         // Check settings have been saved.
-        $settings = get_config('plagiarism');
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        $settings = get_config('plagiarism_turnitinsim');
 
-        $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinsim_use);
+        $this->assertEquals(self::TURNITINSIM_ENABLED, $turnitinsimuse);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinmodenabledassign);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinmodenabledforum);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinmodenabledworkshop);
@@ -90,9 +91,10 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $form->save($data);
 
         // Check settings have been saved.
-        $settings = get_config('plagiarism');
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        $settings = get_config('plagiarism_turnitinsim');
 
-        $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinsim_use);
+        $this->assertEquals(self::TURNITINSIM_DISABLED, $turnitinsimuse);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinmodenabledassign);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinmodenabledforum);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinmodenabledworkshop);
@@ -145,7 +147,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
 
         // Get features enabled in config.
         $featuresenabled = file_get_contents(__DIR__.'/../fixtures/get_features_enabled_success.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display_features();

@@ -43,7 +43,7 @@ class plagiarism_turnitinsim_request {
         // Only set attributes if plugin is configured
         $plugin = new plagiarism_plugin_turnitinsim();
         if ($plugin->is_plugin_configured()) {
-            $pluginconfig = get_config('plagiarism');
+            $pluginconfig = get_config('plagiarism_turnitinsim');
 
             $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
             $this->set_apikey($pluginconfig->turnitinapikey);
