@@ -52,7 +52,7 @@ class plagiarism_turnitinsim_group {
      * Create a Turnitin id and save it for this user.
      */
     public function create_turnitinid() {
-        global $CFG, $DB;
+        global $DB;
 
         $turnitinid = (new handle_deprecation)->create_uuid();
 
