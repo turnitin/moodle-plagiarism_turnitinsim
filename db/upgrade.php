@@ -194,7 +194,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             set_config('turnitin_features_enabled', json_encode($features), 'plagiarism_turnitinsim');
         }
 
-        upgrade_plugin_savepoint(true, 2019112701, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2019121601, 'plagiarism', 'turnitinsim');
     }
 
     // This block will migrate the config namespace for the plugin to plagiarism_turnitinsim.
