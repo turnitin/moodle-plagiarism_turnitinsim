@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tssettings.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/settings.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tsdefaultsform.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tssettings.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/defaults_form.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php');
 
 /**
  * Tests for settings form.
@@ -42,9 +42,9 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         global $CFG;
 
         // Set API details in config.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         // Overwrite mtrace.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
@@ -70,7 +70,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         $data->accessoptions['accessstudents'] = 1;
 
         // Save Module Settings to test inserting.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Check settings have been saved.
@@ -89,7 +89,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         $data->excludeoptions['excludebiblio'] = 0;
 
         // Save Module Settings again.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Check settings have been saved.
@@ -109,7 +109,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_failure.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
@@ -120,7 +120,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Get Features enabled.
-        $tssettings = new tssettings( $tsrequest );
+        $tssettings = new plagiarism_turnitinsim_settings( $tsrequest );
         $result = $tssettings->get_enabled_features();
 
         // Test that the enabled features have not been retrieved.
@@ -134,7 +134,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
@@ -145,7 +145,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
             ->will($this->throwException(new Exception()));
 
         // Get Features enabled.
-        $tssettings = new tssettings($tsrequest);
+        $tssettings = new plagiarism_turnitinsim_settings($tsrequest);
         $result = $tssettings->get_enabled_features();
 
         // Test that the enabled features have not been retrieved.
@@ -162,7 +162,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
@@ -173,7 +173,7 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Get the latest EULA version.
-        $tssettings = new tssettings( $tsrequest );
+        $tssettings = new plagiarism_turnitinsim_settings( $tsrequest );
         $result = $tssettings->get_enabled_features();
 
         // Test that the latest EULA version has been retrieved.

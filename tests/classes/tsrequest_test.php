@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for plagiarism/turnitinsim/classes/tscallback.class.php.
+ * Unit tests for plagiarism/turnitinsim/classes/callback.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
@@ -41,9 +41,9 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
      */
     public function setup() {
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
     }
 
     /**
@@ -57,7 +57,7 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
         $responsefailure = file_get_contents(__DIR__ . '/../fixtures/get_webhook_failure.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
@@ -93,7 +93,7 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
         // Test that a supported language is returned.
         $SESSION->lang = 'de';
 
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
         $this->assertEquals('de', $lang->langcode);
         $this->assertEquals('de-DE', $lang->localecode);

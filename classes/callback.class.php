@@ -26,11 +26,11 @@ use plagiarism_turnitinsim\message\get_webhook_failure;
 
 defined('MOODLE_INTERNAL') || die();
 
-class tscallback {
+class plagiarism_turnitinsim_callback {
 
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null ) {
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = $tsrequest;
     }
 
@@ -124,8 +124,10 @@ class tscallback {
 
             // Print message if creating in cron.
             if ($responsedata->httpstatus == TURNITINSIM_HTTP_CREATED) {
-                set_config('turnitin_webhook_id', $responsedata->id, 'plagiarism');
-                set_config('turnitin_webhook_secret', $secret, 'plagiarism');
+                if (isset($responsedata->id)) {
+                    set_config('turnitin_webhook_id', $responsedata->id, 'plagiarism_turnitinsim');
+                }
+                set_config('turnitin_webhook_secret', $secret, 'plagiarism_turnitinsim');
 
                 mtrace(get_string('taskoutputwebhookcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
             } else {
@@ -141,7 +143,7 @@ class tscallback {
      * Handle callbacks from Turnitin.
      */
     public function expected_callback_signature($requeststr) {
-        $secret = get_config('plagiarism', 'turnitin_webhook_secret');
+        $secret = get_config('plagiarism_turnitinsim', 'turnitin_webhook_secret');
         $sig = hash_hmac('sha256', $requeststr, base64_decode($secret));
 
         return $sig;

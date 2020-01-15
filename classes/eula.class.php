@@ -24,12 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tseula {
+class plagiarism_turnitinsim_eula {
 
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null ) {
-        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }
 
     /**

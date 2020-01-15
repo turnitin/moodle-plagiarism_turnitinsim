@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tseula.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/eula.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
@@ -42,9 +42,9 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
         global $CFG;
 
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }
@@ -59,7 +59,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_failure.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
@@ -70,7 +70,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Get latest EULA version.
-        $tseula = new tseula( $tsrequest );
+        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
         $result = $tseula->get_latest_version();
 
         // Test that the EULA version has not been retrieved.
@@ -84,7 +84,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
@@ -95,7 +95,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
             ->will($this->throwException(new Exception()));
 
         // Get the latest EULA version.
-        $tseula = new tseula($tsrequest);
+        $tseula = new plagiarism_turnitinsim_eula($tsrequest);
         $result = $tseula->get_latest_version();
 
         // Test that the latest EULA version has not been retrieved.
@@ -112,7 +112,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
         $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
 
         // Mock API request class.
-        $tsrequest = $this->getMockBuilder(tsrequest::class)
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
             ->setMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
@@ -123,7 +123,7 @@ class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
             ->willReturn($response);
 
         // Get the latest EULA version.
-        $tseula = new tseula( $tsrequest );
+        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
         $result = $tseula->get_latest_version();
 
         // Test that the latest EULA version has been retrieved.

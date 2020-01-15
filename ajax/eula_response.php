@@ -35,7 +35,7 @@ if (!confirm_sesskey()) {
 $action = required_param('action', PARAM_ALPHAEXT);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 
-$tsrequest = new tsrequest();
+$tsrequest = new plagiarism_turnitinsim_request();
 
 switch ($action) {
     case "accept_eula":
@@ -45,7 +45,7 @@ switch ($action) {
         // Update EULA accepted version and timestamp for user.
         $data = new stdClass();
         $data->id = $user->id;
-        $data->lasteulaaccepted = get_config('plagiarism', 'turnitin_eula_version');
+        $data->lasteulaaccepted = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
         $data->lasteulaacceptedtime = time();
         $lang = $tsrequest->get_language();
         $data->lasteulaacceptedlang = $lang->localecode;

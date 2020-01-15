@@ -24,8 +24,8 @@
 
 require_once(__DIR__."/../../../config.php");
 require_once(__DIR__."/../lib.php");
-require_once( __DIR__ . '/../classes/tssubmission.class.php' );
-require_once( __DIR__ . '/../classes/tsrequest.class.php' );
+require_once( __DIR__ . '/../classes/submission.class.php' );
+require_once( __DIR__ . '/../classes/request.class.php' );
 
 require_login();
 
@@ -39,7 +39,7 @@ switch ($action) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
 
-        $tssubmission = new tssubmission(new tsrequest(), $submissionid);
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $submissionid);
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->update();
 

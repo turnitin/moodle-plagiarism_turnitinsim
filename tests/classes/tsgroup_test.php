@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for (some of) plagiarism/turnitinsim/classes/tsgroup.class.php.
+ * Unit tests for (some of) plagiarism/turnitinsim/classes/group.class.php.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tsgroup.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/group.class.php');
 
 /**
  * Tests for TurnitinSim group class.
@@ -53,7 +53,7 @@ class plagiarism_turnitinsim_group_class_testcase extends advanced_testcase {
         groups_add_member($group, $this->student1);
 
         // Create new tsgroup which should create a Turnitin id.
-        $tsgroup = new tsgroup($group->id);
+        $tsgroup = new plagiarism_turnitinsim_group($group->id);
 
         // Turnitinid should match reg ex.
         $format = "/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";

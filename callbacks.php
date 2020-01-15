@@ -26,12 +26,12 @@
 require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once(__DIR__."/locallib.php");
-require_once(__DIR__."/classes/tscallback.class.php");
+require_once(__DIR__."/classes/callback.class.php");
 
 $PAGE->set_context(context_system::instance());
 
-$logger = new tslogger();
-$tscallback = new tscallback();
+$logger = new plagiarism_turnitinsim_logger();
+$tscallback = new plagiarism_turnitinsim_callback();
 
 // Get headers and body from request.
 $reqheaders = plagiarism_turnitinsim_get_request_headers();
@@ -46,7 +46,7 @@ $params = (object)json_decode($requeststring, true);
 // Generate expected secret.
 $expectedsecret = $tscallback->expected_callback_signature($requeststring);
 
-$pluginconfig = get_config('plagiarism');
+$pluginconfig = get_config('plagiarism_turnitinsim');
 
 // Log out webhook request.
 if ($pluginconfig->turnitinenablelogging) {
@@ -71,7 +71,7 @@ if ($expectedsecret !== $reqheaders['X-Turnitin-Signature']) {
 if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->id));
-    $tssubmission = new tssubmission( new tsrequest(), $submission->id );
+    $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
 
     // If webhook comes after submission response then no need to handle it.
     if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED) {
@@ -88,7 +88,7 @@ if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
 if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE || $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->submission_id));
-    $tssubmission = new tssubmission( new tsrequest(), $submission->id );
+    $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
 
     $tssubmission->handle_similarity_response($params);
 }

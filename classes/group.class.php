@@ -24,7 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsgroup {
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+
+class plagiarism_turnitinsim_group {
 
     public $groupid;
     public $turnitinid;
@@ -52,7 +54,7 @@ class tsgroup {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = generate_uuid();
+        $turnitinid = (new handle_deprecation)->create_uuid();
 
         $group = new stdClass();
         $group->groupid = $this->get_groupid();

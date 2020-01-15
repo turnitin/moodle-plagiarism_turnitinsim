@@ -40,7 +40,7 @@ switch ($action) {
             $apiurl = required_param('apiurl', PARAM_RAW);
             $apikey = required_param('apikey', PARAM_RAW);
 
-            $tsrequest = new tsrequest();
+            $tsrequest = new plagiarism_turnitinsim_request();
             echo $tsrequest->test_connection($apiurl, $apikey);
         }
 }

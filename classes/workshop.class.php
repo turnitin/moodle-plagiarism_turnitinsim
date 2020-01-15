@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper class for plagiarism_turnitinsim component in forums
+ * Helper class for plagiarism_turnitinsim component in workshops
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsforum {
+class plagiarism_turnitinsim_workshop {
 
     /**
      * Get the text from the database for the forum post.
@@ -35,25 +35,24 @@ class tsforum {
     public function get_onlinetext($itemid) {
         global $DB;
 
-        $forumpost = $DB->get_record('forum_posts', array('id' => $itemid), 'message');
-        return $forumpost->message;
+        $submission = $DB->get_record('workshop_submissions', array('id' => $itemid), 'content');
+
+        return $submission->content;
     }
 
     /**
-     * Get the item id from the database for this submission.
+     * Get the item id from the database for this submission when we have userid, moduleid and content.
      *
      * @param $params
-     * @return $postid
+     * @return mixed
      */
     public function get_itemid($params) {
         global $DB;
 
-        $item = $DB->get_record_sql('SELECT FP.id FROM {forum_posts} FP
-                                    RIGHT JOIN {forum_discussions} FD
-                                    ON FD.id = FP.discussion
-                                    WHERE FD.forum = ?
-                                    AND FP.userid = ?
-                                    AND FP.message = ?',
+        $item = $DB->get_record_sql('SELECT id FROM {workshop_submissions}
+                                    WHERE workshopid = ?
+                                    AND authorid = ?
+                                    AND content = ?',
                                     array($params->moduleid, $params->userid, $params->onlinetext)
         );
 
@@ -72,7 +71,7 @@ class tsforum {
     }
 
     /**
-     * Get the group id that a submission belongs to - (N/A in forums).
+     * Get the group id that a submission belongs to - (N/A in workshops).
      *
      * @param $itemid
      * @return null
@@ -82,7 +81,7 @@ class tsforum {
     }
 
     /**
-     * Return whether the submission is a draft. Never the case with a forum submission.
+     * Return whether the submission is a draft. Never the case with a workshop submission.
      *
      * @param $itemid
      * @return bool
@@ -102,24 +101,13 @@ class tsforum {
     }
 
     /*
-     * Determines whether the OR links in other posts should be seen.
+     * Determines whether the OR links in other posts should be seen. This is not applicable for workshops.
      *
      * @param $courseid
      * @param $userid
      * @return bool
      */
     public function show_other_posts_links($courseid, $userid) {
-        global $USER;
-
-        static $context;
-        if (empty($context)) {
-            $context = context_course::instance($courseid);
-        }
-
-        if (has_capability('plagiarism/turnitinsim:viewfullreport', $context) || $USER->id == $userid) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }
