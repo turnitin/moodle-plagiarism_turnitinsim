@@ -189,7 +189,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         // If require_eula does not exist then set it to true, it will be overwritten
         // if necessary when the scheduled tasks run.
         $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
-        if (!property_exists($features, 'tenant')) {
+        if (!isset($features->tenant)) {
             $features->tenant->require_eula = true;
             set_config('turnitin_features_enabled', json_encode($features), 'plagiarism_turnitinsim');
         }
