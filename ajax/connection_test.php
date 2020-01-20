@@ -18,7 +18,8 @@
  * Ajax functionality related to testing a connection to Turnitin.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 David Winn <dwinn@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
