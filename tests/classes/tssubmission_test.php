@@ -876,13 +876,89 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
-     *
+     * Test report generation request failure with not enough text.
      */
     public function test_request_turnitin_report_generation_failure_not_enough_text() {
         $this->resetAfterTest();
 
         // Get the response for a successfully created submission.
         $reportgenresponse = file_get_contents(__DIR__ . '/../fixtures/request_report_generation_failure_not_enough_text.json');
+        $jsonresponse = (array)json_decode($reportgenresponse);
+
+        // Mock API create submission request class and send call.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->getMock();
+
+        // Add submission ID to endpoint.
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
+
+        // Mock send request method for upload.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->with($endpoint)
+            ->willReturn($reportgenresponse);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->submissiondrafts = 0;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create data object for cm assignment.
+        $data = new stdClass();
+        $data->coursemodule = $cm->id;
+        $data->turnitinenabled = 1;
+
+        // Save Module Settings.
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
+
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
+
+        // Request report generation.
+        $tssubmission->request_turnitin_report_generation();
+
+        // Test that the submission status is errored.
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
+        $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
+    }
+
+    /**
+     * Test report generation request failure if cannot extract text.
+     */
+    public function test_request_turnitin_report_generation_failure_cannot_extract_text() {
+        $this->resetAfterTest();
+
+        // Get the response for a successfully created submission.
+        $reportgenresponse = file_get_contents(__DIR__ . '/../fixtures/request_report_generation_failure_cannot_extract_text.json');
         $jsonresponse = (array)json_decode($reportgenresponse);
 
         // Mock API create submission request class and send call.

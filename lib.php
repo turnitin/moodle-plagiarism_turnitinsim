@@ -227,6 +227,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
+
                         $errorstrsuffix = strtolower(str_replace("_", "", $submission->geterrormessage()));
 
                         // Check if a string exists for this error and display it, otherwise use a generic one.
@@ -242,8 +243,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         $erroricon = $OUTPUT->help_icon($errorstring, 'plagiarism_turnitinsim');
 
                         // Render status.
-                        $status = html_writer::tag('span',
-                            get_string('submissiondisplaystatus:error', 'plagiarism_turnitinsim'),
+                        $statusstring = "submissiondisplaystatus:error";
+                        if ($submission->geterrormessage() == TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT) {
+                            $statusstring = 'submissiondisplaystatus:' . $errorstrsuffix;
+                        }
+                        $status = html_writer::tag('span', get_string($statusstring, 'plagiarism_turnitinsim'),
                             array('class' => 'tii_status_text'));
                         $status .= html_writer::tag('span', $erroricon);
                         break;

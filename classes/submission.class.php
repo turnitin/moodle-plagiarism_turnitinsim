@@ -342,7 +342,7 @@ class plagiarism_turnitinsim_submission {
 
         switch ($params->httpstatus) {
             case TURNITINSIM_HTTP_CREATED:
-                // Handle a TURNITINSIM_HTTP_CREATED repsonse.
+                // Handle a TURNITINSIM_HTTP_CREATED response.
                 $this->setturnitinid($params->id);
                 $this->setstatus($params->status);
                 $this->setsubmittedtime(strtotime($params->created_time));
@@ -493,7 +493,6 @@ class plagiarism_turnitinsim_submission {
      * Request a Turnitin report to be generated.
      */
     public function request_turnitin_report_generation() {
-
         // Get module settings.
         $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
@@ -535,19 +534,22 @@ class plagiarism_turnitinsim_submission {
             // Update submission status.
             mtrace('Turnitin Originality Report requested for: '.$this->getturnitinid());
 
-            $status = ($responsedata->httpstatus == TURNITINSIM_HTTP_ACCEPTED) ?
-                TURNITINSIM_SUBMISSION_STATUS_REQUESTED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
-            $this->setstatus($status);
-            // Save error message if request has errored.
-            if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
+            if ($responsedata->httpstatus == TURNITINSIM_HTTP_ACCEPTED) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_REQUESTED);
+
+                if ($responsedata->message == TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT) {
+                    $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                    $this->seterrormessage($responsedata->message);
+                }
+            } else {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
                 $this->seterrormessage($responsedata->message);
             }
+
             $this->setrequestedtime(time());
             $this->calculate_generation_time(true);
             $this->update();
-
         } catch (Exception $e) {
-
             $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
         }
     }
