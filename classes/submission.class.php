@@ -179,12 +179,14 @@ class plagiarism_turnitinsim_submission {
         // Create tsuser object so we get turnitin id.
         $tsuser = new plagiarism_turnitinsim_user($user->id);
 
-        return array(
-            'id' => $tsuser->get_turnitinid(),
-            'family_name' => $user->lastname,
-            'given_name' => $user->firstname,
-            'email' => $user->email
-        );
+        $userdata = array('id' => $tsuser->get_turnitinid());
+
+        if (!get_config('plagiarism_turnitinsim', 'turnitinhideidentity')) {
+            $userdata["family_name"] = $user->lastname;
+            $userdata["given_name"] = $user->firstname;
+            $userdata["email"] = $user->email;
+        }
+        return $userdata;
     }
 
     /*
@@ -303,7 +305,7 @@ class plagiarism_turnitinsim_submission {
         $language = $this->tsrequest->get_language()->localecode;
         $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language;
 
-        // Get the features enabled so we can check if EULAis required for this tenant.
+        // Get the features enabled so we can check if EULA is required for this tenant.
         $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
 
         // Include EULA metadata if necessary.

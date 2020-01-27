@@ -179,6 +179,30 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($tsuser->get_turnitinid(), $userentry['id']);
     }
 
+    /**
+     * Test that build_user_array_entry returns just the userid if student privacy is enabled.
+     */
+    public function test_build_user_array_entry_returns_userid_only_if_student_privacy_is_enabled() {
+        $this->resetAfterTest();
+
+        // Enable student privacy.
+        set_config('turnitinhideidentity', 1, 'plagiarism_turnitinsim');
+
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setuserid($this->student1->id);
+
+        // Build user entry and get Turnitin id.
+        $userentry = $tssubmission->build_user_array_entry($this->student1);
+        $tsuser = new plagiarism_turnitinsim_user($this->student1->id);
+
+        // Check user array returns correct details.
+        $this->assertArrayNotHasKey('family_name', $userentry);
+        $this->assertArrayNotHasKey('given_name', $userentry);
+        $this->assertArrayNotHasKey('email', $userentry);
+        $this->assertEquals($tsuser->get_turnitinid(), $userentry['id']);
+    }
+
     /*
      * Test that create metadata returns no data if the cm doesn't exist.
      */
