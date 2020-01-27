@@ -246,6 +246,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         $statusstring = "submissiondisplaystatus:error";
                         if ($submission->geterrormessage() == TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT) {
                             $statusstring = 'submissiondisplaystatus:' . $errorstrsuffix;
+                            $showresubmitlink = true;
                         }
                         $status = html_writer::tag('span', get_string($statusstring, 'plagiarism_turnitinsim'),
                             array('class' => 'tii_status_text'));
