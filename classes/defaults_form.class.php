@@ -18,16 +18,17 @@
  * Default setting form for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir."/formslib.php");
-require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/tssettings.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/settings.class.php');
 
-class tsdefaultsform extends moodleform {
+class plagiarism_turnitinsim_defaults_form extends moodleform {
 
     // Define the form.
     public function definition () {
@@ -58,7 +59,7 @@ class tsdefaultsform extends moodleform {
      * Save the default settings
      */
     public function save($data) {
-        $settings = new tssettings();
+        $settings = new plagiarism_turnitinsim_settings();
         $data->coursemodule = 0;
         $settings->save_module_settings($data);
     }

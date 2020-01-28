@@ -18,13 +18,16 @@
  * Group class for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsgroup {
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+
+class plagiarism_turnitinsim_group {
 
     public $groupid;
     public $turnitinid;
@@ -52,7 +55,7 @@ class tsgroup {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = generate_uuid();
+        $turnitinid = (new handle_deprecation)->create_uuid();
 
         $group = new stdClass();
         $group->groupid = $this->get_groupid();

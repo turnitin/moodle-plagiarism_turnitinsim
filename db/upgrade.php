@@ -18,7 +18,8 @@
  * Database upgrade script for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -188,13 +189,31 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         // Get the current features enabled.
         // If require_eula does not exist then set it to true, it will be overwritten
         // if necessary when the scheduled tasks run.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
-        if (!property_exists($features, 'tenant')) {
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
+        if (!isset($features->tenant)) {
             $features->tenant->require_eula = true;
-            set_config('turnitin_features_enabled', json_encode($features), 'plagiarism');
+            set_config('turnitin_features_enabled', json_encode($features), 'plagiarism_turnitinsim');
         }
 
-        upgrade_plugin_savepoint(true, 2019112701, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2019121601, 'plagiarism', 'turnitinsim');
+    }
+
+    // This block will migrate the config namespace for the plugin to plagiarism_turnitinsim.
+    if ($oldversion < 2020011001) {
+        $data = get_config('plagiarism');
+
+        $properties = array('turnitinmodenabledassign', 'turnitinmodenabledforum', 'turnitinmodenabledworkshop',
+            'turnitinapikey', 'turnitinapiurl', 'turnitinenablelogging', 'turnitin_eula_url', 'turnitin_eula_version',
+            'turnitin_features_enabled', 'turnitinhideidentity', 'turnitinviewermatchsubinfo', 'turnitinviewersavechanges',
+            'turnitinviewerviewfullsource', 'turnitin_webhook_id', 'turnitin_webhook_secret');
+        foreach ($properties as $property) {
+            if (isset($data->$property)) {
+                set_config($property, $data->$property, 'plagiarism_turnitinsim');
+                unset_config($property, 'plagiarism');
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2020011001, 'plagiarism', 'turnitinsim');
     }
 
     return true;

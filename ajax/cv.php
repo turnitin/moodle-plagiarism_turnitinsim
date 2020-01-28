@@ -18,7 +18,8 @@
  * Ajax functionality related to Turnitin Cloud Viewer.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,7 @@ if (!confirm_sesskey()) {
 
 switch ($action) {
     case "request_cv_launch":
-        $tssubmission = new tssubmission( new tsrequest(), $submissionid);
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submissionid);
         echo $tssubmission->request_cv_launch_url();
 
         break;

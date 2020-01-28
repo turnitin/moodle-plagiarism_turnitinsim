@@ -18,7 +18,8 @@
  * Restore code for plagiarism/turnitinsim.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -60,7 +61,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
      * and if the Turnitin submission does not currently exist in the database.
      */
     public function process_turnitinsim_subs($data) {
-        global $DB;
+        global $DB, $SESSION;
 
         if ($this->task->is_samesite()) {
             $data = (object)$data;
@@ -69,12 +70,11 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
             $recordexists = (!empty($data->turnitinid)) ? $DB->record_exists('plagiarism_turnitinsim_sub', $params) : false;
 
             // At this point Moodle has not restored the necessary submission files so we can not relink them.
-            // Unfortunately this means we have to store data in the session and
-            // add submissions in the after_restore_module method below.
+            // This means we will have to relink the submissions in the after_restore_module method below.
             if (!$recordexists) {
                 $data->cm = $this->task->get_moduleid();
 
-                $_SESSION[ 'tsrestore'][] = $data;
+                $SESSION->tsrestore[] = $data;
             }
         }
     }
@@ -102,9 +102,9 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
      * Restore the links to submissions that have been sent to Turnitin.
      */
     public function after_restore_module() {
-        global $DB;
+        global $DB, $SESSION;
 
-        foreach ($_SESSION[ 'tsrestore'] as $data) {
+        foreach ($SESSION->tsrestore as $data) {
             // Get new itemid for files.
             if ($data->type == TURNITINSIM_SUBMISSION_TYPE_FILE) {
                 $filerecord = $DB->get_records_select(
@@ -128,7 +128,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
 
                 $cm = get_coursemodule_from_id('', $data->cm);
                 // Create module object and get the online text.
-                $moduleclass =  'ts'.$cm->modname;
+                $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
                 $moduleobject = new $moduleclass;
 
                 $onlinetext = $moduleobject->get_onlinetext($data->itemid);
@@ -145,6 +145,6 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
             $DB->insert_record('plagiarism_turnitinsim_sub', $data);
         }
 
-        unset($_SESSION[ 'tsrestore']);
+        unset($SESSION->tsrestore);
     }
 }

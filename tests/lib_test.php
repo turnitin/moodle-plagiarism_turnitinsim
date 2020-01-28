@@ -18,7 +18,8 @@
  * Unit tests for (some of) plagiarism/turnitinsim/lib.php.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tssetupform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
 
 /**
  * Tests for lib methods
@@ -56,13 +57,13 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         global $DB;
 
         // Set plugin as enabled in config for this module type.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_success.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Init. plugin class.
         $this->plugin = new plagiarism_plugin_turnitinsim();
@@ -83,7 +84,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         // Create tsuser entry for student1.
-        $this->student1ts = new tsuser($this->student1->id);
+        $this->student1ts = new plagiarism_turnitinsim_user($this->student1->id);
 
         // Enrol user on course.
         $this->getDataGenerator()->enrol_user($this->student1->id,
@@ -106,9 +107,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         accesslib_clear_all_caches_for_unit_testing();
 
         // Set EULA data.
-        set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism');
-        set_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
-        $this->eulaurl = get_config('plagiarism', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        set_config('turnitin_eula_version', self::EULA_VERSION_1, 'plagiarism_turnitinsim');
+        set_config('plagiarism_turnitinsim', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
+        $this->eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url', self::TURNITINSIM_API_URL);
     }
 
     /**
@@ -135,7 +136,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         $plugin->save_form_elements($data);
 
@@ -155,7 +156,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1);
@@ -184,7 +185,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 0);
@@ -217,7 +218,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
@@ -266,7 +267,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
@@ -293,7 +294,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         // Create a TurnitinSim submission record that is queued for sending to Turnitin.
-        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setcm($this->cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -405,7 +406,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as not enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_active($this->cm));
@@ -419,7 +420,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Disable plugin for module.
         $data = new stdClass();
@@ -440,8 +441,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set plugin as not enabled in config for this module type.
-        set_config('turnitinapiurl', '', 'plagiarism');
-        set_config('turnitinapikey', '', 'plagiarism');
+        set_config('turnitinapiurl', '', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
@@ -454,15 +455,15 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set API URL but not Key.
-        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism');
-        set_config('turnitinapikey', '', 'plagiarism');
+        set_config('turnitinapiurl', self::TURNITINSIM_API_URL, 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
 
         // Set API Key but not URL.
-        set_config('turnitinapiurl', '', 'plagiarism');
-        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism');
+        set_config('turnitinapiurl', '', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', self::TURNITINSIM_API_KEY, 'plagiarism_turnitinsim');
 
         $this->assertFalse($plagiarismturnitinsim->is_plugin_configured($this->cm));
     }
@@ -474,8 +475,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Set plugin as not enabled in config for this module type.
-        set_config('turnitinapiurl', 'test.com', 'plagiarism');
-        set_config('turnitinapikey', '123456', 'plagiarism');
+        set_config('turnitinapiurl', 'test.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', '123456', 'plagiarism_turnitinsim');
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $this->assertTrue($plagiarismturnitinsim->is_plugin_configured($this->cm));
@@ -489,7 +490,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -503,7 +504,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->setUser($this->student1);
 
         // Get locale.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
         $eulaurl = $this->eulaurl."?lang=".$lang->localecode;
 
@@ -525,7 +526,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -556,11 +557,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin as enabled in config for this module type.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -587,7 +588,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Use settings form method to save data for a module.
-        require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tssettings.class.php');
+        require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php');
 
         // Create data object for new assignment.
         $data = new stdClass();
@@ -595,7 +596,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -648,7 +649,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 0, 'plagiarism');
-        set_config('turnitinmodenabledassign', 0, 'plagiarism');
+        set_config('turnitinmodenabledassign', 0, 'plagiarism_turnitinsim');
 
         // Handler should always return true despite plugin not being enabled.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
@@ -669,7 +670,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -677,7 +678,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create dummy event data.
@@ -716,7 +717,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -724,7 +725,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -784,11 +785,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Set the features enabled
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
-        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -796,7 +797,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -848,7 +849,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Create group.
         $group = $this->getDataGenerator()->create_group(array('courseid' => $this->course->id));
@@ -862,7 +863,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -931,7 +932,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -939,7 +940,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1004,7 +1005,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1012,7 +1013,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1097,7 +1098,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1105,7 +1106,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log new user in.
@@ -1157,7 +1158,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1165,7 +1166,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 1;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log student1 in.
@@ -1233,7 +1234,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Set plugin config.
         set_config('turnitinsim_use', 1, 'plagiarism');
-        set_config('turnitinmodenabledassign', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
         $data = new stdClass();
@@ -1241,7 +1242,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->turnitinenabled = 1;
         $data->queuedrafts = 0;
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Log student1 in.
@@ -1334,11 +1335,11 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->reportgenoptions['reportgeneration'] = TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE;
 
         // Save Module Settings.
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
 
         // Create dummy turnitin submission.
-        $tssubmission = new tssubmission( new tsrequest() );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
         $tssubmission->setsubmitter($this->student1->id);
@@ -1357,7 +1358,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->plugin->module_updated($eventdata);
 
         // Check submission was updated.
-        $tssubmission = new tssubmission( new tsrequest(), $tssubmission->id );
+        $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $tssubmission->id );
         $this->assertEquals($duedate, $tssubmission->getgenerationtime());
         $this->assertEquals(1, $tssubmission->gettogenerate());
     }

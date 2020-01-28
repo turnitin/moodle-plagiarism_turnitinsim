@@ -18,7 +18,8 @@
  * Main library for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,14 +30,14 @@ if (!defined('MOODLE_INTERNAL')) {
 // Get global class.
 require_once( $CFG->dirroot . '/plagiarism/lib.php' );
 require_once( __DIR__ . '/utilities/constants.php' );
-require_once( __DIR__ . '/classes/tssettings.class.php' );
-require_once( __DIR__ . '/classes/tssubmission.class.php' );
-require_once( __DIR__ . '/classes/tsuser.class.php' );
-require_once( __DIR__ . '/classes/tsgroup.class.php' );
-require_once( __DIR__ . '/classes/tsrequest.class.php' );
-require_once( __DIR__ . '/classes/tslogger.class.php' );
-require_once( __DIR__ . '/classes/tseula.class.php' );
-require_once( __DIR__ . '/classes/tstask.class.php' );
+require_once( __DIR__ . '/classes/settings.class.php' );
+require_once( __DIR__ . '/classes/submission.class.php' );
+require_once( __DIR__ . '/classes/user.class.php' );
+require_once( __DIR__ . '/classes/group.class.php' );
+require_once( __DIR__ . '/classes/request.class.php' );
+require_once( __DIR__ . '/classes/logger.class.php' );
+require_once( __DIR__ . '/classes/eula.class.php' );
+require_once( __DIR__ . '/classes/task.class.php' );
 
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
@@ -54,7 +55,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         $location = ($context == context_system::instance()) ? 'defaults' : 'module';
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->add_settings_to_module($mform, $location, $modulename);
 
         if ($modsettings = $this->get_settings( $cmid )) {
@@ -94,12 +95,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      */
     public function save_form_elements($data) {
 
-        $moduletiienabled = $moduletiienabled = get_config('plagiarism', 'turnitinmodenabled'.$data->modulename);
+        $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
         if (empty($moduletiienabled)) {
             return;
         }
 
-        $form = new tssettings();
+        $form = new plagiarism_turnitinsim_settings();
         $form->save_module_settings($data);
     }
 
@@ -142,7 +143,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Check if the logged in user is an instructor.
@@ -163,7 +164,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $showresubmitlink = false;
 
             // Get turnitin submission details.
-            $plagiarismfile = tssubmission::get_submission_details($linkarray);
+            $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
             // The links for forum posts get shown to all users.
             // Return if the logged in user shouldn't see OR scores. E.g. forum posts.
@@ -173,7 +174,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             // Render the OR score or current submission status.
             if ($plagiarismfile) {
-                $submission = new tssubmission(new tsrequest(), $plagiarismfile->id);
+                $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
 
                 switch ($submission->getstatus()) {
                     case TURNITINSIM_SUBMISSION_STATUS_QUEUED:
@@ -204,9 +205,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
                         // Allow a modal to be launched with a EULA link and ability to accept.
-                        $tsrequest = new tsrequest();
+                        $tsrequest = new plagiarism_turnitinsim_request();
                         $lang = $tsrequest->get_language();
-                        $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
+                        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
                         $helpicon = $OUTPUT->pix_icon(
                             'help',
@@ -226,6 +227,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
+
                         $errorstrsuffix = strtolower(str_replace("_", "", $submission->geterrormessage()));
 
                         // Check if a string exists for this error and display it, otherwise use a generic one.
@@ -241,8 +243,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         $erroricon = $OUTPUT->help_icon($errorstring, 'plagiarism_turnitinsim');
 
                         // Render status.
-                        $status = html_writer::tag('span',
-                            get_string('submissiondisplaystatus:error', 'plagiarism_turnitinsim'),
+                        $statusstring = "submissiondisplaystatus:error";
+                        if ($submission->geterrormessage() == TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT) {
+                            $statusstring = 'submissiondisplaystatus:' . $errorstrsuffix;
+                            $showresubmitlink = true;
+                        }
+                        $status = html_writer::tag('span', get_string($statusstring, 'plagiarism_turnitinsim'),
                             array('class' => 'tii_status_text'));
                         $status .= html_writer::tag('span', $erroricon);
                         break;
@@ -289,7 +295,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      */
     public function is_plugin_active($cm) {
         // Get whether plugin is enabled for this module.
-        $moduletiienabled = get_config('plagiarism', 'turnitinmodenabled'.$cm->modname);
+        $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$cm->modname);
 
         // Exit if Turnitin is not being used for this activity type.
         if (empty($moduletiienabled)) {
@@ -311,8 +317,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Check whether the plugin is configured to connect to Turnitin.
      */
     public function is_plugin_configured() {
-        $turnitinapiurl = get_config('plagiarism', 'turnitinapiurl');
-        $turnitinapikey = get_config('plagiarism', 'turnitinapikey');
+        $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
+        $turnitinapikey = get_config('plagiarism_turnitinsim', 'turnitinapikey');
 
         return (empty($turnitinapiurl) || empty($turnitinapikey)) ? false : true;
     }
@@ -359,18 +365,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Check we have the latest version of the EULA stored.
         // This should only happen the very first time someone submits.
-        $eulaversion = get_config('plagiarism', 'turnitin_eula_version');
+        $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
         // Overwrite mtrace so when EULA is checked it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
         if (empty($eulaversion)) {
-            $tstask = new tstask();
+            $tstask = new plagiarism_turnitinsim_task();
             $tstask->check_latest_eula_version();
-            $eulaversion = get_config('plagiarism', 'turnitin_eula_version');
+            $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
         }
 
         // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
-        $user = new tsuser($USER->id);
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        $user = new plagiarism_turnitinsim_user($USER->id);
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         if ($user->get_lasteulaaccepted() == $eulaversion || !(bool)$features->tenant->require_eula) {
             return '';
         }
@@ -381,9 +387,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eula_response');
 
         // Link to open the Turnitin EULA in a new tab.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
-        $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
         $eulastring = ($cmid > -1) ? 'eulalink' : 'eulalinkgeneric';
         $eulalink = get_string($eulastring, 'plagiarism_turnitinsim', $eulaurl);
 
@@ -446,8 +452,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Get config settings, module settings and plagiarism settings for this module.
         $plagiarismsettings = $this->get_settings($eventdata['contextinstanceid']);
-        $pluginconfig = get_config('plagiarism');
-        $features = json_decode($pluginconfig->turnitin_features_enabled);
+        $pluginconfig = get_config('plagiarism_turnitinsim');
+        $features = (!empty($pluginconfig->turnitin_features_enabled)) ?
+            json_decode($pluginconfig->turnitin_features_enabled) : '';
 
         // Either module not using Turnitin or Turnitin not being used at all so return true to remove event from queue.
         $modenabled = "turnitinmodenabled".$eventdata['other']['modulename'];
@@ -473,13 +480,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Set the author, submitter and group (if applicable).
         $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
-        $submitter = new tsuser($eventdata['userid']);
+        $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Get the item ID.
         $itemid = (!empty($eventdata['objectid'])) ? $eventdata['objectid'] : null;
@@ -494,7 +501,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             );
 
             foreach ($submissions as $submission) {
-                $tssubmission = new tssubmission(new tsrequest(), $submission->id);
+                $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $submission->id);
 
                 $statusarray = array(
                     TURNITINSIM_SUBMISSION_STATUS_NOT_SENT,
@@ -519,7 +526,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Queue files to submit to Turnitin.
         if (!empty($eventdata['other']['pathnamehashes'])) {
             foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
-                $tssubmission = new tssubmission(new tsrequest());
+                $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
                 $tssubmission->setcm($cm->id);
                 $tssubmission->setuserid($author);
                 $tssubmission->setgroupid($groupid);
@@ -575,7 +582,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 // If the submitter has not accepted the EULA then flag accordingly.
                 if ((empty($submitter->get_lasteulaaccepted()) ||
-                    $submitter->get_lasteulaaccepted() < get_config('plagiarism', 'turnitin_eula_version')) &&
+                    $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
                     (bool)$features->tenant->require_eula
                 ) {
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
@@ -594,7 +601,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Queue text content to submit to Turnitin.
         if (!empty($eventdata['other']['content'])) {
-            $tssubmission = new tssubmission(new tsrequest());
+            $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
             $tssubmission->setcm($cm->id);
             $tssubmission->setuserid($author);
             $tssubmission->setgroupid($groupid);
@@ -617,7 +624,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             }
 
             // If the submitter has not accepted the EULA then flag accordingly.
-            if ($submitter->get_lasteulaaccepted() < get_config('plagiarism', 'turnitin_eula_version')) {
+            if ($submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
                 $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $tssubmission->update();
                 return true;
@@ -651,7 +658,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if ($module->reportgeneration != TURNITINSIM_REPORT_GEN_IMMEDIATE) {
 
             // Create module object and get due date.
-            $moduleclass =  'ts'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             $duedate = $moduleobject->get_due_date($cm->instance);

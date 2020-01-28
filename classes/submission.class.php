@@ -18,7 +18,8 @@
  * Submission class for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,11 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 use plagiarism_turnitinsim\message\receipt_instructor;
 use plagiarism_turnitinsim\message\receipt_student;
 
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsassign.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsforum.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/modules/tsworkshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
 
-class tssubmission {
+class plagiarism_turnitinsim_submission {
 
     public $id;
     public $cm;
@@ -51,11 +52,11 @@ class tssubmission {
     public $errormessage;
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null, $id = null) {
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null, $id = null) {
         global $DB;
 
         $this->setid($id);
-        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
         $this->plagiarism_plugin_turnitinsim = new plagiarism_plugin_turnitinsim();
 
         if (!empty($id)) {
@@ -103,7 +104,7 @@ class tssubmission {
         $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
 
         // Create module object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         $duedate = $moduleobject->get_due_date($cm->instance);
@@ -176,14 +177,16 @@ class tssubmission {
         }
 
         // Create tsuser object so we get turnitin id.
-        $tsuser = new tsuser($user->id);
+        $tsuser = new plagiarism_turnitinsim_user($user->id);
 
-        return array(
-            'id' => $tsuser->get_turnitinid(),
-            'family_name' => $user->lastname,
-            'given_name' => $user->firstname,
-            'email' => $user->email
-        );
+        $userdata = array('id' => $tsuser->get_turnitinid());
+
+        if (!get_config('plagiarism_turnitinsim', 'turnitinhideidentity')) {
+            $userdata["family_name"] = $user->lastname;
+            $userdata["given_name"] = $user->firstname;
+            $userdata["email"] = $user->email;
+        }
+        return $userdata;
     }
 
     /*
@@ -263,11 +266,11 @@ class tssubmission {
      */
     public function get_owner() {
         if (!empty($this->getgroupid())) {
-            $tsgroup = new tsgroup($this->getgroupid());
+            $tsgroup = new plagiarism_turnitinsim_group($this->getgroupid());
             return $tsgroup->get_turnitinid();
         }
 
-        $tsauthor = new tsuser($this->getuserid());
+        $tsauthor = new plagiarism_turnitinsim_user($this->getuserid());
         return $tsauthor->get_turnitinid();
     }
 
@@ -276,7 +279,7 @@ class tssubmission {
      */
     public function create_submission_in_turnitin() {
 
-        $tssubmitter = new tsuser($this->getsubmitter());
+        $tssubmitter = new plagiarism_turnitinsim_user($this->getsubmitter());
         $filedetails = $this->get_file_details();
 
         // Initialise request with owner and submitter.
@@ -302,8 +305,8 @@ class tssubmission {
         $language = $this->tsrequest->get_language()->localecode;
         $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language;
 
-        // Get the features enabled so we can check if EULAis required for this tenant.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        // Get the features enabled so we can check if EULA is required for this tenant.
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
 
         // Include EULA metadata if necessary.
         if (!empty($tssubmitter->get_lasteulaaccepted()) || !(bool)$features->tenant->require_eula) {
@@ -341,7 +344,7 @@ class tssubmission {
 
         switch ($params->httpstatus) {
             case TURNITINSIM_HTTP_CREATED:
-                // Handle a TURNITINSIM_HTTP_CREATED repsonse.
+                // Handle a TURNITINSIM_HTTP_CREATED response.
                 $this->setturnitinid($params->id);
                 $this->setstatus($params->status);
                 $this->setsubmittedtime(strtotime($params->created_time));
@@ -384,7 +387,7 @@ class tssubmission {
             $cm = get_coursemodule_from_id('', $this->getcm());
 
             // Create module object.
-            $moduleclass =  'ts'.$cm->modname;
+            $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
             $moduleobject = new $moduleclass;
 
             // Add text content to request.
@@ -492,14 +495,13 @@ class tssubmission {
      * Request a Turnitin report to be generated.
      */
     public function request_turnitin_report_generation() {
-
         // Get module settings.
         $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
         $cm = get_coursemodule_from_id('', $this->getcm());
 
         // Create module helper object.
-        $moduleclass =  'ts'.$cm->modname;
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
 
         // Configure request body array.
@@ -513,7 +515,7 @@ class tssubmission {
 
         // Generation Settings.
         // Configure repositories to search.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         $searchrepositories = $features->similarity->generation_settings->search_repositories;
         $request['generation_settings'] = array('search_repositories' => $searchrepositories);
         $request['generation_settings']['auto_exclude_self_matching_scope'] = TURNITINSIM_REPORT_GEN_EXCLUDE_SELF_GROUP;
@@ -534,19 +536,22 @@ class tssubmission {
             // Update submission status.
             mtrace('Turnitin Originality Report requested for: '.$this->getturnitinid());
 
-            $status = ($responsedata->httpstatus == TURNITINSIM_HTTP_ACCEPTED) ?
-                TURNITINSIM_SUBMISSION_STATUS_REQUESTED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
-            $this->setstatus($status);
-            // Save error message if request has errored.
-            if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
+            if ($responsedata->httpstatus == TURNITINSIM_HTTP_ACCEPTED) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_REQUESTED);
+
+                if ($responsedata->message == TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT) {
+                    $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                    $this->seterrormessage($responsedata->message);
+                }
+            } else {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
                 $this->seterrormessage($responsedata->message);
             }
+
             $this->setrequestedtime(time());
             $this->calculate_generation_time(true);
             $this->update();
-
         } catch (Exception $e) {
-
             $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
         }
     }
@@ -649,9 +654,9 @@ class tssubmission {
      * @return array
      */
     public function create_report_viewer_permissions() {
-        $turnitinviewerviewfullsource = get_config('plagiarism', 'turnitinviewerviewfullsource');
-        $turnitinviewermatchsubinfo = get_config('plagiarism', 'turnitinviewermatchsubinfo');
-        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
+        $turnitinviewerviewfullsource = get_config('plagiarism_turnitinsim', 'turnitinviewerviewfullsource');
+        $turnitinviewermatchsubinfo = get_config('plagiarism_turnitinsim', 'turnitinviewermatchsubinfo');
+        $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
@@ -668,7 +673,7 @@ class tssubmission {
      * @return array
      */
     public function create_similarity_overrides() {
-        $turnitinviewersavechanges = get_config('plagiarism', 'turnitinviewersavechanges');
+        $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
             'modes' => array(
@@ -693,7 +698,7 @@ class tssubmission {
 
         // Build request.
         $lang = $this->tsrequest->get_language();
-        $viewinguser = new tsuser($USER->id);
+        $viewinguser = new plagiarism_turnitinsim_user($USER->id);
         $request = array(
             "locale" => $lang->langcode,
             "viewer_user_id" => $viewinguser->get_turnitinid()
@@ -747,7 +752,7 @@ class tssubmission {
         $identitiesrevealed = !empty($moduledata->revealidentities);
 
         // Return true if hide identities is on, otherwise go by module blind marking settings.
-        $turnitinhideidentity = get_config('plagiarism', 'turnitinhideidentity');
+        $turnitinhideidentity = get_config('plagiarism_turnitinsim', 'turnitinhideidentity');
         if ($turnitinhideidentity) {
             $anon = true;
         } else {

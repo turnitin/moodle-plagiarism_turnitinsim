@@ -16,13 +16,14 @@
 
 /**
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2019121601;
+$plugin->version = 2020011001;
 $plugin->release = "v1.0";
 $plugin->requires = 2017051500;
 $plugin->component = 'plagiarism_turnitinsim';

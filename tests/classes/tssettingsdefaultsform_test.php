@@ -18,14 +18,15 @@
  * Unit tests for (some of) plagiarism/turnitinsim/classes/turnitinsim_setttings_defaults_form.class.php.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forms/tsdefaultsform.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/defaults_form.class.php');
 
 /**
  * Tests for default settings form.
@@ -39,9 +40,9 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
      */
     public function setup() {
         // Set API details in config.
-        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism');
-        set_config('turnitinapikey', 1234, 'plagiarism');
-        set_config('turnitinenablelogging', 0, 'plagiarism');
+        set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
+        set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
+        set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
     }
 
     /**
@@ -63,7 +64,7 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
         $data->accessoptions['accessstudents'] = 1;
 
         // Save Module Settings.
-        $form = new tsdefaultsform();
+        $form = new plagiarism_turnitinsim_defaults_form();
         $form->save($data);
 
         // Check settings have been saved.
@@ -85,7 +86,7 @@ class plagiarism_tsdefaultsform_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Save Module Settings.
-        $form = new tsdefaultsform();
+        $form = new plagiarism_turnitinsim_defaults_form();
         $output = $form->display();
 
         $this->assertContains('</form>', $output);

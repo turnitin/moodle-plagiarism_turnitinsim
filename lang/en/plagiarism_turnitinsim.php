@@ -18,18 +18,19 @@
  * Strings for plagiarism_turnitinsim component, language 'en'
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['accessoptions'] = 'Student Access';
+$string['accessoptions'] = 'Student access';
 $string['accessoptions_help'] = 'Students will have access to the Similarity Report for their submission after it generates.';
 $string['accessstudents'] = 'Allow students to view Similarity Reports';
 $string['addtoindex'] = 'Index all submissions';
 $string['code'] = 'Code';
-$string['dbexport'] = 'Database Export';
+$string['dbexport'] = 'Database export';
 $string['dbexporttable'] = 'Export {$a} data';
-$string['defaultsettings'] = 'Default Settings';
+$string['defaultsettings'] = 'Default settings';
 $string['errortoolarge'] = 'This file will not be submitted to Turnitin as it exceeds the maximum size of {$a} allowed';
 $string['eulaaccept'] = 'I accept the Turnitin EULA';
 $string['eulaaccepted'] = 'Thank you for accepting the new Turnitin EULA. All future submissions will now be sent to Turnitin for processing.';
@@ -43,10 +44,10 @@ $string['excludebiblio'] = 'Bibliography';
 $string['excludeoptions'] = 'Exclude from Similarity Reports';
 $string['excludeoptions_help'] = 'Selected options will not show as a match in Similarity Reports.';
 $string['excludequotes'] = 'Quotes';
-$string['faultcode'] = 'Fault Code';
-$string['getwebhookfailure:subject'] = 'Turnitin Webhook Check Failure';
+$string['faultcode'] = 'Fault code';
+$string['getwebhookfailure:subject'] = 'Turnitin webhook check failure';
 $string['getwebhookfailure:message'] = 'There may be a problem with the webhook you have registered with Turnitin for the Plagiarism Plugin. The scheduled task to check it has failed to connect to Turnitin. Please check your logs.';
-$string['indexoptions'] = 'Submission Indexing';
+$string['indexoptions'] = 'Submission indexing';
 $string['indexoptions_help'] = 'Indexed submissions will be available for comparison in Similarity Reports.';
 $string['invalidtablename'] = 'Table {$a} could not be exported';
 $string['line'] = 'Line';
@@ -76,9 +77,10 @@ $string['settingslearnmore'] = 'Learn more about Turnitin settings';
 $string['submissiondisplaystatus:awaitingeula'] = 'Awaiting EULA';
 $string['submissiondisplaystatus:pending'] = 'Pending';
 $string['submissiondisplaystatus:queued'] = 'Queued';
-$string['submissiondisplaystatus:notsent'] = 'Not Sent';
+$string['submissiondisplaystatus:notsent'] = 'Not sent';
 $string['submissiondisplaystatus:error'] = 'Error';
-$string['submissiondisplaystatus:unknown'] = 'Unknown Error';
+$string['submissiondisplaystatus:unknown'] = 'Unknown error';
+$string['submissiondisplaystatus:cannotextracttext'] = 'Report Unavailable';
 $string['submissiondisplayerror:notsent'] = 'File not sent to Turnitin';
 $string['submissiondisplayerror:notsent_help'] = 'This file has not been submitted to Turnitin because Turnitin was not enabled at the time of submission, please modify or re-upload your submission if you would like it to be sent to Turnitin.';
 $string['submissiondisplayerror:generic'] = 'File not sent to Turnitin';
@@ -89,6 +91,8 @@ $string['submissiondisplayerror:unsupportedfiletype'] = 'Unsupported filetype';
 $string['submissiondisplayerror:unsupportedfiletype_help'] = 'The uploaded filetype is not supported.';
 $string['submissiondisplayerror:processingerror'] = 'Processing error';
 $string['submissiondisplayerror:processingerror_help'] = 'An unspecified error occurred while processing the submissions.';
+$string['submissiondisplayerror:cannotextracttext'] = 'Report Unavailable';
+$string['submissiondisplayerror:cannotextracttext_help'] = 'A report could not be generated for this submission. This may be because this type of file cannot generate a report or there is not enough text.';
 $string['submissiondisplayerror:toolarge'] = 'File is too large';
 $string['submissiondisplayerror:toolarge_help'] = 'This file is too large to send to Turnitin. To check for Originality, please submit a file below 100MB in size.';
 $string['submissiondisplayerror:toolittletext'] = 'Not enough text';
@@ -137,10 +141,10 @@ $string['turnitinsim:enable'] = 'Enable Turnitin Similarity';
 $string['turnitinsim:viewfullreport'] = 'View Originality Report';
 $string['turnitinapikey'] = 'Turnitin API Key';
 $string['turnitinapiurl'] = 'Turnitin API URL';
-$string['turnitinsiminternet'] = 'Check against Internet content';
-$string['turnitinsimprivate'] = 'Check against Private content';
-$string['turnitinconfig'] = 'Plugin Configuration';
-$string['turnitinenablelogging'] = 'Enable Diagnostic Mode';
+$string['turnitinsiminternet'] = 'Check against internet content';
+$string['turnitinsimprivate'] = 'Check against private content';
+$string['turnitinconfig'] = 'Plugin configuration';
+$string['turnitinenablelogging'] = 'Enable diagnostic mode';
 $string['turnitinfeatures'] = 'Turnitin Similarity features';
 $string['turnitinfeatures::header'] = 'Turnitin Similarity features';
 $string['turnitinfeatures::moreinfo'] = 'For more information on the enabled features and packages available from Turnitin please see <a href="http://www.turnitin.com" target="_blank">http://www.turnitin.com</a>.';
@@ -148,7 +152,7 @@ $string['turnitinfeatures::repositories'] = 'Repositories checked against: ';
 $string['turnitinfeatures::viewoptions'] = 'Cloud Viewer options: ';
 $string['turnitinfeatures::eularequired'] = 'Acceptance of the Turnitin EULA is required for all users';
 $string['turnitinfeatures::eulanotrequired'] = 'Acceptance of the Turnitin EULA is not required by users';
-$string['turnitinhideidentity'] = 'Hide Student\'s Identity from Turnitin';
+$string['turnitinhideidentity'] = 'Hide student\'s identity from Turnitin';
 $string['turnitinmodenabled'] = 'Enable Turnitin Similarity for {$a}';
 $string['turnitinpluginenabled'] = 'Enable Turnitin';
 $string['turnitinpluginsettings'] = 'Turnitin Similarity plagiarism plugin settings';
@@ -161,7 +165,7 @@ $string['viewlogs'] = 'Logs';
 $string['viewapilog'] = 'View API logs from {$a}';
 $string['webhook_description'] = 'Webhook for {$a}';
 $string['webhookincorrectsignature'] = 'Webhook callback failed as signature is incorrect';
-$string['connecttest'] = 'Test Turnitin Connection';
+$string['connecttest'] = 'Test Turnitin connection';
 $string['connecttestsuccess'] = 'Connection test successful';
 $string['connecttestfailed'] = 'Connection test failed.';
 

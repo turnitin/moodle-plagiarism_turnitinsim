@@ -18,18 +18,19 @@
  * Class for handling Turnitin's EULA.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tseula {
+class plagiarism_turnitinsim_eula {
 
     public $tsrequest;
 
-    public function __construct(tsrequest $tsrequest = null ) {
-        $this->tsrequest = ($tsrequest) ? $tsrequest : new tsrequest();
+    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }
 
     /**

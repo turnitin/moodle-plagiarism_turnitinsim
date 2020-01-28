@@ -18,7 +18,8 @@
  * Constants for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 define('TURNITINSIM_SUBMISSION_STATUS_QUEUED', 'QUEUED');
 define('TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED', 'EMPTYORNOFILE');
 define('TURNITINSIM_SUBMISSION_STATUS_ERROR', 'ERROR');
+define('TURNITINSIM_SUBMISSION_STATUS_CANNOT_EXTRACT_TEXT', 'CANNOT_EXTRACT_TEXT');
 define('TURNITINSIM_SUBMISSION_STATUS_CREATED', 'CREATED');
 define('TURNITINSIM_SUBMISSION_STATUS_UPLOADED', 'UPLOADED');
 define('TURNITINSIM_SUBMISSION_STATUS_REQUESTED', 'REQUESTED');
@@ -50,6 +52,7 @@ define('TURNITINSIM_HTTP_CREATED', 201);
 define('TURNITINSIM_HTTP_ACCEPTED', 202);
 define('TURNITINSIM_HTTP_NO_CONTENT', 204);
 define('TURNITINSIM_HTTP_BAD_REQUEST', 400);
+define('TURNITINSIM_HTTP_CANNOT_EXTRACT_TEXT', 409);
 define('TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS', 451);
 
 // API Endpoints.

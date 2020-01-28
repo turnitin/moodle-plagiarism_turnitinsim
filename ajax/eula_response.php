@@ -18,7 +18,8 @@
  * Ajax functionality for handling the Turnitin EULA response.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,7 @@ if (!confirm_sesskey()) {
 $action = required_param('action', PARAM_ALPHAEXT);
 $contextid = optional_param('contextid', 0, PARAM_INT);
 
-$tsrequest = new tsrequest();
+$tsrequest = new plagiarism_turnitinsim_request();
 
 switch ($action) {
     case "accept_eula":
@@ -45,7 +46,7 @@ switch ($action) {
         // Update EULA accepted version and timestamp for user.
         $data = new stdClass();
         $data->id = $user->id;
-        $data->lasteulaaccepted = get_config('plagiarism', 'turnitin_eula_version');
+        $data->lasteulaaccepted = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
         $data->lasteulaacceptedtime = time();
         $lang = $tsrequest->get_language();
         $data->lasteulaacceptedlang = $lang->localecode;

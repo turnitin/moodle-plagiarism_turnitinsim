@@ -18,13 +18,14 @@
  * Page to allow users to accept the EULA
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__.'/../../config.php');
 require_once(__DIR__.'/lib.php');
-require_once(__DIR__.'/classes/tsrequest.class.php');
+require_once(__DIR__.'/classes/request.class.php');
 
 $cmd = optional_param('cmd', 'eularedirect', PARAM_ALPHAEXT);
 
@@ -38,9 +39,9 @@ switch ($cmd) {
         }
 
         // Get EULA Link.
-        $tsrequest = new tsrequest();
+        $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
-        $eulaurl = get_config('plagiarism', 'turnitin_eula_url')."?lang=".$lang->localecode;
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
         header('Location: '.$eulaurl);
         exit;

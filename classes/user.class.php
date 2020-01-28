@@ -18,13 +18,16 @@
  * User class for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsuser {
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+
+class plagiarism_turnitinsim_user {
 
     public $userid;
     public $turnitinid;
@@ -59,7 +62,7 @@ class tsuser {
     public function create_turnitinid() {
         global $DB;
 
-        $turnitinid = \core\uuid::generate();
+        $turnitinid = (new handle_deprecation)->create_uuid();
 
         $user = new stdClass();
         $user->userid = $this->get_userid();

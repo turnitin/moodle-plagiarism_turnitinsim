@@ -18,14 +18,15 @@
  * Ajax functionality related to resending an errored submission to Turnitin.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 David Winn <dwinn@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__."/../../../config.php");
 require_once(__DIR__."/../lib.php");
-require_once( __DIR__ . '/../classes/tssubmission.class.php' );
-require_once( __DIR__ . '/../classes/tsrequest.class.php' );
+require_once( __DIR__ . '/../classes/submission.class.php' );
+require_once( __DIR__ . '/../classes/request.class.php' );
 
 require_login();
 
@@ -39,7 +40,7 @@ switch ($action) {
             throw new moodle_exception('invalidsesskey', 'error');
         }
 
-        $tssubmission = new tssubmission(new tsrequest(), $submissionid);
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $submissionid);
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->update();
 

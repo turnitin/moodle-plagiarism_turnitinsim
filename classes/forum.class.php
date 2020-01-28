@@ -18,13 +18,14 @@
  * Helper class for plagiarism_turnitinsim component in forums
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class tsforum {
+class plagiarism_turnitinsim_forum {
 
     /**
      * Get the text from the database for the forum post.

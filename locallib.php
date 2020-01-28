@@ -18,7 +18,8 @@
  * Extra library for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
-require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/tstask.class.php');
+require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/task.class.php');
 
 /*
  * Wrapper function for where PHP's getallheaders() function doesn't exist
@@ -52,7 +53,7 @@ function plagiarism_turnitinsim_get_request_headers() {
  * Scheduled Task to request and retrieve report scores from Turnitin.
  */
 function plagiarism_turnitinsim_task_get_reports() {
-    $tstask = new tstask();
+    $tstask = new plagiarism_turnitinsim_task();
     $tstask->get_reports();
 }
 
@@ -60,7 +61,7 @@ function plagiarism_turnitinsim_task_get_reports() {
  * Scheduled Task to send submissions to Turnitin.
  */
 function plagiarism_turnitinsim_task_send_submissions() {
-    $tstask = new tstask();
+    $tstask = new plagiarism_turnitinsim_task();
     $tstask->send_queued_submissions();
 }
 
@@ -68,6 +69,6 @@ function plagiarism_turnitinsim_task_send_submissions() {
  * Scheduled Task to update local configuration from Turnitin.
  */
 function plagiarism_turnitinsim_task_admin_update() {
-    $tstask = new tstask();
+    $tstask = new plagiarism_turnitinsim_task();
     $tstask->admin_update();
 }

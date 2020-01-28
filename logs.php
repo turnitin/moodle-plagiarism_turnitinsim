@@ -18,7 +18,8 @@
  * View logs page for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2017 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,7 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 // Require classes.
-require_once(__DIR__ . '/classes/forms/tssetupform.class.php');
+require_once(__DIR__ . '/classes/setup_form.class.php');
 
 // Restrict access to admins only.
 require_login();

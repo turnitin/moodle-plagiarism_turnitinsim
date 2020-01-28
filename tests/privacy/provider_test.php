@@ -17,9 +17,10 @@
 /**
  * Privacy provider tests.
  *
- * @package    plagiarism_turnitinsim
- * @copyright  2018 John McGettrick
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_turnitinsim
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use core_privacy\local\metadata\collection;

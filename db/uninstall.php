@@ -18,7 +18,8 @@
  * Configuration to remove on install for plagiarism_turnitinsim component
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2018 John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,17 +36,17 @@ function xmldb_plagiarism_turnitinsim_uninstall() {
     $mods = core_component::get_plugin_list('mod');
     foreach ($mods as $mod => $modpath) {
         if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-            set_config('turnitinmodenabled'.$mod, null, 'plagiarism');
+            set_config('turnitinmodenabled'.$mod, null, 'plagiarism_turnitinsim');
         }
     }
 
-    set_config('turnitinapiurl', null, 'plagiarism');
-    set_config('turnitinapikey', null, 'plagiarism');
-    set_config('turnitinenablelogging', null, 'plagiarism');
+    set_config('turnitinapiurl', null, 'plagiarism_turnitinsim');
+    set_config('turnitinapikey', null, 'plagiarism_turnitinsim');
+    set_config('turnitinenablelogging', null, 'plagiarism_turnitinsim');
 
-    set_config('turnitin_webhook_id', null, 'plagiarism');
-    set_config('turnitin_webhook_secret', null, 'plagiarism');
+    set_config('turnitin_webhook_id', null, 'plagiarism_turnitinsim');
+    set_config('turnitin_webhook_secret', null, 'plagiarism_turnitinsim');
 
-    set_config('turnitin_eula_version', null, 'plagiarism');
-    set_config('turnitin_eula_url', null, 'plagiarism');
+    set_config('turnitin_eula_version', null, 'plagiarism_turnitinsim');
+    set_config('turnitin_eula_url', null, 'plagiarism_turnitinsim');
 }

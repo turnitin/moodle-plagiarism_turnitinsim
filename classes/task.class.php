@@ -27,24 +27,24 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/tscallback.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php');
 
 use plagiarism_turnitinsim\message\new_eula;
 
 /**
  * Scheduled tasks.
  */
-class tstask {
+class plagiarism_turnitinsim_task {
 
     public $tsrequest;
     public $tscallback;
     public $tssettings;
 
     public function __construct( $params = null ) {
-        $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new tsrequest();
-        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new tscallback($this->tsrequest);
-        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new tssettings($this->tsrequest);
-        $this->tseula = (!empty($params->tseula)) ? $params->tseula : new tseula();
+        $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new plagiarism_turnitinsim_request();
+        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
+        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
+        $this->tseula = (!empty($params->tseula)) ? $params->tseula : new plagiarism_turnitinsim_eula();
     }
 
     /**
@@ -61,9 +61,9 @@ class tstask {
         }
 
         // Create webhook if necessary.
-        $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
+        $webhookid = get_config('plagiarism_turnitinsim', 'turnitin_webhook_id');
         if (empty($webhookid)) {
-            $this->tscallback = new tscallback($this->tsrequest);
+            $this->tscallback = new plagiarism_turnitinsim_callback($this->tsrequest);
             $this->tscallback->create_webhook();
         }
 
@@ -78,7 +78,7 @@ class tstask {
             // Reset headers.
             $this->tsrequest->set_headers();
 
-            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
+            $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
@@ -121,7 +121,7 @@ class tstask {
         $count = 0;
         foreach ($submissions as $submission) {
 
-            $tssubmission = new tssubmission($this->tsrequest, $submission->id);
+            $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             // Request Originality Report to be generated if it hasn't already, this should have been done by the
             // webhook callback so ignore anything submitted to Turnitin in the 2 minutes.
@@ -185,7 +185,7 @@ class tstask {
         $this->tsrequest->set_headers();
 
         // Check webhook is valid.
-        $webhookid = get_config('plagiarism', 'turnitin_webhook_id');
+        $webhookid = get_config('plagiarism_turnitinsim', 'turnitin_webhook_id');
 
         // If we have a webhook id then retrieve the webhook.
         if ($webhookid) {
@@ -210,7 +210,7 @@ class tstask {
         $this->tsrequest->set_headers();
 
         // Get the features enabled so we can check if EULA is required for this tenant.
-        $features = json_decode(get_config('plagiarism', 'turnitin_features_enabled'));
+        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         if (!(bool)$features->tenant->require_eula) {
             return true;
         }
@@ -219,13 +219,13 @@ class tstask {
         $response = $this->tseula->get_latest_version();
         if (!empty($response)) {
             // Compare latest EULA to the current EULA we have stored.
-            $currenteulaversion = get_config('plagiarism', 'turnitin_eula_version');
+            $currenteulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
             $neweulaversion = (empty($response->version)) ? '' : $response->version;
 
             // Update EULA version and url if necessary.
             if ($currenteulaversion != $neweulaversion) {
-                set_config('turnitin_eula_version', $response->version, 'plagiarism');
-                set_config('turnitin_eula_url', $response->url, 'plagiarism');
+                set_config('turnitin_eula_version', $response->version, 'plagiarism_turnitinsim');
+                set_config('turnitin_eula_url', $response->url, 'plagiarism_turnitinsim');
 
                 // Notify all users linked to Turnitin that there is a new EULA to accept.
                 $message = new new_eula();
@@ -250,12 +250,12 @@ class tstask {
             unset($response->status);
 
             // Compare enabled features to the current enabled features we have stored.
-            $currentfeatures = get_config('plagiarism', 'turnitin_features_enabled');
+            $currentfeatures = get_config('plagiarism_turnitinsim', 'turnitin_features_enabled');
             $newfeatures = json_encode($response);
 
             // Update enabled features if necessary.
             if ($currentfeatures != $newfeatures && !empty($newfeatures)) {
-                set_config('turnitin_features_enabled', $newfeatures, 'plagiarism');
+                set_config('turnitin_features_enabled', $newfeatures, 'plagiarism_turnitinsim');
             }
         }
 
