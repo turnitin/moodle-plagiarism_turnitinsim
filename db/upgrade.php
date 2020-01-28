@@ -199,7 +199,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     // This block will migrate the config namespace for the plugin to plagiarism_turnitinsim.
-    if ($oldversion < 2020011001) {
+    if ($oldversion < 2020012801) {
         $data = get_config('plagiarism');
 
         $properties = array('turnitinmodenabledassign', 'turnitinmodenabledforum', 'turnitinmodenabledworkshop',
@@ -213,7 +213,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2020011001, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2020012801, 'plagiarism', 'turnitinsim');
     }
 
     return true;
