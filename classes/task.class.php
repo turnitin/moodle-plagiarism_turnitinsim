@@ -120,7 +120,6 @@ class plagiarism_turnitinsim_task {
         // Request reports be generated or get scores for reports that have been requested.
         $count = 0;
         foreach ($submissions as $submission) {
-
             $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             // Request Originality Report to be generated if it hasn't already, this should have been done by the

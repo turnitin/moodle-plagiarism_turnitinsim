@@ -190,7 +190,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
 
         // If we don't then retrieve them and overwrite mtrace so it doesn't output to screen.
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
-        if (empty($features)) {
+        if (empty($features) || $features = "{}") {
             try {
                 $tstask = new plagiarism_turnitinsim_task();
                 $tstask->check_enabled_features();
@@ -206,26 +206,29 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
 
         // Display Search Repositories.
         $repolist = html_writer::tag('dt', get_string('turnitinfeatures::repositories', 'plagiarism_turnitinsim'));
-        foreach ($features['similarity']['generation_settings']['search_repositories'] as $repo) {
-            $repolist .= html_writer::tag('dd', ucwords(strtolower(str_replace('_', ' ', $repo))));
-        }
-        $enabledfeatures .= html_writer::tag('dl', $repolist, array('class' => 'turnitinsim_featurelist'));
 
-        // Display View Options.
-        $settinglist = html_writer::tag('dt', get_string('turnitinfeatures::viewoptions', 'plagiarism_turnitinsim'));
-        foreach ($features['similarity']['view_settings'] as $setting => $enabled) {
-            $icon = ($enabled) ? 'option-yes' : 'option-no';
-            $icon = $OUTPUT->pix_icon($icon, '', 'plagiarism_turnitinsim', array('class' => 'turnitinsim_optionicon'));
-            $settinglist .= html_writer::tag('dd', $icon.ucwords(str_replace('_', ' ', $setting)));
-        }
-        $enabledfeatures .= html_writer::tag('dl', $settinglist, array('class' => 'turnitinsim_featurelist'));
+        if (!empty($features)) {
+            foreach ($features['similarity']['generation_settings']['search_repositories'] as $repo) {
+                $repolist .= html_writer::tag('dd', ucwords(strtolower(str_replace('_', ' ', $repo))));
+            }
+            $enabledfeatures .= html_writer::tag('dl', $repolist, array('class' => 'turnitinsim_featurelist'));
 
-        $eulastring = (!(bool)$features['tenant']['require_eula']) ? 'eulanotrequired' : 'eularequired';
-        $enabledfeatures .= html_writer::tag(
-            'p',
-            get_string('turnitinfeatures::'.$eulastring, 'plagiarism_turnitinsim'),
-            array('class' => 'bold')
-        );
+            // Display View Options.
+            $settinglist = html_writer::tag('dt', get_string('turnitinfeatures::viewoptions', 'plagiarism_turnitinsim'));
+            foreach ($features['similarity']['view_settings'] as $setting => $enabled) {
+                $icon = ($enabled) ? 'option-yes' : 'option-no';
+                $icon = $OUTPUT->pix_icon($icon, '', 'plagiarism_turnitinsim', array('class' => 'turnitinsim_optionicon'));
+                $settinglist .= html_writer::tag('dd', $icon . ucwords(str_replace('_', ' ', $setting)));
+            }
+            $enabledfeatures .= html_writer::tag('dl', $settinglist, array('class' => 'turnitinsim_featurelist'));
+
+            $eulastring = (!(bool)$features['tenant']['require_eula']) ? 'eulanotrequired' : 'eularequired';
+            $enabledfeatures .= html_writer::tag(
+                'p',
+                get_string('turnitinfeatures::'.$eulastring, 'plagiarism_turnitinsim'),
+                array('class' => 'bold')
+            );
+        }
 
         $enabledfeatures .= html_writer::tag('p', get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'));
 
