@@ -207,7 +207,6 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         // Display Search Repositories.
         $repolist = html_writer::tag('dt', get_string('turnitinfeatures::repositories', 'plagiarism_turnitinsim'));
 
-//        if (!empty($features)) {
         if (!empty($features) && $features != "{}") {
                 foreach ($features['similarity']['generation_settings']['search_repositories'] as $repo) {
                     $repolist .= html_writer::tag('dd', ucwords(strtolower(str_replace('_', ' ', $repo))));
