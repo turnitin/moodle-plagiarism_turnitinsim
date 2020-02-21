@@ -68,6 +68,7 @@ class plagiarism_turnitinsim_task {
         }
 
         // Get Submissions to send.
+        // Joined with course_modules so that we don't send queued submissions for submissions belonging to deleted course_modules.
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
@@ -125,10 +126,6 @@ class plagiarism_turnitinsim_task {
                                         AND turnitinid IS NOT NULL',
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)
         );
-
-        echo '<pre>';
-        var_dump($submissions);
-        echo '</pre>';
 
         // Request reports be generated or get scores for reports that have been requested.
         $count = 0;
