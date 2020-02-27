@@ -101,6 +101,13 @@ class plagiarism_turnitinsim_submission {
      */
     public function calculate_generation_time($generated = false) {
         $cm = get_coursemodule_from_id('', $this->getcm());
+
+        // If we can't find a course module, don't proceed.
+        if (!$cm) {
+            $this->settogenerate(0);
+            return;
+        }
+
         $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
 
         // Create module object.
