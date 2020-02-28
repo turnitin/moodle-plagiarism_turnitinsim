@@ -1400,6 +1400,64 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
+     * Test that the generation date is set correctly when no course module exists.
+     */
+    public function test_set_generation_time_no_course_module() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1, 'reportgeneration' => TURNITINSIM_REPORT_GEN_IMMEDIATE);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
+
+        // Log student in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+
+        $assign->delete_instance();
+
+        // Call the method we're testing and update.
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => $cm->id]);
+
+        $this->assertEquals(0, $record->to_generate);
+        $this->assertEquals(0, $record->generation_time);
+    }
+
+    /**
      * Test that is submission anonymous returns false if blind marking is off.
      */
     public function test_is_submission_anonymous_blindmarking_off() {

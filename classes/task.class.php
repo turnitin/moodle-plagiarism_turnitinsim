@@ -68,9 +68,15 @@ class plagiarism_turnitinsim_task {
         }
 
         // Get Submissions to send.
-        $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub', 'status = ?',
-            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED), '', '*', 0,
-            TURNITINSIM_SUBMISSION_SEND_LIMIT);
+        // Joined with course_modules so that we don't send queued submissions for submissions belonging to deleted course_modules.
+        $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
+                                    JOIN {course_modules} c
+                                    ON s.cm = c.id
+                                    WHERE (status = ? OR status = ?) 
+                                        AND c.deletioninprogress = ?
+                                    LIMIT ?',
+            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, 0, TURNITINSIM_SUBMISSION_SEND_LIMIT)
+        );
 
         // Create each submission in Turnitin and upload submission.
         foreach ($submissions as $submission) {
@@ -111,16 +117,19 @@ class plagiarism_turnitinsim_task {
         }
 
         // Get submissions to request reports for.
-        $submissions = $DB->get_records_select(
-            'plagiarism_turnitinsim_sub',
-            " ((to_generate = ? AND generation_time <= ?) OR (status = ?)) AND turnitinid IS NOT NULL",
-            array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED)
+        // Joined with course_modules so that we don't request reports for submissions belonging to deleted course_modules.
+        $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
+                                    JOIN {course_modules} c
+                                    ON s.cm = c.id
+                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?)) 
+                                        AND c.deletioninprogress = ?
+                                        AND turnitinid IS NOT NULL',
+            array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)
         );
 
         // Request reports be generated or get scores for reports that have been requested.
         $count = 0;
         foreach ($submissions as $submission) {
-
             $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
 
             // Request Originality Report to be generated if it hasn't already, this should have been done by the

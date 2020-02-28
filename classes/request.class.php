@@ -60,10 +60,6 @@ class plagiarism_turnitinsim_request {
         global $CFG;
 
         $this->headers = array(
-            'sms-namespace: redwood',
-            'sms-serviceName: tsa',
-            'sms-tenantId: *',
-            'sms-serviceVersion: latest',
             'Authorization: Bearer ' . $this->apikey,
             'X-Turnitin-Integration-Name: Moodle',
             'X-Turnitin-Integration-Version: tii-v' . get_config('plagiarism_turnitinsim', 'version'). '.' . $CFG->version
