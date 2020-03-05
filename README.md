@@ -1,5 +1,21 @@
-TurnitinSim Plagiarism plugin for Moodle
+Turnitin Integrity Plugin for Moodle
 =
+
+Description:
+-
+Utilize **Turnitin Integrity’s** Similarity Report and Authorship investigating tools within Moodle’s assignment workflow by integrating with the Turnitin Integrity plugin. **Turnitin Integrity** is a commercial plagiarism and authorship detection system whose features depend on which paid license has been selected. This plugin is developed and maintained by Turnitin.
+
+Features:
+-
+- Plugin integrates into the existing Moodle assignment, Forum, and Workshop workflows
+- Plugin provides Turnitin Originality, Similarity, and SimCheck services dependant on the license used
+- Receive a similarity score for your Moodle assignment, Forum, and Workshop submissions
+- Launch into the Turnitin viewer to review a detailed report on the similarity score produced
+- Option for anonymized submissions which masks the student’s details when sent to Turnitin
+
+Useful Links
+-
+[Creating the your Turnitin API key](https://help.turnitin.com/simcheck/integrations/moodle/administrator/account-basics/creating-an-API-key.htm)
 
 Installation
 -
@@ -10,7 +26,7 @@ Plagiarism plugins also need to be enabled before this plugin can be used. This 
 
 Configuring
 -
-To configure the plugin go to `"Site administration" > "Plugins" > "Plagiarism" > "TurnitinSim plagiarism plugin"` and enter your API key and API URL.
+To configure the plugin go to `"Site administration" > "Plugins" > "Plagiarism" > "Turnitin Integrity plagiarism plugin"` and enter your API key and API URL.
 
 Testing
 -

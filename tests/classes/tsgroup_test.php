@@ -29,7 +29,7 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/group.class.php');
 
 /**
- * Tests for TurnitinSim group class.
+ * Tests for Turnitin Integrity group class.
  *
  * @package turnitinsim
  */
