@@ -293,7 +293,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
             "objectid" => $submission->id
         );
 
-        // Create a TurnitinSim submission record that is queued for sending to Turnitin.
+        // Create a Turnitin Integrity submission record that is queued for sending to Turnitin.
         $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request() );
         $tssubmission->setcm($this->cm->id);
         $tssubmission->setuserid($this->student1->id);
