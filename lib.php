@@ -484,7 +484,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $moduleobject = new $moduleclass;
 
         // Set the author, submitter and group (if applicable).
-        $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
+        $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid']);
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
@@ -493,7 +493,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // If this is a user confirming a final submission then revert the submission to
         // TURNITINSIM_SUBMISSION_STATUS_UPLOADED so that a report gets requested and the paper gets indexed if needed.
-        if ($moduledata->submissiondrafts && $eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
+        if ($moduledata->submissiondrafts &&
+            $eventdata['other']['modulename'] == 'assign' &&
+            $eventdata['eventtype'] == "assessable_submitted") {
+
             $submissions = $DB->get_records_select(
                 'plagiarism_turnitinsim_sub',
                 'cm = ? AND userid = ? AND itemid = ? AND status != ?',

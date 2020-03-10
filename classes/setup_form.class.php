@@ -195,6 +195,8 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
                 $tstask = new plagiarism_turnitinsim_task();
                 $tstask->check_enabled_features();
             } catch (Exception $e) {
+                $logger = new plagiarism_turnitinsim_logger();
+                $logger->error(get_string('errorenabledfeatures', 'plagiarism_turnitinsim'));
                 // Gracefully handle error - do nothing.
             }
             $features = get_config('plagiarism_turnitinsim', 'turnitin_features_enabled');

@@ -75,7 +75,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
         $mockwebhookid = (new handle_deprecation)->create_uuid();
-        $result = $tscallback->get_webhook($mockwebhookid);
+        $result = $tscallback->has_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
         $this->assertFalse($result);
@@ -101,7 +101,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback($tsrequest);
         $mockwebhookid = (new handle_deprecation)->create_uuid();
-        $result = $tscallback->get_webhook($mockwebhookid);
+        $result = $tscallback->has_webhook($mockwebhookid);
 
         // Test that the webhook has not been retrieved.
         $this->assertTrue($result);
@@ -130,7 +130,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
         $mockwebhookid = (new handle_deprecation)->create_uuid();
-        $result = $tscallback->get_webhook($mockwebhookid);
+        $result = $tscallback->has_webhook($mockwebhookid);
 
         // Test that the webhook should return false as the URL does not match the current site.
         $this->assertFalse($result);
@@ -159,7 +159,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         // Get webhook.
         $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
         $mockwebhookid = (new handle_deprecation)->create_uuid();
-        $result = $tscallback->get_webhook($mockwebhookid);
+        $result = $tscallback->has_webhook($mockwebhookid);
 
         // Test that the webhook should fail to retrieve as the URL does not match the current site.
         $this->assertTrue($result);

@@ -190,3 +190,5 @@ $string['privacy:metadata:plagiarism_turnitinsim_client:lastname'] = 'The user\'
 $string['privacy:metadata:plagiarism_turnitinsim_client:submission_title'] = 'The title of the submission is sent to Turntin so that it is identifiable.';
 $string['privacy:metadata:plagiarism_turnitinsim_client:submission_filename'] = 'The name of the submitted file is sent to Turntin so that it is identifiable.';
 $string['privacy:metadata:plagiarism_turnitinsim_client:submission_content'] = 'Please be aware that the content of a file/submission is sent to Turnitin for processing.';
+
+$string['errorenabledfeatures'] = 'Could not get the list of enabled features.';

@@ -41,7 +41,7 @@ class plagiarism_turnitinsim_callback {
      * @param $webhookid
      * @return bool
      */
-    public function get_webhook($webhookid) {
+    public function has_webhook($webhookid) {
         // Make request to get webhook.
         try {
             $endpoint = TURNITINSIM_ENDPOINT_GET_WEBHOOK;
@@ -115,7 +115,11 @@ class plagiarism_turnitinsim_callback {
         $request['signing_secret'] = $secret;
         $request['description'] = get_string('webhook_description', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL);
         $request['url'] = TURNITINSIM_CALLBACK_URL;
-        $request['event_types'] = array(TURNITINSIM_SUBMISSION_COMPLETE, TURNITINSIM_SIMILARITY_COMPLETE, TURNITINSIM_SIMILARITY_UPDATED);
+        $request['event_types'] = array(
+            TURNITINSIM_SUBMISSION_COMPLETE,
+            TURNITINSIM_SIMILARITY_COMPLETE,
+            TURNITINSIM_SIMILARITY_UPDATED
+        );
         $request['allow_insecure'] = preg_match("@^https?://@", $CFG->wwwroot) ? true : false;
 
         // Make request to add webhook.

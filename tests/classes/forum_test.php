@@ -43,7 +43,7 @@ class forum_test extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -171,12 +171,12 @@ class forum_test extends advanced_testcase {
 
         // Test that get author returns student2 as the author.
         $tsforum = new plagiarism_turnitinsim_forum();
-        $response = $tsforum->get_author($this->student1->id, $this->student2->id, 0, 0);
+        $response = $tsforum->get_author($this->student1->id, $this->student2->id);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
         $tsforum = new plagiarism_turnitinsim_forum();
-        $response = $tsforum->get_author($this->student1->id, 0, 0, 0);
+        $response = $tsforum->get_author($this->student1->id, 0);
         $this->assertEquals($this->student1->id, $response);
     }
 

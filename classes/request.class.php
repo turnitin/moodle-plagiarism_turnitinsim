@@ -40,7 +40,7 @@ class plagiarism_turnitinsim_request {
 
     public function __construct() {
 
-        // Only set attributes if plugin is configured
+        // Only set attributes if plugin is configured.
         $plugin = new plagiarism_plugin_turnitinsim();
         if ($plugin->is_plugin_configured()) {
             $pluginconfig = get_config('plagiarism_turnitinsim');

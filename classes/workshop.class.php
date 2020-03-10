@@ -67,7 +67,7 @@ class plagiarism_turnitinsim_workshop {
      * @param $relateduserid
      * @param $cmid
      */
-    public function get_author($userid, $relateduserid, $cmid, $itemid) {
+    public function get_author($userid, $relateduserid) {
         return (!empty($relateduserid)) ? $relateduserid : $userid;
     }
 

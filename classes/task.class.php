@@ -42,8 +42,10 @@ class plagiarism_turnitinsim_task {
 
     public function __construct( $params = null ) {
         $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new plagiarism_turnitinsim_request();
-        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
-        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
+        $this->tscallback = (!empty($params->tscallback)) ?
+            $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
+        $this->tssettings = (!empty($params->tssettings)) ?
+            $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
         $this->tseula = (!empty($params->tseula)) ? $params->tseula : new plagiarism_turnitinsim_eula();
     }
 
@@ -72,7 +74,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE (status = ? OR status = ?) 
+                                    WHERE (status = ? OR status = ?)
                                         AND c.deletioninprogress = ?
                                     LIMIT ?',
             array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, 0, TURNITINSIM_SUBMISSION_SEND_LIMIT)
@@ -121,7 +123,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?)) 
+                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?))
                                         AND c.deletioninprogress = ?
                                         AND turnitinid IS NOT NULL',
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)
@@ -198,7 +200,7 @@ class plagiarism_turnitinsim_task {
 
         // If we have a webhook id then retrieve the webhook.
         if ($webhookid) {
-            $valid = $this->tscallback->get_webhook($webhookid);
+            $valid = $this->tscallback->has_webhook($webhookid);
 
             if (!$valid) {
                 $this->tscallback->delete_webhook($webhookid);
