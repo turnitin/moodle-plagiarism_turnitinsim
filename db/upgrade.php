@@ -197,6 +197,8 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         // if necessary when the scheduled tasks run.
         $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         if (!isset($features->tenant)) {
+            $features = new \stdClass();
+            $features->tenant = new \stdClass();
             $features->tenant->require_eula = true;
             set_config('turnitin_features_enabled', json_encode($features), 'plagiarism_turnitinsim');
         }

@@ -500,7 +500,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $moduleobject = new $moduleclass;
 
         // Set the author, submitter and group (if applicable).
-        $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid']);
+        $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
