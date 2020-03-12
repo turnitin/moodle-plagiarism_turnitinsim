@@ -41,6 +41,15 @@ function xmldb_plagiarism_turnitinsim_install() {
     }
 }
 
+/**
+ * This method is ran on install so that anyone using the plugin namespaced turnitincheck can upgrade
+ * to the new plugin namespace without problems with losing data.
+ *
+ * @param $oldtable string The old table to migrate from.
+ * @param $newtable string The new table to migrate to.
+ * @throws ddl_exception
+ * @throws dml_exception
+ */
 function upgrade_from_turnitincheck_plugin($oldtable, $newtable) {
     global $DB;
 

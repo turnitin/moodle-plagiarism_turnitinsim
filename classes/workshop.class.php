@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper class for plagiarism_turnitinsim component in workshops
+ * Helper class for plagiarism_turnitinsim component in workshops.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -25,13 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Helper class for plagiarism_turnitinsim component in workshops
+ */
 class plagiarism_turnitinsim_workshop {
 
     /**
-     * Get the text from the database for the forum post.
+     * Get the text from the database for the submission.
      *
-     * @param $itemid
-     * @return mixed
+     * @param $itemid String The itemid for this submission.
+     * @return mixed The text of the submission.
+     * @throws dml_exception
      */
     public function get_onlinetext($itemid) {
         global $DB;
@@ -42,10 +46,11 @@ class plagiarism_turnitinsim_workshop {
     }
 
     /**
-     * Get the item id from the database for this submission when we have userid, moduleid and content.
+     * Get the item id from the database for this submission.
      *
-     * @param $params
-     * @return mixed
+     * @param $params object The params to call the DB with.
+     * @return int The itemid.
+     * @throws dml_exception
      */
     public function get_itemid($params) {
         global $DB;
@@ -63,19 +68,19 @@ class plagiarism_turnitinsim_workshop {
     /**
      * Get the actual author of the submission.
      *
-     * @param $userid
-     * @param $relateduserid
-     * @param $cmid
+     * @param $userid int The userid as given by Moodle.
+     * @param $relateduserid int The relateduserid as given by Moodle.
+     * @return int The authorid.
      */
     public function get_author($userid, $relateduserid) {
         return (!empty($relateduserid)) ? $relateduserid : $userid;
     }
 
     /**
-     * Get the group id that a submission belongs to - (N/A in workshops).
+     * Get the group id that a submission belongs to. - (N/A in workshops).
      *
-     * @param $itemid
-     * @return null
+     * @param $itemid string The itemid for the submission.
+     * @return int The group id.
      */
     public function get_groupid($itemid) {
         return null;
@@ -84,8 +89,8 @@ class plagiarism_turnitinsim_workshop {
     /**
      * Return whether the submission is a draft. Never the case with a workshop submission.
      *
-     * @param $itemid
-     * @return bool
+     * @param $itemid string The itemid for the submission.
+     * @return bool If the submission is a draft.
      */
     public function is_submission_draft($itemid) {
         return false;
@@ -94,8 +99,8 @@ class plagiarism_turnitinsim_workshop {
     /**
      * Return the due date so we can work out report generation time. Not applicable to forums.
      *
-     * @param $id
-     * @return int
+     * @param $id int The forum ID we want the due date for.
+     * @return int The due date for the assignment.
      */
     public function get_due_date($id) {
         return 0;

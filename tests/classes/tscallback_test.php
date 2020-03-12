@@ -32,9 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecati
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for Turnitin Integrity submission class
- *
- * @package turnitinsim
+ * Tests for Turnitin Integrity submission class.
  */
 class plagiarism_tscallback_class_testcase extends advanced_testcase {
 

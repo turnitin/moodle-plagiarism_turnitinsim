@@ -30,7 +30,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/task.class.php');
 
-/*
+/**
  * Wrapper function for where PHP's getallheaders() function doesn't exist
  *
  * return array

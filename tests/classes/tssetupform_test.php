@@ -30,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.p
 
 /**
  * Tests for settings form.
- *
- * @package turnitinsim
  */
 class plagiarism_tssetupform_class_testcase extends advanced_testcase {
 

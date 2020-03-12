@@ -30,13 +30,18 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for Turnitin Integrity submission class
- *
- * @package turnitinsim
+ * Tests for Turnitin Integrity submission class.
  */
 class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase {
 
+    /**
+     * A valid submission ID.
+     */
     const VALID_SUBMISSION_ID = '0ec9141f-3390-460e-8d2f-a4080080e749';
+
+    /**
+     * An invalid submission ID.
+     */
     const INVALID_SUBMISSION_ID = 'INVALID_ID';
 
     /**
@@ -203,7 +208,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($tsuser->get_turnitinid(), $userentry['id']);
     }
 
-    /*
+    /**
      * Test that create metadata returns no data if the cm doesn't exist.
      */
     public function test_create_group_metadata_no_cm() {
@@ -321,7 +326,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($tsgroup->get_turnitinid(), $owner);
     }
 
-    /*
+    /**
      * Test that create metadata returns as expected.
      */
     public function test_create_group_metadata_full() {

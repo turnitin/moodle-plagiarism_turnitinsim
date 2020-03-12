@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin setup form for plagiarism_turnitinsim component
+ * Plugin setup form for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -29,9 +29,16 @@ require_once($CFG->libdir."/formslib.php");
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 
+/**
+ * Plugin setup form for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_setup_form extends moodleform {
 
-    // Define the form.
+    /**
+     * Define the form.
+     *
+     * @throws coding_exception
+     */
     public function definition() {
         $mform =& $this->_form;
 
@@ -118,7 +125,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
      * Display the form, saving the contents of the output buffer overriding Moodle's
      * display function that prints to screen when called
      *
-     * @return the form as an object to print to screen at our convenience
+     * @return false|string The form as an object to print to screen at our convenience.
      */
     public function display() {
         ob_start();
@@ -130,7 +137,10 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
     }
 
     /**
-     * Save the plugin config data
+     * Save the plugin config data.
+     *
+     * @param $data object The data to save.
+     * @throws coding_exception
      */
     public function save($data) {
         $useplugin = 0;

@@ -25,10 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class for handling Turnitin's EULA.
+ */
 class plagiarism_turnitinsim_eula {
 
     public $tsrequest;
 
+    /**
+     * plagiarism_turnitinsim_eula constructor.
+     *
+     * @param plagiarism_turnitinsim_request|null $tsrequest The request we're handling.
+     */
     public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }

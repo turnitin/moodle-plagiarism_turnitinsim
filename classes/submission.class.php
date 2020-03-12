@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Submission class for plagiarism_turnitinsim component
+ * Submission class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -32,26 +32,103 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php')
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
 
+/**
+ * Submission class for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_submission {
 
+    /**
+     * @var int The submission ID.
+     */
     public $id;
+
+    /**
+     * @var object The course module.
+     */
     public $cm;
+
+    /**
+     * @var int The user ID.
+     */
     public $userid;
+
+    /**
+     * @var int The group ID.
+     */
     public $groupid;
+
+    /**
+     * @var int The submitter of the paper.
+     */
     public $submitter;
+
+    /**
+     * @var int The Turnitin submission ID.
+     */
     public $turnitinid;
+
+    /**
+     * @var string The submission status.
+     */
     public $status;
+
+    /**
+     * @var string The Moodle identifier for the file.
+     */
     public $identifier;
+
+    /**
+     * @var string The Moodle itemid for the submission.
+     */
     public $itemid;
+
+    /**
+     * @var string The type of submission, for example text or file.
+     */
     public $type;
+
+    /**
+     * @var int The time the submission was made.
+     */
     public $submittedtime;
+
+    /**
+     * @var int Whether or not the submission is still to be generated.
+     */
     public $togenerate;
+
+    /**
+     * @var int The time the originality report was generated.
+     */
     public $generationtime;
+
+    /**
+     * @var int The time the originality report was requested.
+     */
     public $requestedtime;
+
+    /**
+     * @var int The originality report.
+     */
     public $overallscore;
+
+    /**
+     * @var string The error nessage, if the submission did not complete successfully.
+     */
     public $errormessage;
+
+    /**
+     * @var object The request object.
+     */
     public $tsrequest;
 
+    /**
+     * plagiarism_turnitinsim_submission constructor.
+     *
+     * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
+     * @param null $id The submission ID.
+     * @throws dml_exception
+     */
     public function __construct(plagiarism_turnitinsim_request $tsrequest = null, $id = null) {
         global $DB;
 
@@ -98,6 +175,9 @@ class plagiarism_turnitinsim_submission {
 
     /**
      * Set the generation time for a paper.
+     *
+     * @param bool $generated true if originality report has been generated.
+     * @throws coding_exception
      */
     public function calculate_generation_time($generated = false) {
         $cm = get_coursemodule_from_id('', $this->getcm());
@@ -173,8 +253,9 @@ class plagiarism_turnitinsim_submission {
     /**
      * Build a user array entry from a passed in user object for submission metadata.
      *
-     * @param $user
+     * @param $user object The user data object.
      * @return mixed
+     * @throws dml_exception
      */
     public function build_user_array_entry($user) {
 
@@ -196,7 +277,7 @@ class plagiarism_turnitinsim_submission {
         return $userdata;
     }
 
-    /*
+    /**
      * Compile metadata for submission request.
      *
      * return mixed
@@ -270,6 +351,7 @@ class plagiarism_turnitinsim_submission {
      * Return the submission owner, this will be the group id for group submissions.
      *
      * @return integer Turnitin id identifying the owner.
+     * @throws dml_exception
      */
     public function get_owner() {
         if (!empty($this->getgroupid())) {
@@ -345,7 +427,8 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API create submission response.
      *
-     * @param $params
+     * @param $params object containing the submission response.
+     * @throws coding_exception
      */
     public function handle_create_submission_response($params) {
 
@@ -431,7 +514,10 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API submission response and callback from Turnitin.
      *
-     * @param $params
+     * @param $params object containing the upload response.
+     * @param $filename string The name of the file submitted.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function handle_upload_response($params, $filename) {
         // Update submission status.
@@ -457,7 +543,9 @@ class plagiarism_turnitinsim_submission {
     /**
      * Send digital receipts to the instructors and student.
      *
-     * @param $filename
+     * @param $filename string The name of the file submitted.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function send_digital_receipts($filename) {
         global $DB;
@@ -585,7 +673,8 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API similarity response and callback from Turnitin.
      *
-     * @param $params
+     * @param $params object containing the similarity score response.
+     * @throws coding_exception
      */
     public function handle_similarity_response($params) {
         // Update submission details.
@@ -604,8 +693,11 @@ class plagiarism_turnitinsim_submission {
     /**
      * Get the details for a submission from the Moodle database.
      *
-     * @param $linkarray
+     * @param $linkarray array The linkarray given by Moodle containing module data.
      * @return mixed
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public static function get_submission_details($linkarray) {
         global $DB;
@@ -659,6 +751,7 @@ class plagiarism_turnitinsim_submission {
      * Create the cloud viewer permissions array to send when requesting a viewer launch URL.
      *
      * @return array
+     * @throws dml_exception
      */
     public function create_report_viewer_permissions() {
         $turnitinviewerviewfullsource = get_config('plagiarism_turnitinsim', 'turnitinviewerviewfullsource');
@@ -678,6 +771,7 @@ class plagiarism_turnitinsim_submission {
      * These are true but may be configurable in the future.
      *
      * @return array
+     * @throws dml_exception
      */
     public function create_similarity_overrides() {
         $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
@@ -738,15 +832,18 @@ class plagiarism_turnitinsim_submission {
             $response = $this->tsrequest->send_request($endpoint, json_encode($request), 'POST');
             return $response;
         } catch (Exception $e) {
-
             $this->tsrequest->handle_exception($e, 'taskoutputfailedcvlaunchurl', $this->getturnitinid());
         }
+
+        return null;
     }
 
     /**
      * Check whether the submission is anonymous.
      *
      * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function is_submission_anonymous() {
         global $DB;
@@ -773,7 +870,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Get the path to the file from the pathnamehash
      *
-     * @return $filepath
+     * @return bool|stored_file $filepath
      */
     public function get_file_details() {
         $fs = get_file_storage();
@@ -783,6 +880,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the submission ID.
+     *
      * @return int
      */
     public function getid() {
@@ -790,6 +889,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the submission ID.
+     *
      * @param int $id
      */
     public function setid($id) {
@@ -797,13 +898,17 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
-     * @return int
+     * Get the course module.
+     *
+     * @return object
      */
     public function getcm() {
         return $this->cm;
     }
 
     /**
+     * Set the course module.
+     *
      * @param int $cm
      */
     public function setcm($cm) {
@@ -811,6 +916,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the user ID.
+     *
      * @return int
      */
     public function getuserid() {
@@ -818,6 +925,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the user ID.
+     *
      * @param int $userid
      */
     public function setuserid($userid) {
@@ -825,6 +934,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the group ID.
+     *
      * @return mixed
      */
     public function getgroupid() {
@@ -832,13 +943,17 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
-     * @param mixed $ownertype
+     * Set the group ID.
+     *
+     * @param mixed $groupid
      */
     public function setgroupid($groupid) {
         $this->groupid = $groupid;
     }
 
     /**
+     * Get the submitter of the paper.
+     *
      * @return mixed
      */
     public function getsubmitter() {
@@ -846,6 +961,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the submitter of the paper.
+     *
      * @param mixed $submitter
      */
     public function setsubmitter($submitter) {
@@ -853,6 +970,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the Turnitin submission ID.
+     *
      * @return int
      */
     public function getturnitinid() {
@@ -860,6 +979,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the Turnitin submission ID.
+     *
      * @param int $turnitinid
      */
     public function setturnitinid($turnitinid) {
@@ -867,6 +988,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the submission status.
+     *
      * @return mixed
      */
     public function getstatus() {
@@ -874,6 +997,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the submission status.
+     *
      * @param mixed $status
      */
     public function setstatus($status) {
@@ -881,6 +1006,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the Moodle identifier for the file.
+     *
      * @return mixed
      */
     public function getidentifier() {
@@ -888,6 +1015,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the Moodle identifier for the file.
+     *
      * @param mixed $identifier
      */
     public function setidentifier($identifier) {
@@ -895,34 +1024,43 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the time the submission was made.
+     *
      * @return mixed
      */
     public function getsubmittedtime() {
-        return $this->submitted_time;
+        return $this->submittedtime;
     }
 
     /**
+     * Set the time the submission was made.
+     *
      * @param mixed $submittedtime
      */
     public function setsubmittedtime($submittedtime) {
-        $this->submitted_time = $submittedtime;
+        $this->submittedtime = $submittedtime;
     }
 
     /**
+     * Get the originality report.
+     *
      * @return mixed
      */
     public function getoverallscore() {
-        return $this->overall_score;
+        return $this->overallscore;
     }
 
     /**
+     * Set the originality report.
+     *
      * @param mixed $overallscore
      */
     public function setoverallscore($overallscore) {
-        $this->overall_score = $overallscore;
+        $this->overallscore = $overallscore;
     }
 
     /**
+     * Get the Moodle itemid for the submission.
      * @return mixed
      */
     public function getitemid() {
@@ -930,6 +1068,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the Moodle itemid for the submission.
+     *
      * @param mixed $itemid
      */
     public function setitemid($itemid) {
@@ -937,20 +1077,26 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the time the originality report was requested.
+     *
      * @return mixed
      */
     public function getrequestedtime() {
-        return $this->requested_time;
+        return $this->requestedtime;
     }
 
     /**
+     * Set the time the originality report was requested.
+     *
      * @param mixed $requestedtime
      */
     public function setrequestedtime($requestedtime) {
-        $this->requested_time = $requestedtime;
+        $this->requestedtime = $requestedtime;
     }
 
     /**
+     * Get the error nessage, if the submission did not complete successfully.
+     *
      * @return mixed
      */
     public function geterrormessage() {
@@ -958,6 +1104,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the error nessage, if the submission did not complete successfully.
+     *
      * @param mixed $errormessage
      */
     public function seterrormessage($errormessage) {
@@ -965,6 +1113,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get the type of submission, for example text or file.
+     *
      * @return mixed
      */
     public function gettype() {
@@ -972,6 +1122,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Set the type of submission, for example text or file.
+     *
      * @param mixed $type
      */
     public function settype($type) {
@@ -979,30 +1131,37 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Get whether or not the submission is still to be generated.
      * @return mixed
      */
     public function gettogenerate() {
-        return $this->to_generate;
+        return $this->togenerate;
     }
 
     /**
+     * Set whether or not the submission is still to be generated.
+     *
      * @param mixed $togenerate
      */
     public function settogenerate($togenerate) {
-        $this->to_generate = $togenerate;
+        $this->togenerate = $togenerate;
     }
 
     /**
+     * Get the time the originality report was generated.
+     *
      * @return mixed
      */
     public function getgenerationtime() {
-        return $this->generation_time;
+        return $this->generationtime;
     }
 
     /**
+     * Get the time the originality report was generated.
+     *
      * @param mixed $generationtime
      */
     public function setgenerationtime($generationtime) {
-        $this->generation_time = $generationtime;
+        $this->generationtime = $generationtime;
     }
 }

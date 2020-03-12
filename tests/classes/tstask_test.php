@@ -30,12 +30,17 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 
 /**
  * Tests for Turnitin Integrity user class.
- *
- * @package turnitinsim
  */
 class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
 
+    /**
+     * An example API URL used for unit testing.
+     */
     const TURNITINSIM_API_URL = 'http://test.turnitin.com';
+
+    /**
+     * An example API key used for unit testing.
+     */
     const TURNITINSIM_API_KEY = '123456';
 
     /**
@@ -136,7 +141,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
         $this->assertEquals($url, $latesteula->url);
     }
 
-    /*
+    /**
      * Test that test_check_enabled_features sets the config as expected.
      */
     public function test_check_enabled_features() {

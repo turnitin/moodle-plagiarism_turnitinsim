@@ -31,9 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for Turnitin Integrity submission class
- *
- * @package turnitinsim
+ * Tests for Turnitin Integrity submission class.
  */
 class plagiarism_tsrequest_testcase extends advanced_testcase {
 

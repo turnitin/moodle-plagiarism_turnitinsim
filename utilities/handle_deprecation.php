@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Constants for plagiarism_turnitinsim component
+ * Class for handling deprecations for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2020 Turnitin
@@ -26,12 +26,17 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class deprecations - As Moodle development continues, we sometimes need to continue supporting methods that have
- * been deprecated so that our plugin continues to work in older Moodle versions.
+ * Handle class deprecations so that we can support multiple Moodle versions.
  */
 class handle_deprecation {
+    /**
+     * @var int The Moodle version.
+     */
     public $branch;
 
+    /**
+     * handle_deprecation constructor.
+     */
     public function __construct() {
         global $CFG;
         $this->branch = $CFG->branch;
