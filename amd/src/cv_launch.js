@@ -26,15 +26,15 @@
  * @module plagiarism_turnitinsim/cv_launch
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/str'], function($, str) {
     return {
-        open_cv: function() {
+        openCv: function() {
             $(document).on('click', '.or_score', function() {
 
                 // Moodle forums strip ids from elements so we have to use classes.
                 var classList = $(this).parent().attr('class').split(/\s+/);
                 var submissionid = 0;
-                $(classList).each(function(index){
+                $(classList).each(function(index) {
                     if (classList[index].match("^submission_")) {
                         submissionid = classList[index].split("_")[1];
                     }
@@ -46,7 +46,7 @@ define(['jquery'], function($) {
                 var loading = '<div class="tii_dv_loading" style="text-align:center;">';
                 var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiIcon.svg';
                 loading += '<img src="' + icon + '" style="width:100px; height: 100px">';
-                var loadingCvStr = M.str.plagiarism_turnitinsim.loadingcv;
+                var loadingCvStr = str.get_string('loadingcv', 'plagiarism_turnitinsim');
                 loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + loadingCvStr + '</p>';
                 loading += '</div>';
                 $(dvWindow.document.body).html(loading);

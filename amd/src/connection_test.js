@@ -26,7 +26,7 @@
  * @module plagiarism_turnitinsim/connection_test
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/str'], function($, str) {
     return {
         connectionTest: function() {
             // Store connection test selector.
@@ -49,12 +49,12 @@ define(['jquery'], function($) {
                                 ct.removeClass("connection-test-failed");
                                 ct.addClass("connection-test-success");
 
-                                changeString(ct, M.str.plagiarism_turnitinsim.connecttestsuccess);
+                                changeString(ct, str.get_string('connecttestsuccess', 'plagiarism_turnitinsim'));
                             } else {
                                 ct.removeClass("connection-test-success");
                                 ct.addClass("connection-test-failed");
 
-                                changeString(ct, M.str.plagiarism_turnitinsim.connecttestfailed);
+                                changeString(ct, str.get_string('connecttestfailed', 'plagiarism_turnitinsim'));
                             }
 
                             // Fade out classes and swap back values.
@@ -62,7 +62,7 @@ define(['jquery'], function($) {
                                 $(this).removeClass("turnitinsim_connection-test-failed");
                                 $(this).removeClass("turnitinsim_connection-test-success");
 
-                                changeString(ct, M.str.plagiarism_turnitinsim.connecttest);
+                                changeString(ct, str.get_string('connecttest', 'plagiarism_turnitinsim'));
                             }).fadeIn("slow");
                         }
                     });

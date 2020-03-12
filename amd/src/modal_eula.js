@@ -74,7 +74,7 @@ define(
                     Config.wwwroot + '/plagiarism/turnitinsim/eula.php?cmd=eularedirect&sesskey=' + Config.sesskey,
                     '_blank'
                 );
-            }.bind(this));
+            });
 
             // On accepting the EULA, update the db and queue submissions for this module.
             this.getModal().on(CustomEvents.events.activate, SELECTORS.ACCEPT_BUTTON, function() {
@@ -82,14 +82,14 @@ define(
 
                 $.ajax({
                     type: "POST",
-                    url: Config.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
+                    url: Config.wwwroot + "/plagiarism/turnitinsim/ajax/eulaResponse.php",
                     dataType: "json",
                     data: {
                         action: 'accept_eula',
                         contextid: Config.contextid,
                         sesskey: Config.sesskey
                     },
-                    success: function () {
+                    success: function() {
                         modal.hide();
                         var link = window.location.origin + window.location.pathname + window.location.search + '&eula=1';
                         window.location.href = link;

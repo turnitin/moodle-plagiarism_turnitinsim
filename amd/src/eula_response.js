@@ -26,9 +26,9 @@
  * @module plagiarism_turnitinsim/handleEulaResponse
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/str'], function($, str) {
     return {
-        eula_response: function() {
+        eulaResponse: function() {
             $(document).ready(function() {
                 $('input[name=submitbutton]').prop('disabled', 'disabled');
             });
@@ -39,17 +39,17 @@ define(['jquery'], function($) {
                 // Hide the EULA link.
                 $.ajax({
                     type: "POST",
-                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
+                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/eulaResponse.php",
                     dataType: "text",
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
-                        $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.eulaaccepted).fadeIn();
+                        $('.eulacontainer').hide().html(str.get_string('eulaaccepted', 'plagiarism_turnitinsim')).fadeIn();
                     }
                 });
             });
 
             $(document).on('click', '#pp-eula-decline', function() {
-                $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.euladeclined).fadeIn();
+                $('.eulacontainer').hide().html(str.get_string('euladeclined', 'plagiarism_turnitinsim')).fadeIn();
                 $('input[name=submitbutton]').prop('disabled', '');
             });
         }
