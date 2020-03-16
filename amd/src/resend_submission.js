@@ -50,8 +50,11 @@ define(['jquery', 'core/str'], function($, str) {
                     data: {action: "resubmit_event", submissionid: submissionid, sesskey: M.cfg.sesskey},
                     success: function() {
                         that.siblings('.turnitinsim_status').removeClass('hidden');
-                        that.siblings('.tii_status_text').html(
-                            str.get_string('submissiondisplaystatusqueued', 'plagiarism_turnitinsim'));
+
+                        str.get_string('euladeclined', 'plagiarism_turnitinsim').done(function(text) {
+                            that.siblings('.tii_status_text').html(text);
+                        });
+
                         that.siblings('.pp_resubmitting').addClass('hidden');
                     },
                     error: function() {

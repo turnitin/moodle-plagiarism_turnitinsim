@@ -46,8 +46,12 @@ define(['jquery', 'core/str'], function($, str) {
                 var loading = '<div class="tii_dv_loading" style="text-align:center;">';
                 var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiIcon.svg';
                 loading += '<img src="' + icon + '" style="width:100px; height: 100px">';
-                var loadingCvStr = str.get_string('loadingcv', 'plagiarism_turnitinsim');
-                loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + loadingCvStr + '</p>';
+
+                str.get_string('loadingcv', 'plagiarism_turnitinsim').done(function(text) {
+                    loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + text + '</p>';
+                    $('.eulacontainer').hide().html(text).fadeIn();
+                });
+
                 loading += '</div>';
                 $(dvWindow.document.body).html(loading);
 

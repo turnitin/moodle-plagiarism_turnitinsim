@@ -49,12 +49,16 @@ define(['jquery', 'core/str'], function($, str) {
                                 ct.removeClass("connection-test-failed");
                                 ct.addClass("connection-test-success");
 
-                                changeString(ct, str.get_string('connecttestsuccess', 'plagiarism_turnitinsim'));
+                                str.get_string('connecttestsuccess', 'plagiarism_turnitinsim').done(function(text) {
+                                    changeString(ct, text);
+                                });
                             } else {
                                 ct.removeClass("connection-test-success");
                                 ct.addClass("connection-test-failed");
 
-                                changeString(ct, str.get_string('connecttestfailed', 'plagiarism_turnitinsim'));
+                                str.get_string('connecttestfailed', 'plagiarism_turnitinsim').done(function(text) {
+                                    changeString(ct, text);
+                                });
                             }
 
                             // Fade out classes and swap back values.
@@ -62,7 +66,9 @@ define(['jquery', 'core/str'], function($, str) {
                                 $(this).removeClass("turnitinsim_connection-test-failed");
                                 $(this).removeClass("turnitinsim_connection-test-success");
 
-                                changeString(ct, str.get_string('connecttest', 'plagiarism_turnitinsim'));
+                                str.get_string('connecttest', 'plagiarism_turnitinsim').done(function(text) {
+                                    changeString(ct, text);
+                                });
                             }).fadeIn("slow");
                         }
                     });
