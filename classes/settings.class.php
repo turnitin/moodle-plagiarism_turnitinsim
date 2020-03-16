@@ -63,7 +63,7 @@ class plagiarism_turnitinsim_settings {
 
         // Require JS modules.
         if ($modulename == 'mod_assign') {
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/set_report_generation', 'set_report_generation');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/set_report_generation', 'setReportGeneration');
         }
 
         $mform->addElement('checkbox', 'turnitinenabled', get_string('turnitinpluginenabled', 'plagiarism_turnitinsim'));

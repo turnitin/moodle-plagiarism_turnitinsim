@@ -130,7 +130,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'openCv');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/resend_submission', 'resendSubmission');
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inboxEulaLaunch', 'inboxEulaLaunch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inboxEulaLaunch');
         }
         $output = '';
 
@@ -397,7 +397,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Require the JS module to handle the user's eula response.
         $PAGE->requires->string_for_js('eulaaccepted', 'plagiarism_turnitinsim');
         $PAGE->requires->string_for_js('euladeclined', 'plagiarism_turnitinsim');
-        $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eulaResponse', 'eulaResponse');
+        $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
 
         // Link to open the Turnitin EULA in a new tab.
         $tsrequest = new plagiarism_turnitinsim_request();

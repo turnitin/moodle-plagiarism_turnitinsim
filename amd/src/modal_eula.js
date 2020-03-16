@@ -82,7 +82,7 @@ define(
 
                 $.ajax({
                     type: "POST",
-                    url: Config.wwwroot + "/plagiarism/turnitinsim/ajax/eulaResponse.php",
+                    url: Config.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
                     dataType: "json",
                     data: {
                         action: 'accept_eula',

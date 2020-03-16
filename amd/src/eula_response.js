@@ -39,7 +39,7 @@ define(['jquery', 'core/str'], function($, str) {
                 // Hide the EULA link.
                 $.ajax({
                     type: "POST",
-                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/eulaResponse.php",
+                    url: M.cfg.wwwroot + "/plagiarism/turnitinsim/ajax/eula_response.php",
                     dataType: "text",
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
