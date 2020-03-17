@@ -24,7 +24,7 @@ define(['jquery',
     ],
     function($, Templates, ModalFactory, ModalTcEula) {
         return {
-            inbox_eula_launch: function() {
+            inboxEulaLaunch: function() {
                 var trigger = $('.eula-row-launch');
 
                 ModalFactory.create(

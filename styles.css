@@ -3,7 +3,8 @@
     position: relative;
 }
 
-.turnitinsim_features, .turnitinsim_ferpa {
+.turnitinsim_features,
+.turnitinsim_ferpa {
     border: 1px solid #db4221;
     padding: 10px;
     margin-bottom: 10px;
@@ -11,17 +12,17 @@
 
 .turnitinsim_features .turnitinsim_featurelist {
     float: left;
-    margin-top: 0px;
+    margin-top: 0;
     margin-right: 32px;
 }
 
 .turnitinsim_features h4 {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 .turnitinsim_features p {
     clear: both;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .turnitinsim_setup_download_links .mdl-align {
@@ -71,10 +72,12 @@
 }
 
 .turnitinsim_links .clear {
-    clear:both;
+    clear: both;
 }
 
-.turnitinsim_links .pp_resubmit_link, .turnitinsim_links .turnitinsim_status_text_eula, .turnitinsim_links .eula-row-launch {
+.turnitinsim_links .pp_resubmit_link,
+.turnitinsim_links .turnitinsim_status_text_eula,
+.turnitinsim_links .eula-row-launch {
     cursor: pointer;
 }
 
@@ -132,17 +135,17 @@
 /* Connection Test*/
 .turnitinsim_connection-test-success,
 .turnitinsim_connection-test-failed {
-    background-image: none !important;
-    color: #FFFFFF !important;
-    text-shadow: none !important;
+    background-image: none;
+    color: #fff;
+    text-shadow: none;
 }
 .turnitinsim_connection-test-success button:focus,
-.turnitinsim_connection-test-failed button:focus{
-    outline: 0 !important;
+.turnitinsim_connection-test-failed button:focus {
+    outline: 0;
 }
 .turnitinsim_connection-test-success {
-    background-color: #51a351 !important;
+    background-color: #51a351;
 }
 .turnitinsim_connection-test-failed {
-    background-color: #d9534f !important;
+    background-color: #d9534f;
 }

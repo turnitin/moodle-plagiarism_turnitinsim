@@ -25,8 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Used when backing up data created by the plugin.
+ */
 class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
 
+    /**
+     * Required by Moodle's backup tool to define the plugin structure.
+     *
+     * @return backup_plugin_element
+     * @throws backup_step_exception
+     * @throws base_element_struct_exception
+     */
     protected function define_module_plugin_structure() {
         $plugin = $this->get_plugin_element();
 

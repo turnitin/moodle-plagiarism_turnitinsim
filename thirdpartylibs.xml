@@ -14,4 +14,18 @@
         <license>PHP Framework Interoperability Group</license>
         <licenseversion></licenseversion>
     </library>
+    <library>
+        <location>vendor/composer</location>
+        <name>Composer</name>
+        <version></version>
+        <license></license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>vendor/autoload.php</location>
+        <name>Composer</name>
+        <version></version>
+        <license></license>
+        <licenseversion></licenseversion>
+    </library>
 </libraries>

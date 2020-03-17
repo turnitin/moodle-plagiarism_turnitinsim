@@ -15,7 +15,7 @@ Features:
 
 Useful Links
 -
-[Creating the your Turnitin API key](https://help.turnitin.com/simcheck/integrations/moodle/administrator/account-basics/creating-an-API-key.htm)
+[Creating your Turnitin API key](https://help.turnitin.com/simcheck/integrations/moodle/administrator/account-basics/creating-an-API-key.htm)
 
 Installation
 -

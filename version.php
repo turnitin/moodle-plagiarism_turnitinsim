@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version file for the plagiarism_turnitinsim plugin.
+ *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
  * @author    John McGettrick <jmcgettrick@turnitin.com>

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Default setting form for plagiarism_turnitinsim component
+ * Default setting form for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -28,9 +28,17 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir."/formslib.php");
 require_once($CFG->dirroot.'/plagiarism/turnitinsim/classes/settings.class.php');
 
+/**
+ * Default setting form for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_defaults_form extends moodleform {
 
-    // Define the form.
+    /**
+     * Form definition required when building a Moodle form.
+     *
+     * @throws dml_exception
+     * @throws coding_exception
+     */
     public function definition () {
         $mform =& $this->_form;
 
@@ -44,7 +52,7 @@ class plagiarism_turnitinsim_defaults_form extends moodleform {
      * Display the form, saving the contents of the output buffer overriding Moodle's
      * display function that prints to screen when called
      *
-     * @return the form as an object to print to screen at our convenience
+     * @return string The form as an object to print to screen at our convenience
      */
     public function display() {
         ob_start();
@@ -57,6 +65,13 @@ class plagiarism_turnitinsim_defaults_form extends moodleform {
 
     /**
      * Save the default settings
+     */
+
+    /**
+     * Save the default settings
+     *
+     * @param $data object The form data we were passed and need to save.
+     * @throws dml_exception
      */
     public function save($data) {
         $settings = new plagiarism_turnitinsim_settings();

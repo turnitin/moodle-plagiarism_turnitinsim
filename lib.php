@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main library for plagiarism_turnitinsim component
+ * Main library for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -39,15 +39,20 @@ require_once( __DIR__ . '/classes/logger.class.php' );
 require_once( __DIR__ . '/classes/eula.class.php' );
 require_once( __DIR__ . '/classes/task.class.php' );
 
+/**
+ * Main library for plagiarism_turnitinsim component.
+ */
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
      * Get the fields to be used in the form to configure each module's Turnitin settings.
      *
-     * @param object $mform  - Moodle form
+     * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
-     * @return array of settings fields.
+     * @return void of settings fields.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
 
@@ -92,6 +97,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Save the data associated with the plugin from the module's mod_form.
      *
      * @param object $data the form data to save
+     * @throws dml_exception
      */
     public function save_form_elements($data) {
 
@@ -108,7 +114,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Hook to allow report score and link to be displayed beside a submission.
      *
      * @param array $linkarray contains all relevant information to display a report score and link to cloud viewer.
-     * @return string
+     * @return string Output for similarity score and other display information.
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public function get_links($linkarray) {
         global $OUTPUT, $PAGE;
@@ -119,9 +128,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $jsloaded = true;
             $PAGE->requires->string_for_js('loadingcv', 'plagiarism_turnitinsim');
             $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'open_cv');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'openCv');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/resend_submission', 'resendSubmission');
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inbox_eula_launch');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inboxEulaLaunch');
         }
         $output = '';
 
@@ -290,8 +299,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
      * Check whether the plugin is active.
-     * @param $cm
-     * @return bool
+     * @param $cm object The course module data.
+     * @return bool true if the plugin is active.
+     * @throws dml_exception
      */
     public function is_plugin_active($cm) {
         // Get whether plugin is enabled for this module.
@@ -326,8 +336,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Render a link to resubmit the file to Turnitin.
      *
-     * @param $submissionid
-     * @return mixed
+     * @param $submissionid int The ID of the submission.
+     * @return mixed A link to resubmit the submission.
+     * @throws coding_exception
      */
     public function render_resubmit_link($submissionid) {
         global $OUTPUT;
@@ -351,6 +362,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      *
      * @param int $cmid - course module id
      * @return string
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function print_disclosure($cmid) {
         global $CFG, $PAGE, $USER;
@@ -384,7 +397,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Require the JS module to handle the user's eula response.
         $PAGE->requires->string_for_js('eulaaccepted', 'plagiarism_turnitinsim');
         $PAGE->requires->string_for_js('euladeclined', 'plagiarism_turnitinsim');
-        $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eula_response');
+        $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
 
         // Link to open the Turnitin EULA in a new tab.
         $tsrequest = new plagiarism_turnitinsim_request();
@@ -427,9 +440,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Get the Turnitin settings for a module.
      *
-     * @param int $cm_id - the course module id, if this is 0 the default settings will be retrieved
+     * @param int $cmid - the course module id, if this is 0 the default settings will be retrieved
      * @param string $fields - fields to return, all by default
      * @return array of Turnitin settings for a module
+     * @throws dml_exception
      */
     public function get_settings($cmid = null, $fields = '*') {
         global $DB;
@@ -441,6 +455,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * @param array $eventdata - provided by Moodle, should contain enough data to process a submission.
      * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function submission_handler($eventdata) {
         global $DB;
@@ -493,7 +509,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // If this is a user confirming a final submission then revert the submission to
         // TURNITINSIM_SUBMISSION_STATUS_UPLOADED so that a report gets requested and the paper gets indexed if needed.
-        if ($moduledata->submissiondrafts && $eventdata['other']['modulename'] == 'assign' && $eventdata['eventtype'] == "assessable_submitted") {
+        if ($moduledata->submissiondrafts &&
+            $eventdata['other']['modulename'] == 'assign' &&
+            $eventdata['eventtype'] == "assessable_submitted") {
+
             $submissions = $DB->get_records_select(
                 'plagiarism_turnitinsim_sub',
                 'cm = ? AND userid = ? AND itemid = ? AND status != ?',
@@ -509,11 +528,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     TURNITINSIM_SUBMISSION_STATUS_QUEUED
                 );
 
-                $status = (in_array($tssubmission->getstatus(), $statusarray)) ?
-                    TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_UPLOADED;
-
-                $generated = (in_array($tssubmission->getstatus(), $statusarray)) ?
-                    false : true;
+                $statusexists = in_array($tssubmission->getstatus(), $statusarray);
+                $status = ($statusexists) ? TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_UPLOADED;
+                $generated = ($statusexists) ? false : true;
 
                 $tssubmission->calculate_generation_time($generated);
                 $tssubmission->setstatus($status);
@@ -640,7 +657,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Event hook for when a module has been changed. Set the generation flag for a submission.
      *
-     * @param $eventdata
+     * @param $eventdata array containing information from the event being handled.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function module_updated($eventdata) {
         global $DB;
@@ -687,6 +706,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
 /**
  * Override Moodle's mtrace function for methods shared with tasks.
+ *
+ * @param $string string The message that would otherwise be displayed.
+ * @param $eol string end of line.
+ * @return bool
  */
 function plagiarism_turnitinsim_mtrace($string, $eol) {
     return true;

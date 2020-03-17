@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Task to update local config from Turnitin including testing the webhook, eatures enabled and
- * checking the latest version of the EULA with Turnitin.
+ * Update local configuration from Turnitin.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -29,14 +28,24 @@ namespace plagiarism_turnitinsim\task;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Update local configuration from Turnitin.
+ * Task to update local config from Turnitin including testing the webhook, eatures enabled and
+ * checking the latest version of the EULA with Turnitin.
  */
 class admin_update extends \core\task\scheduled_task {
 
+    /**
+     * Get the task name.
+     *
+     * @return string
+     * @throws \coding_exception
+     */
     public function get_name() {
         return \get_string('taskadminupdate', 'plagiarism_turnitinsim');
     }
 
+    /**
+     * Execute the task.
+     */
     public function execute() {
         global $CFG;
 

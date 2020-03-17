@@ -30,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/user.class.php');
 
 /**
  * Tests for Turnitin Integrity user class.
- *
- * @package turnitinsim
  */
 class plagiarism_turnitinsim_user_class_testcase extends advanced_testcase {
 

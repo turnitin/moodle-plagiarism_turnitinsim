@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin module settings form for plagiarism_turnitinsim component
+ * Plugin module settings form for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -25,10 +25,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Plugin module settings form for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_settings {
 
+    /**
+     * @var plagiarism_turnitinsim_request|null Request object.
+     */
     public $tsrequest;
 
+    /**
+     * plagiarism_turnitinsim_settings constructor.
+     *
+     * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
+     * @throws dml_exception
+     */
     public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }
@@ -36,7 +48,11 @@ class plagiarism_turnitinsim_settings {
     /**
      * Add Turnitin settings to module form.
      *
-     * @param $mform
+     * @param $mform object The Moodle form object.
+     * @param string $context The context, eg module or course.
+     * @param string $modulename The name of the module.
+     * @return mixed Moodle form with settings.
+     * @throws coding_exception
      */
     public function add_settings_to_module($mform, $context = 'module', $modulename = '') {
         global $PAGE;
@@ -47,7 +63,7 @@ class plagiarism_turnitinsim_settings {
 
         // Require JS modules.
         if ($modulename == 'mod_assign') {
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/set_report_generation', 'set_report_generation');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/set_report_generation', 'setReportGeneration');
         }
 
         $mform->addElement('checkbox', 'turnitinenabled', get_string('turnitinpluginenabled', 'plagiarism_turnitinsim'));
@@ -136,7 +152,8 @@ class plagiarism_turnitinsim_settings {
     /**
      * Save Turnitin settings for a module.
      *
-     * @param $mform
+     * @param $data object The settings data to add.
+     * @throws dml_exception
      */
     public function save_module_settings($data) {
         global $DB;

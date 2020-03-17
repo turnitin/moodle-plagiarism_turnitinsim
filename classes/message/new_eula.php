@@ -27,6 +27,9 @@ namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Notification for users that a new user is available that testing webhook check has failed.
+ */
 class new_eula {
     /**
      * Send notification to site admins.

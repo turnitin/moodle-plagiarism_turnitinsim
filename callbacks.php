@@ -86,7 +86,8 @@ if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
 }
 
 // Handle Similarity complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE || $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
+if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE ||
+    $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->submission_id));
     $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );

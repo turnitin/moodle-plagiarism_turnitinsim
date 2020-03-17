@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Group class for plagiarism_turnitinsim component
+ * Group class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -27,11 +27,26 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 
+/**
+ * Group class for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_group {
 
+    /**
+     * @var int The ID of the grup.
+     */
     public $groupid;
+
+    /**
+     * @var string The Turnitin group ID for the group.
+     */
     public $turnitinid;
 
+    /**
+     * plagiarism_turnitinsim_group constructor.
+     * @param $groupid int The ID of the group.
+     * @throws dml_exception
+     */
     public function __construct($groupid) {
         global $DB;
 
@@ -67,6 +82,8 @@ class plagiarism_turnitinsim_group {
     }
 
     /**
+     * Get the group ID.
+     *
      * @return mixed
      */
     public function get_groupid() {
@@ -74,6 +91,8 @@ class plagiarism_turnitinsim_group {
     }
 
     /**
+     * Set the group ID.
+     *
      * @param mixed $groupid
      */
     public function set_groupid($groupid) {
@@ -81,6 +100,8 @@ class plagiarism_turnitinsim_group {
     }
 
     /**
+     * Get the Turnitin group ID.
+     *
      * @return mixed
      */
     public function get_turnitinid() {
@@ -88,6 +109,8 @@ class plagiarism_turnitinsim_group {
     }
 
     /**
+     * Set the Turnitin group ID.
+     *
      * @param mixed $turnitinid
      */
     public function set_turnitinid($turnitinid) {

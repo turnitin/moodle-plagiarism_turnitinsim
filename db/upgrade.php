@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database upgrade script for plagiarism_turnitinsim component
+ * Database upgrade script for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -26,9 +26,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @global moodle_database $DB
- * @param int $oldversion
- * @return bool
+ * Database upgrade script for plagiarism_turnitinsim component.
+ *
+ * @param int $oldversion The version that is currently installed.
+ * @return bool true if upgrade was successful.
+ * @throws ddl_exception
+ * @throws ddl_table_missing_exception
+ * @throws dml_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
  */
 function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     global $DB;
@@ -191,6 +197,8 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         // if necessary when the scheduled tasks run.
         $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
         if (!isset($features->tenant)) {
+            $features = new \stdClass();
+            $features->tenant = new \stdClass();
             $features->tenant->require_eula = true;
             set_config('turnitin_features_enabled', json_encode($features), 'plagiarism_turnitinsim');
         }

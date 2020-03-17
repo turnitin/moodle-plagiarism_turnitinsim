@@ -30,16 +30,31 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
 
 /**
- * Tests for lib methods
- *
- * @package turnitinsim
+ * Tests for lib methods.
  */
 class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
+    /**
+     * Sample eula version for unit testing.
+     */
     const EULA_VERSION_1 = 'EULA1';
+
+    /**
+     * Sample API URL for unit testing.
+     */
     const TURNITINSIM_API_URL = 'http://test.turnitin.com';
+
+    /**
+     * Sample API key for unit testing.
+     */
     const TURNITINSIM_API_KEY = '123456';
 
+    /**
+     * Get a list of activity modules that support plagiarism plugins.
+     *
+     * @return int|string
+     * @throws coding_exception
+     */
     public function get_module_that_supports_plagiarism() {
         $mods = core_component::get_plugin_list('mod');
 
@@ -61,7 +76,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -387,7 +402,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertContains('or_score_colour_' . round($score, -1), $plagiarismturnitinsim->get_links($linkarray));
     }
 
-    /*
+    /**
      * Test that a resubmit link is rendered correctly.
      */
     public function test_render_resubmit_link() {
@@ -482,7 +497,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertTrue($plagiarismturnitinsim->is_plugin_configured($this->cm));
     }
 
-    /*
+    /**
      * Test that the EULA is output if the user has not accepted the latest version previously.
      */
     public function test_print_disclosure_display_latest() {
@@ -516,7 +531,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
     }
 
-    /*
+    /**
      * Test that the EULA is not output if the user has accepted the latest version previously.
      */
     public function test_print_disclosure_not_display_latest() {
@@ -559,7 +574,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -787,7 +802,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         set_config('turnitinsim_use', 1, 'plagiarism');
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/fixtures/get_features_enabled_eula_not_required.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 

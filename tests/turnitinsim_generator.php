@@ -25,8 +25,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Generator for Turnitin tests.
+ */
 class turnitinsim_generator extends advanced_testcase {
 
+    /**
+     * Define test_generator method.
+     *
+     * @return bool
+     */
     public function test_generator() {
         return true;
     }
@@ -37,6 +45,8 @@ class turnitinsim_generator extends advanced_testcase {
      *
      * @param array $params parameters to be provided to the assignment module creation
      * @return array containing the course, assignment module, student and teacher
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function create_assign_with_student_and_teacher($params = array()) {
         global $DB;
@@ -77,8 +87,10 @@ class turnitinsim_generator extends advanced_testcase {
     /**
      * Create a Turnitin submission.
      *
-     * @param int $numsubmissions
+     * @param int $numsubmissions The number of submissions to create.
      * @return array
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function create_submission($numsubmissions = 1) {
         global $DB, $CFG;

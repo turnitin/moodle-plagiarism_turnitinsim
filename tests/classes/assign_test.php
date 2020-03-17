@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for assign module class for plagiarism_turnitinsim component
+ * Tests for assign module class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -28,8 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
 
+/**
+ * Tests for assign module class for plagiarism_turnitinsim component.
+ */
 class assign_test extends advanced_testcase {
 
+    /**
+     * This is text content for unit testing a text submission.
+     */
     const TEST_ASSIGN_TEXT = 'This is text content for unit testing a text submission.';
 
     /**
@@ -43,7 +49,7 @@ class assign_test extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -192,7 +198,7 @@ class assign_test extends advanced_testcase {
         $this->assertEquals($tsassign->get_itemid($params), 0);
     }
 
-    /*
+    /**
      * Test that getting the author returns the correct user id.
      */
     public function test_get_author_returns_correct_user_id() {
@@ -245,7 +251,7 @@ class assign_test extends advanced_testcase {
 
     }
 
-    /*
+    /**
      * Test that checking the group author returns the first student.
      */
     public function test_check_group_first_author_returns_first_student() {
@@ -265,7 +271,7 @@ class assign_test extends advanced_testcase {
         $this->assertEquals($this->student1->id, $response);
     }
 
-    /*
+    /**
      * Test that checking the group author does not return an instructor.
      */
     public function test_check_group_first_author_does_not_return_instructor() {
@@ -285,7 +291,7 @@ class assign_test extends advanced_testcase {
         $this->assertEquals($this->student1->id, $response);
     }
 
-    /*
+    /**
      * Test that checking the group author does not return a user if no students are in the group.
      */
     public function test_check_group_first_author_returns_no_user_if_no_students_in_group() {
@@ -304,7 +310,7 @@ class assign_test extends advanced_testcase {
         $this->assertEquals(0, $response);
     }
 
-    /*
+    /**
      * Test that is submission draft returns correctly.
      */
     public function test_is_submission_draft() {

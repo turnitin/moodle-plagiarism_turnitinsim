@@ -26,9 +26,9 @@
  * @module plagiarism_turnitinsim/handleEulaResponse
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/str'], function($, str) {
     return {
-        eula_response: function() {
+        eulaResponse: function() {
             $(document).ready(function() {
                 $('input[name=submitbutton]').prop('disabled', 'disabled');
             });
@@ -43,13 +43,18 @@ define(['jquery'], function($) {
                     dataType: "text",
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
-                        $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.eulaaccepted).fadeIn();
+                        str.get_string('eulaaccepted', 'plagiarism_turnitinsim').done(function(text) {
+                            $('.eulacontainer').hide().html(text).fadeIn();
+                        });
                     }
                 });
             });
 
             $(document).on('click', '#pp-eula-decline', function() {
-                $('.eulacontainer').hide().html(M.str.plagiarism_turnitinsim.euladeclined).fadeIn();
+                str.get_string('euladeclined', 'plagiarism_turnitinsim').done(function(text) {
+                    $('.eulacontainer').hide().html(text).fadeIn();
+                });
+
                 $('input[name=submitbutton]').prop('disabled', '');
             });
         }

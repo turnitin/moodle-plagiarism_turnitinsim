@@ -17,9 +17,10 @@
 /**
  * Log API requests and responses from Turnitin.
  *
- * @package    plagiarism_turnitinsim
- * @author     John McGettrick http://www.turnitin.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_turnitinsim
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,12 +31,29 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 use Katzgrau\KLogger;
 
+/**
+ * Log API requests and responses from Turnitin.
+ */
 class plagiarism_turnitinsim_logger extends Katzgrau\KLogger\Logger {
 
+    /**
+     * The location of the log directory.
+     */
     const LOG_DIR = '/turnitinsim/logs/';
+
+    /**
+     * The number of logs to keep.
+     */
     const KEEPLOGS = 10;
+
+    /**
+     * The prefix for the API log file name.
+     */
     const APILOG_PREFIX = 'apilog_';
 
+    /**
+     * plagiarism_turnitinsim_logger constructor.
+     */
     public function __construct() {
         global $CFG;
 
@@ -49,7 +67,7 @@ class plagiarism_turnitinsim_logger extends Katzgrau\KLogger\Logger {
     /**
      * Rotate logs, only keep the last KEEPLOGS number of logs.
      *
-     * @param $filepath
+     * @param $filepath string The file path for the logs.
      */
     private function rotate_logs( $filepath ) {
 
