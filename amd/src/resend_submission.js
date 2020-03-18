@@ -26,7 +26,7 @@
  * @module plagiarism_turnitinsim/resendSubmission
  */
 
-define(['jquery'], function($) {
+define(['jquery', 'core/str'], function($, str) {
     return {
         resendSubmission: function() {
             $(document).on('click', '.pp_resubmit_link', function() {
@@ -37,7 +37,7 @@ define(['jquery'], function($) {
                 // Moodle forums strip ids from elements so we have to use classes.
                 var classList = $(this).attr('class').split(/\s+/);
                 var submissionid = 0;
-                $(classList).each(function(index){
+                $(classList).each(function(index) {
                     if (classList[index].match("^pp_resubmit_id_")) {
                         submissionid = classList[index].split("_")[3];
                     }
@@ -50,7 +50,11 @@ define(['jquery'], function($) {
                     data: {action: "resubmit_event", submissionid: submissionid, sesskey: M.cfg.sesskey},
                     success: function() {
                         that.siblings('.turnitinsim_status').removeClass('hidden');
-                        that.siblings('.tii_status_text').html(M.str.plagiarism_turnitinsim.submissiondisplaystatusqueued);
+
+                        str.get_string('euladeclined', 'plagiarism_turnitinsim').done(function(text) {
+                            that.siblings('.tii_status_text').html(text);
+                        });
+
                         that.siblings('.pp_resubmitting').addClass('hidden');
                     },
                     error: function() {

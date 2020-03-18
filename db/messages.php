@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Configuration for message providers for sending notifications.
+ *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
  * @author    John McGettrick <jmcgettrick@turnitin.com>

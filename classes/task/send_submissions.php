@@ -18,6 +18,7 @@
  * Send queued submissions to Turnitin.
  *
  * @package    plagiarism_turnitinsim
+ * @copyright  2018 Turnitin
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,10 +32,19 @@ defined('MOODLE_INTERNAL') || die();
  */
 class send_submissions extends \core\task\scheduled_task {
 
+    /**
+     * Get the task name.
+     *
+     * @return string
+     * @throws \coding_exception
+     */
     public function get_name() {
         return \get_string('tasksendqueuedsubmissions', 'plagiarism_turnitinsim');
     }
 
+    /**
+     * Execute the task.
+     */
     public function execute() {
         global $CFG;
 

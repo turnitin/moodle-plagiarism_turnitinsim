@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Student Digital Receipt for plagiarism_turnitinsim component
+ * Student Digital Receipt for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -27,13 +27,17 @@ namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Student Digital Receipt for plagiarism_turnitinsim component.
+ */
 class receipt_student {
 
     /**
      * Build digital receipt to send to student
      *
-     * @param array $input - used to build message
+     * @param $input - used to build message
      * @return string
+     * @throws \coding_exception
      */
     public function build_message($input) {
         $message = new \stdClass();
@@ -49,11 +53,12 @@ class receipt_student {
     }
 
     /**
-     * Send digital receipt to student
+     * Send digital receipt to student.
      *
-     * @param int $userid
-     * @param string $message
-     * @param int $courseid
+     * @param $userid int The userid to send the message to.
+     * @param $message string The message to send.
+     * @param $courseid int The ID for the course the submission is on.
+     * @throws \coding_exception
      */
     public function send_message($userid, $message, $courseid) {
         $eventdata = new \core\message\message();

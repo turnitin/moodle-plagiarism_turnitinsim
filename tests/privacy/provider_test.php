@@ -34,8 +34,14 @@ global $CFG;
 require_once($CFG->dirroot . '/mod/assign/externallib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/turnitinsim_generator.php');
 
+/**
+ * Privacy provider tests.
+ */
 class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase {
 
+    /**
+     * Setup method that runs before each test.
+     */
     public function setup() {
         $this->turnitinsim_generator = new turnitinsim_generator();
         $this->submission = $this->turnitinsim_generator->create_submission();
@@ -112,6 +118,9 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
         $this->assertCount(1, $contextlist);
     }
 
+    /**
+     * Test that user data is exported,
+     */
     public function test_export_plagiarism_user_data() {
         global $DB;
         $this->resetAfterTest();
@@ -125,6 +134,9 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
         $this->assertTrue($writer->has_any_data());
     }
 
+    /**
+     * Test that data can be deleted.
+     */
     public function test_delete_plagiarism_for_user() {
         global $DB;
         $this->resetAfterTest();
@@ -139,6 +151,9 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
         $this->assertEquals(0, count($submissions));
     }
 
+    /**
+     * Test that data for contexts can be deleted.
+     */
     public function test_delete_plagiarism_for_context() {
         global $DB;
         $this->resetAfterTest();

@@ -18,6 +18,7 @@
  * Communicate with Turnitin.
  *
  * @package    plagiarism_turnitinsim
+ * @copyright  2018 Turnitin
  * @author     John McGettrick http://www.turnitin.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,19 +29,42 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 /**
- * Get report Scores from Turnitin.
+ * Communicate with Turnitin.
  */
 class plagiarism_turnitinsim_request {
 
+    /**
+     * @var
+     */
     public $headers;
+
+    /**
+     * @var string The API URL for the account.
+     */
     public $apiurl;
+
+    /**
+     * @var string The API key for the account.
+     */
     public $apikey;
+
+    /**
+     * @var string The endpoint being requested.
+     */
     public $endpoint;
+
+    /**
+     * @var bool|plagiarism_turnitinsim_logger Instance of the logger.
+     */
     public $logger;
 
+    /**
+     * plagiarism_turnitinsim_request constructor.
+     * @throws dml_exception
+     */
     public function __construct() {
 
-        // Only set attributes if plugin is configured
+        // Only set attributes if plugin is configured.
         $plugin = new plagiarism_plugin_turnitinsim();
         if ($plugin->is_plugin_configured()) {
             $pluginconfig = get_config('plagiarism_turnitinsim');
@@ -54,7 +78,9 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
-     * @param array $headers
+     * Set the headers for the request.
+     *
+     * @throws dml_exception
      */
     public function set_headers() {
         global $CFG;
@@ -69,7 +95,7 @@ class plagiarism_turnitinsim_request {
     /**
      * Merge additional headers with current headers.
      *
-     * @param array $additional_headers
+     * @param array $additionalheaders Additional headers to add.
      */
     public function add_additional_headers($additionalheaders = array()) {
         $this->headers = array_merge($this->headers, $additionalheaders);
@@ -78,11 +104,11 @@ class plagiarism_turnitinsim_request {
     /**
      * Send request to Turnitin.
      *
-     * @param $endpoint
-     * @param $requestbody
-     * @param $method
-     * @param $requesttype general/submission
-     * @return mixed
+     * @param $endpoint string The endpoint to make a request to.
+     * @param $requestbody string The request body to send.
+     * @param $method string The request method eg GET/POST.
+     * @param string $requesttype The type of request, can be general or submission.
+     * @return array|bool|false|mixed|stdClass|string
      */
     public function send_request($endpoint, $requestbody, $method, $requesttype = 'general') {
         global $CFG;
@@ -192,8 +218,9 @@ class plagiarism_turnitinsim_request {
     /**
      * Handle API exceptions
      *
-     * @param $e
-     * @param string $displaystr
+     * @param $e object The exception.
+     * @param string $displaystr The string to display for the error.
+     * @throws coding_exception
      */
     public function handle_exception($e, $displaystr = '') {
 
@@ -259,6 +286,8 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
+     * Get the API URL.
+     *
      * @return mixed
      */
     public function get_apiurl() {
@@ -266,6 +295,8 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
+     * Set the API URL.
+     *
      * @param mixed $apiurl
      */
     public function set_apiurl($apiurl) {
@@ -273,14 +304,17 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
+     * Get the API key.
+     *
      * @return mixed
      */
-
     public function get_apikey() {
         return $this->apikey;
     }
 
     /**
+     * Set the API key.
+     *
      * @param mixed $apikey
      */
     public function set_apikey($apikey) {

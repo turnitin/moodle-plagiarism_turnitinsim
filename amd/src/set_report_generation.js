@@ -28,7 +28,7 @@
 
 define(['jquery'], function($) {
     return {
-        set_report_generation: function() {
+        setReportGeneration: function() {
             $(document).on('click', 'input[name="duedate[enabled]"]', function() {
                 if (!$(this).is(":checked")) {
                     $('select[name=reportgeneration]')[0].selectedIndex = 0;

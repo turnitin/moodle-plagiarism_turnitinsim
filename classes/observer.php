@@ -14,22 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Class for handling Moodle observers - for handling events.
+ *
+ * @package   plagiarism_turnitinsim
+ * @copyright 2018 Turnitin
+ * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
 require_once($CFG->dirroot.'/plagiarism/turnitinsim/lib.php');
 
+/**
+ * Class for handling Moodle observers - for handling events.
+ */
 class plagiarism_turnitinsim_observer {
-
 
     /**
      * Build the eventdata array.
      *
-     * @param $event
-     * @param $eventtype
-     * @param $module
-     * @return array $eventdata
+     * @param $event object The event we are handling.
+     * @param $eventtype string The type of event we are handling.
+     * @param $module string The name of the module.
+     * @return mixed
      */
     public static function build_event_data($event, $eventtype, $module = '') {
         $eventdata = $event->get_data();
@@ -88,6 +99,10 @@ class plagiarism_turnitinsim_observer {
         $plugin->submission_handler(self::build_event_data($event, 'assessable_submitted', 'workshop'));
     }
 
+    /**
+     * Handle the course_module_updated event.
+     * @param \core\event\course_module_updated $event
+     */
     public static function module_updated(\core\event\course_module_updated $event) {
         $plugin = new plagiarism_plugin_turnitinsim();
         $plugin->module_updated(self::build_event_data($event, 'module_updated'));

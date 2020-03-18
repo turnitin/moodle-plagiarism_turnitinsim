@@ -27,10 +27,18 @@ use plagiarism_turnitinsim\message\get_webhook_failure;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class for handling callbacks from Turnitin.
+ */
 class plagiarism_turnitinsim_callback {
 
     public $tsrequest;
 
+    /**
+     * plagiarism_turnitinsim_callback constructor.
+     *
+     * @param plagiarism_turnitinsim_request|null $tsrequest The request we're handling.
+     */
     public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = $tsrequest;
     }
@@ -38,10 +46,10 @@ class plagiarism_turnitinsim_callback {
     /**
      * Attempt to retrieve the webhook.
      *
-     * @param $webhookid
-     * @return bool
+     * @param $webhookid string The webhookid to check.
+     * @return bool true if has webhook.
      */
-    public function get_webhook($webhookid) {
+    public function has_webhook($webhookid) {
         // Make request to get webhook.
         try {
             $endpoint = TURNITINSIM_ENDPOINT_GET_WEBHOOK;
@@ -78,8 +86,8 @@ class plagiarism_turnitinsim_callback {
     /**
      * Attempt to delete the webhook (not currently used).
      *
-     * @param $webhookid
-     * @return bool
+     * @param $webhookid string The webhookid to be deleted.
+     * @return bool true if webhook has been deleted.
      */
     public function delete_webhook($webhookid) {
         // Make request to get webhook.
@@ -115,7 +123,11 @@ class plagiarism_turnitinsim_callback {
         $request['signing_secret'] = $secret;
         $request['description'] = get_string('webhook_description', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL);
         $request['url'] = TURNITINSIM_CALLBACK_URL;
-        $request['event_types'] = array(TURNITINSIM_SUBMISSION_COMPLETE, TURNITINSIM_SIMILARITY_COMPLETE, TURNITINSIM_SIMILARITY_UPDATED);
+        $request['event_types'] = array(
+            TURNITINSIM_SUBMISSION_COMPLETE,
+            TURNITINSIM_SIMILARITY_COMPLETE,
+            TURNITINSIM_SIMILARITY_UPDATED
+        );
         $request['allow_insecure'] = preg_match("@^https?://@", $CFG->wwwroot) ? true : false;
 
         // Make request to add webhook.
@@ -141,11 +153,15 @@ class plagiarism_turnitinsim_callback {
     }
 
     /**
-     * Handle callbacks from Turnitin.
+     * Generate a 64 character length hash of the request string.
+     *
+     * @param $requeststring string The request in string format.
+     * @return string A 64 character length hash.
+     * @throws dml_exception
      */
-    public function expected_callback_signature($requeststr) {
+    public function expected_callback_signature($requeststring) {
         $secret = get_config('plagiarism_turnitinsim', 'turnitin_webhook_secret');
-        $sig = hash_hmac('sha256', $requeststr, base64_decode($secret));
+        $sig = hash_hmac('sha256', $requeststring, base64_decode($secret));
 
         return $sig;
     }
@@ -153,7 +169,8 @@ class plagiarism_turnitinsim_callback {
     /**
      * Generate random webhook secret.
      *
-     * @return string
+     * @return string Random webhook secret.
+     * @throws Exception
      */
     public function generate_secret() {
         $randomstring = random_bytes(20);

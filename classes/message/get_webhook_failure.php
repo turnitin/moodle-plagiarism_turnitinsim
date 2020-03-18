@@ -27,6 +27,9 @@ namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Notification for admin that testing webhook check has failed.
+ */
 class get_webhook_failure {
     /**
      * Send notification to site admins.

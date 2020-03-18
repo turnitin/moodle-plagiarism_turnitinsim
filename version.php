@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version file for the plagiarism_turnitinsim plugin.
+ *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
  * @author    John McGettrick <jmcgettrick@turnitin.com>
@@ -23,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2020030501;
+$plugin->version = 2020031801;
 $plugin->release = "v1.0";
 $plugin->requires = 2017051500;
 $plugin->component = 'plagiarism_turnitinsim';

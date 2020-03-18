@@ -30,8 +30,14 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 
+/**
+ * Tests for workshop module class for plagiarism_turnitinsim component
+ */
 class workshop_test extends advanced_testcase {
 
+    /**
+     * Sameple text used for unit testing a workshop.
+     */
     const TEST_WORKSHOP_TEXT = 'Generated content';
 
     /**
@@ -43,7 +49,7 @@ class workshop_test extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -51,6 +57,11 @@ class workshop_test extends advanced_testcase {
         $this->student2 = $this->getDataGenerator()->create_user();
     }
 
+    /**
+     * Test that get_onlinetext returns the correct text.
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function test_get_onlinetext_returns_correct_text() {
         global $DB;
 
@@ -138,7 +149,7 @@ class workshop_test extends advanced_testcase {
         $this->assertEquals($result, 0);
     }
 
-    /*
+    /**
      * Test that getting the author returns the related user id.
      */
     public function test_get_author_returns_related_user_id() {
@@ -146,12 +157,12 @@ class workshop_test extends advanced_testcase {
 
         // Test that get author returns student2 as the author.
         $tsworkshop = new plagiarism_turnitinsim_workshop();
-        $response = $tsworkshop->get_author($this->student1->id, $this->student2->id, 0, 0);
+        $response = $tsworkshop->get_author($this->student1->id, $this->student2->id);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
         $tsworkshop = new plagiarism_turnitinsim_workshop();
-        $response = $tsworkshop->get_author($this->student1->id, 0, 0, 0);
+        $response = $tsworkshop->get_author($this->student1->id, 0);
         $this->assertEquals($this->student1->id, $response);
     }
 

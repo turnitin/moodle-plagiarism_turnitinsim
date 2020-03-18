@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for forum module class for plagiarism_turnitinsim component
+ * Tests for forum module class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -28,8 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
 
+/**
+ * Tests for forum module class for plagiarism_turnitinsim component.
+ */
 class forum_test extends advanced_testcase {
 
+    /**
+     * Sample text for testing a forum.
+     */
     const TEST_FORUM_TEXT = 'This is a test forum post';
 
     /**
@@ -43,7 +49,7 @@ class forum_test extends advanced_testcase {
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
 
-        // Set the features enabled
+        // Set the features enabled.
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
 
@@ -73,6 +79,11 @@ class forum_test extends advanced_testcase {
         );
     }
 
+    /**
+     * Test that get_onlinetext returns the correct text.
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function test_get_onlinetext_returns_correct_text() {
         $this->resetAfterTest();
 
@@ -163,7 +174,7 @@ class forum_test extends advanced_testcase {
         $this->assertEquals($result, 0);
     }
 
-    /*
+    /**
      * Test that getting the author returns the related user id.
      */
     public function test_get_author_returns_related_user_id() {
@@ -171,12 +182,12 @@ class forum_test extends advanced_testcase {
 
         // Test that get author returns student2 as the author.
         $tsforum = new plagiarism_turnitinsim_forum();
-        $response = $tsforum->get_author($this->student1->id, $this->student2->id, 0, 0);
+        $response = $tsforum->get_author($this->student1->id, $this->student2->id);
         $this->assertEquals($this->student2->id, $response);
 
         // Test that get author returns student1 as the author because relateduserid is empty.
         $tsforum = new plagiarism_turnitinsim_forum();
-        $response = $tsforum->get_author($this->student1->id, 0, 0, 0);
+        $response = $tsforum->get_author($this->student1->id, 0);
         $this->assertEquals($this->student1->id, $response);
     }
 

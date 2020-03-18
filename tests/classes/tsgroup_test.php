@@ -30,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/group.class.php');
 
 /**
  * Tests for Turnitin Integrity group class.
- *
- * @package turnitinsim
  */
 class plagiarism_turnitinsim_group_class_testcase extends advanced_testcase {
 

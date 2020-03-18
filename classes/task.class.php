@@ -18,6 +18,7 @@
  * Perform Scheduled Tasks.
  *
  * @package    plagiarism_turnitinsim
+ * @copyright  2017 Turnitin
  * @author     John McGettrick <jmcgettrick@turnitin.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,24 +33,44 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/callback.class.php
 use plagiarism_turnitinsim\message\new_eula;
 
 /**
- * Scheduled tasks.
+ * Perform Scheduled Tasks.
  */
 class plagiarism_turnitinsim_task {
 
+    /**
+     * @var plagiarism_turnitinsim_request Request object.
+     */
     public $tsrequest;
+
+    /**
+     * @var plagiarism_turnitinsim_callback Callback object.
+     */
     public $tscallback;
+
+    /**
+     * @var plagiarism_turnitinsim_settings Settings object.
+     */
     public $tssettings;
 
+    /**
+     * plagiarism_turnitinsim_task constructor.
+     * @param null $params for the task to run.
+     * @throws dml_exception
+     */
     public function __construct( $params = null ) {
         $this->tsrequest = (!empty($params->tsrequest)) ? $params->tsrequest : new plagiarism_turnitinsim_request();
-        $this->tscallback = (!empty($params->tscallback)) ? $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
-        $this->tssettings = (!empty($params->tssettings)) ? $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
+        $this->tscallback = (!empty($params->tscallback)) ?
+            $params->tscallback : new plagiarism_turnitinsim_callback($this->tsrequest);
+        $this->tssettings = (!empty($params->tssettings)) ?
+            $params->tssettings : new plagiarism_turnitinsim_settings($this->tsrequest);
         $this->tseula = (!empty($params->tseula)) ? $params->tseula : new plagiarism_turnitinsim_eula();
     }
 
     /**
      * Send Queued submissions to Turnitin.
      * @return boolean
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function send_queued_submissions() {
         global $DB;
@@ -72,7 +93,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE (status = ? OR status = ?) 
+                                    WHERE (status = ? OR status = ?)
                                         AND c.deletioninprogress = ?
                                     LIMIT ?',
             array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, 0, TURNITINSIM_SUBMISSION_SEND_LIMIT)
@@ -106,6 +127,8 @@ class plagiarism_turnitinsim_task {
     /**
      * Request a report to be generated and get report scores from Turnitin.
      * @return boolean
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function get_reports() {
         global $DB;
@@ -121,7 +144,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?)) 
+                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?))
                                         AND c.deletioninprogress = ?
                                         AND turnitinid IS NOT NULL',
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)
@@ -164,6 +187,7 @@ class plagiarism_turnitinsim_task {
      * Update the features enabled on the Turnitin Account and store locally.
      *
      * @return bool
+     * @throws coding_exception
      */
     public function admin_update() {
 
@@ -188,6 +212,7 @@ class plagiarism_turnitinsim_task {
     /**
      * Test whether the webhook is working, if not create a new one.
      * @return bool
+     * @throws dml_exception
      */
     public function test_webhook() {
         // Reset headers.
@@ -198,7 +223,7 @@ class plagiarism_turnitinsim_task {
 
         // If we have a webhook id then retrieve the webhook.
         if ($webhookid) {
-            $valid = $this->tscallback->get_webhook($webhookid);
+            $valid = $this->tscallback->has_webhook($webhookid);
 
             if (!$valid) {
                 $this->tscallback->delete_webhook($webhookid);
@@ -275,7 +300,9 @@ class plagiarism_turnitinsim_task {
      * Check if the task should be run. Initially this will check if the plugin is configured
      * and only run if it is but this could be expanded.
      *
-     * return boolean
+     * @param string $taskname The name of the scheduled task being ran.
+     * @return bool
+     * @throws coding_exception
      */
     public function run_task($taskname = '') {
         $plugin = new plagiarism_plugin_turnitinsim();

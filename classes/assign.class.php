@@ -25,13 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Helper class for plagiarism_turnitinsim component in assignments
+ */
 class plagiarism_turnitinsim_assign {
 
     /**
      * Get the text from the database for the submission.
      *
-     * @param $itemid
-     * @return mixed
+     * @param $itemid String The itemid for this submission.
+     * @return mixed The text of the submission.
+     * @throws dml_exception
      */
     public function get_onlinetext($itemid) {
         global $DB;
@@ -44,8 +48,9 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the item id from the database for this submission.
      *
-     * @param $params
-     * @return mixed
+     * @param $params object The params to call the DB with.
+     * @return int The itemid.
+     * @throws dml_exception
      */
     public function get_itemid($params) {
         global $DB;
@@ -65,10 +70,13 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the actual author of the submission.
      *
-     * @param $userid
-     * @param $relateduserid
-     * @param $cm
-     * @param $itemid
+     * @param $userid int The userid as given by Moodle.
+     * @param $relateduserid int The relateduserid as given by Moodle.
+     * @param $cm object The course module.
+     * @param $itemid string the itemid for this submission.
+     * @return int The authorid.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function get_author($userid, $relateduserid, $cm, $itemid) {
         $author = (!empty($relateduserid)) ? $relateduserid : $userid;
@@ -94,8 +102,9 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the group id that a submission belongs to.
      *
-     * @param $itemid
-     * @return int
+     * @param $itemid string The itemid for the submission.
+     * @return int The group id.
+     * @throws dml_exception
      */
     public function get_groupid($itemid) {
         global $DB;
@@ -105,13 +114,14 @@ class plagiarism_turnitinsim_assign {
         return (!empty($moodlesubmission->groupid)) ? $moodlesubmission->groupid : null;
     }
 
-    /*
+    /**
      * Related user ID will be NULL if an instructor submits on behalf of a student who is in a group.
      * To get around this, we get the group ID, get the group members and set the author as the first student in the group.
 
      * @param int $courseid - The course ID.
      * @param int $groupid - The ID of the Moodle group that we're getting from.
      * @return int $author The Moodle user ID that we'll be using for the author.
+     * @throws coding_exception
      */
     public function get_first_group_author($courseid, $groupid) {
         static $context;
@@ -132,8 +142,9 @@ class plagiarism_turnitinsim_assign {
     /**
      * Return whether the submission is a draft.
      *
-     * @param $itemid
-     * @return bool
+     * @param $itemid string The itemid for the submission.
+     * @return bool If the submission is a draft.
+     * @throws dml_exception
      */
     public function is_submission_draft($itemid) {
         global $DB;
@@ -143,9 +154,12 @@ class plagiarism_turnitinsim_assign {
         return ($moodlesubmission->status == 'draft') ? true : false;
     }
 
-    /*
+    /**
      * Get the assignment due date.
-     * @param $id
+     *
+     * @param $id int The assignment ID we want the due date for.
+     * @return mixed The due date for the assignment.
+     * @throws dml_exception
      */
     public function get_due_date($id) {
         global $DB;
@@ -155,12 +169,12 @@ class plagiarism_turnitinsim_assign {
         return $module->duedate;
     }
 
-    /*
+    /**
      * Determines whether the OR links in other posts should be seen. This is not applicable for assignments.
      *
-     * @param $courseid
-     * @param $userid
-     * @return bool
+     * @param $courseid int The ID for this course.
+     * @param $userid int The userid.
+     * @return bool if showing other posts links.
      */
     public function show_other_posts_links($courseid, $userid) {
         return true;

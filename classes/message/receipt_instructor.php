@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Instructor Digital Receipt for plagiarism_turnitinsim component
+ * Instructor Digital Receipt for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2018 Turnitin
@@ -27,13 +27,17 @@ namespace plagiarism_turnitinsim\message;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Instructor Digital Receipt for plagiarism_turnitinsim component
+ */
 class receipt_instructor {
 
     /**
      * Send digital receipt to instructor. This message must preserve the anonymity of a submission.
      *
-     * @param array $input
+     * @param $input - used to build message
      * @return string
+     * @throws \coding_exception
      */
     public function build_message($input) {
         $message = new \stdClass();
@@ -49,10 +53,10 @@ class receipt_instructor {
     /**
      * Send digital receipt to instructors.
      *
-     * @param array $instructors
-     * @param string $message
-     * @param int $courseid
-     * @return void
+     * @param $instructors array The instructors to send the receipt message to.
+     * @param $message string The message to send.
+     * @param $courseid int The ID for the course the submission is on.
+     * @throws \coding_exception
      */
     public function send_message($instructors, $message, $courseid) {
         $eventdata = new \core\message\message();

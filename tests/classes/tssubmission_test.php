@@ -30,13 +30,18 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
- * Tests for Turnitin Integrity submission class
- *
- * @package turnitinsim
+ * Tests for Turnitin Integrity submission class.
  */
 class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase {
 
+    /**
+     * A valid submission ID.
+     */
     const VALID_SUBMISSION_ID = '0ec9141f-3390-460e-8d2f-a4080080e749';
+
+    /**
+     * An invalid submission ID.
+     */
     const INVALID_SUBMISSION_ID = 'INVALID_ID';
 
     /**
@@ -117,6 +122,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->settogenerate(1);
         $tssubmission->setgenerationtime(100000001);
+
         $tssubmission->update();
 
         // Submission id should now be set.
@@ -203,7 +209,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($tsuser->get_turnitinid(), $userentry['id']);
     }
 
-    /*
+    /**
      * Test that create metadata returns no data if the cm doesn't exist.
      */
     public function test_create_group_metadata_no_cm() {
@@ -321,7 +327,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($tsgroup->get_turnitinid(), $owner);
     }
 
-    /*
+    /**
      * Test that create metadata returns as expected.
      */
     public function test_create_group_metadata_full() {
@@ -1654,25 +1660,25 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     /**
      * Test that the similarity overrides are false when configured as such.
      */
-     public function test_similarity_overrides_are_false() {
-         $this->resetAfterTest();
+    public function test_similarity_overrides_are_false() {
+        $this->resetAfterTest();
 
-         set_config('turnitinviewersavechanges', 0, 'plagiarism_turnitinsim');
+        set_config('turnitinviewersavechanges', 0, 'plagiarism_turnitinsim');
 
-         // Create assign module.
-         $record = new stdClass();
-         $record->course = $this->course;
-         $module = $this->getDataGenerator()->create_module('assign', $record);
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
 
-         // Get course module data.
-         $cm = get_coursemodule_from_instance('assign', $module->id);
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
 
-         // Create submission object.
-         $tssubmission = new plagiarism_turnitinsim_submission();
-         $tssubmission->setcm($cm->id);
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
 
-         // Verify that viewer permissions are true as the config values are set to true.
-         $overrides = $tssubmission->create_similarity_overrides();
-         $this->assertFalse($overrides['view_settings']['save_changes']);
-     }
+        // Verify that viewer permissions are true as the config values are set to true.
+        $overrides = $tssubmission->create_similarity_overrides();
+        $this->assertFalse($overrides['view_settings']['save_changes']);
+    }
 }

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * User class for plagiarism_turnitinsim component
+ * User class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
  * @copyright 2017 Turnitin
@@ -27,15 +27,46 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 
+/**
+ * User class for plagiarism_turnitinsim component.
+ */
 class plagiarism_turnitinsim_user {
 
+    /**
+     * @var int The Moodle user ID.
+     */
     public $userid;
+
+    /**
+     * @var int The Turnitin user ID.
+     */
     public $turnitinid;
+
+    /**
+     * @var string The EULA version the user last accepted.
+     */
     public $lasteulaaccepted;
+
+    /**
+     * @var int The unix timestamp that latest EULA was accepted.
+     */
     public $lasteulaacceptedtime;
+
+    /**
+     * @var string The language of the EULA that was last accepted.
+     */
     public $lasteulaacceptedlang;
+
+    /**
+     * @var object Request object.
+     */
     public $tsrequest;
 
+    /**
+     * plagiarism_turnitinsim_user constructor.
+     * @param $userid int The Moodle user ID.
+     * @throws dml_exception
+     */
     public function __construct($userid) {
         global $DB;
 
@@ -74,6 +105,8 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
+     * Get the Moodle user ID.
+     *
      * @return mixed
      */
     public function get_userid() {
@@ -81,13 +114,17 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
-     * @param mixed $userid
+     * Set the Moodle user ID.
+     *
+     * @param int $userid The Moodle user ID.
      */
     public function set_userid($userid) {
         $this->userid = $userid;
     }
 
     /**
+     * Get the Turnitin user ID.
+     *
      * @return mixed
      */
     public function get_turnitinid() {
@@ -95,13 +132,17 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
-     * @param mixed $turnitinid
+     * Set the Turnitin user ID.
+     *
+     * @param int $turnitinid The Turnitin user ID.
      */
     public function set_turnitinid($turnitinid) {
         $this->turnitinid = $turnitinid;
     }
 
     /**
+     * Get the EULA version the user last accepted.
+     *
      * @return mixed
      */
     public function get_lasteulaaccepted() {
@@ -109,13 +150,16 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
-     * @param mixed $lasteulaaccepted
+     * Set the EULA version the user last accepted.
+     *
+     * @param string $lasteulaaccepted The EULA version the user last accepted.
      */
     public function set_lasteulaaccepted($lasteulaaccepted) {
         $this->lasteulaaccepted = $lasteulaaccepted;
     }
 
     /**
+     * Get the unix timestamp that latest EULA was accepted.
      * @return mixed
      */
     public function get_lasteulaacceptedtime() {
@@ -123,13 +167,17 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
-     * @param mixed $lasteulaacceptedtime
+     * Set the unix timestamp that latest EULA was accepted.
+     *
+     * @param mixed $lasteulaacceptedtime The unix timestamp that latest EULA was accepted.
      */
     public function set_lasteulaacceptedtime($lasteulaacceptedtime) {
         $this->lasteulaacceptedtime = $lasteulaacceptedtime;
     }
 
     /**
+     * Get the language of the EULA that was last accepted.
+     *
      * @return mixed
      */
     public function get_lasteulaacceptedlang() {
@@ -137,7 +185,9 @@ class plagiarism_turnitinsim_user {
     }
 
     /**
-     * @param mixed $lasteulaacceptedtime
+     * Set the language of the EULA that was last accepted.
+     *
+     * @param string $lasteulaacceptedlang The language of the EULA that was last accepted.
      */
     public function set_lasteulaacceptedlang($lasteulaacceptedlang) {
         $this->lasteulaacceptedlang = $lasteulaacceptedlang;
