@@ -14,13 +14,13 @@
                 <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="turnitinid" NEXT="identifier"/>
                 <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="status" NEXT="itemid"/>
                 <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="identifier" NEXT="type"/>
-                <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="itemid" NEXT="submitted_time"/>
-                <FIELD NAME="submitted_time" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="itemid" NEXT="to_generate"/>
-                <FIELD NAME="to_generate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="submitted_time" NEXT="generation_time"/>
-                <FIELD NAME="generation_time" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="to_generate" NEXT="overall_score"/>
-                <FIELD NAME="overall_score" LENGTH="10" TYPE="int" NOTNULL="false" SEQUENCE="false" PREVIOUS="submitted_time" NEXT="requested_time"/>
-                <FIELD NAME="requested_time" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="overall_score" NEXT="errormessage"/>
-                <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="requested_time"/>
+                <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="itemid" NEXT="submittedtime"/>
+                <FIELD NAME="submittedtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="itemid" NEXT="togenerate"/>
+                <FIELD NAME="togenerate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="submittedtime" NEXT="generationtime"/>
+                <FIELD NAME="generationtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="togenerate" NEXT="overallscore"/>
+                <FIELD NAME="overallscore" LENGTH="10" TYPE="int" NOTNULL="false" SEQUENCE="false" PREVIOUS="submittedtime" NEXT="requestedtime"/>
+                <FIELD NAME="requestedtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="overallscore" NEXT="errormessage"/>
+                <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="requestedtime"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

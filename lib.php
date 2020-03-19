@@ -576,7 +576,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     $tssubmission->setid($submission->id);
 
                     // Only re-queue previously submitted files if they have been modified since original submission.
-                    if ($filedetails->get_timemodified() < $submission->submitted_time
+                    if ($filedetails->get_timemodified() < $submission->submittedtime
                         && $submission->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
                         continue;
                     }
@@ -684,21 +684,21 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $duedate = $moduleobject->get_due_date($cm->instance);
 
-            // Update to_generate field.
+            // Update togenerate field.
             $DB->set_field_select(
                 'plagiarism_turnitinsim_sub',
-                'to_generate',
+                'togenerate',
                 1,
-                'cm = ? AND generation_time > ? ',
+                'cm = ? AND generationtime > ? ',
                 array($cm->id, $duedate)
             );
 
             // Update generation time.
             $DB->set_field_select(
                 'plagiarism_turnitinsim_sub',
-                'generation_time',
+                'generationtime',
                 $duedate,
-                'cm = ? AND generation_time > ? ',
+                'cm = ? AND generationtime > ? ',
                 array($cm->id, time())
             );
         }

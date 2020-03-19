@@ -90,27 +90,27 @@ class plagiarism_turnitinsim_submission {
     /**
      * @var int The time the submission was made.
      */
-    public $submitted_time;
+    public $submittedtime;
 
     /**
      * @var int Whether or not the submission is still to be generated.
      */
-    public $to_generate;
+    public $togenerate;
 
     /**
      * @var int The time the originality report was generated.
      */
-    public $generation_time;
+    public $generationtime;
 
     /**
      * @var int The time the originality report was requested.
      */
-    public $requested_time;
+    public $requestedtime;
 
     /**
      * @var int The originality report.
      */
-    public $overall_score;
+    public $overallscore;
 
     /**
      * @var string The error nessage, if the submission did not complete successfully.
@@ -147,12 +147,12 @@ class plagiarism_turnitinsim_submission {
             $this->setstatus($submission->status);
             $this->setidentifier($submission->identifier);
             $this->setitemid($submission->itemid);
-            $this->settogenerate($submission->to_generate);
-            $this->setgenerationtime($submission->generation_time);
+            $this->settogenerate($submission->togenerate);
+            $this->setgenerationtime($submission->generationtime);
             $this->settype($submission->type);
-            $this->setsubmittedtime($submission->submitted_time);
-            $this->setoverallscore($submission->overall_score);
-            $this->setrequestedtime($submission->requested_time);
+            $this->setsubmittedtime($submission->submittedtime);
+            $this->setoverallscore($submission->overallscore);
+            $this->setrequestedtime($submission->requestedtime);
             $this->seterrormessage($submission->errormessage);
         }
     }
@@ -1029,7 +1029,7 @@ class plagiarism_turnitinsim_submission {
      * @return mixed
      */
     public function getsubmittedtime() {
-        return $this->submitted_time;
+        return $this->submittedtime;
     }
 
     /**
@@ -1038,7 +1038,7 @@ class plagiarism_turnitinsim_submission {
      * @param mixed $submittedtime
      */
     public function setsubmittedtime($submittedtime) {
-        $this->submitted_time = $submittedtime;
+        $this->submittedtime = $submittedtime;
     }
 
     /**
@@ -1047,7 +1047,7 @@ class plagiarism_turnitinsim_submission {
      * @return mixed
      */
     public function getoverallscore() {
-        return $this->overall_score;
+        return $this->overallscore;
     }
 
     /**
@@ -1056,7 +1056,7 @@ class plagiarism_turnitinsim_submission {
      * @param mixed $overallscore
      */
     public function setoverallscore($overallscore) {
-        $this->overall_score = $overallscore;
+        $this->overallscore = $overallscore;
     }
 
     /**
@@ -1082,7 +1082,7 @@ class plagiarism_turnitinsim_submission {
      * @return mixed
      */
     public function getrequestedtime() {
-        return $this->requested_time;
+        return $this->requestedtime;
     }
 
     /**
@@ -1091,7 +1091,7 @@ class plagiarism_turnitinsim_submission {
      * @param mixed $requestedtime
      */
     public function setrequestedtime($requestedtime) {
-        $this->requested_time = $requestedtime;
+        $this->requestedtime = $requestedtime;
     }
 
     /**
@@ -1135,7 +1135,7 @@ class plagiarism_turnitinsim_submission {
      * @return mixed
      */
     public function gettogenerate() {
-        return $this->to_generate;
+        return $this->togenerate;
     }
 
     /**
@@ -1144,7 +1144,7 @@ class plagiarism_turnitinsim_submission {
      * @param mixed $togenerate
      */
     public function settogenerate($togenerate) {
-        $this->to_generate = $togenerate;
+        $this->togenerate = $togenerate;
     }
 
     /**
@@ -1153,7 +1153,7 @@ class plagiarism_turnitinsim_submission {
      * @return mixed
      */
     public function getgenerationtime() {
-        return $this->generation_time;
+        return $this->generationtime;
     }
 
     /**
@@ -1162,6 +1162,6 @@ class plagiarism_turnitinsim_submission {
      * @param mixed $generationtime
      */
     public function setgenerationtime($generationtime) {
-        $this->generation_time = $generationtime;
+        $this->generationtime = $generationtime;
     }
 }

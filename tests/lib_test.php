@@ -1072,7 +1072,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Update submission to have a status of completed and submitted time after when file was last modified.
         $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
-        $submission->submitted_time = $file->get_timemodified() + 1;
+        $submission->submittedtime = $file->get_timemodified() + 1;
         $DB->update_record('plagiarism_turnitinsim_sub', $submission);
 
         // Resubmit the same file.
@@ -1088,7 +1088,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Update submission to have a status of completed and submitted time before when file was last modified.
         $submission->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
-        $submission->submitted_time = $file->get_timemodified() - 1;
+        $submission->submittedtime = $file->get_timemodified() - 1;
         $DB->update_record('plagiarism_turnitinsim_sub', $submission);
 
         // Resubmit the same file.

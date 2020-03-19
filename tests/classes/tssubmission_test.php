@@ -141,8 +141,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($submission->status, TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $this->assertEquals($submission->userid, $this->student1->id);
         $this->assertEquals($submission->cm, 1);
-        $this->assertEquals($submission->to_generate, 1);
-        $this->assertEquals($submission->generation_time, 100000001);
+        $this->assertEquals($submission->togenerate, 1);
+        $this->assertEquals($submission->generationtime, 100000001);
 
         // Change a parameter and check it saves correctly.
         $tssubmission->setidentifier('NEWPATHNAMEHASH');
@@ -1182,7 +1182,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     /**
      * Test that the generation date is set correctly when report generation is set to immediate
      */
-    public function test_set_generation_time_immediate() {
+    public function test_set_generationtime_immediate() {
         global $DB;
 
         $this->resetAfterTest();
@@ -1237,15 +1237,15 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Compare submission details.
         $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-        $this->assertEquals($result->to_generate, 1);
-        $this->assertLessThanOrEqual($result->generation_time, time());
+        $this->assertEquals($result->togenerate, 1);
+        $this->assertLessThanOrEqual($result->generationtime, time());
     }
 
     /**
      * Test that report generation is set correctly when report generation is set to immediate
      * then to regenerate on due date.
      */
-    public function test_set_generation_time_immediate_duedate() {
+    public function test_set_generationtime_immediate_duedate() {
         global $DB;
 
         $this->resetAfterTest();
@@ -1306,8 +1306,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Compare submission details.
         $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-        $this->assertEquals($result->to_generate, 1);
-        $this->assertLessThanOrEqual($result->generation_time, time());
+        $this->assertEquals($result->togenerate, 1);
+        $this->assertLessThanOrEqual($result->generationtime, time());
 
         // Update status and generation time.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_COMPLETE);
@@ -1317,14 +1317,14 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Compare submission details.
         $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-        $this->assertEquals($result->to_generate, 1);
-        $this->assertEquals($result->generation_time, $duedate);
+        $this->assertEquals($result->togenerate, 1);
+        $this->assertEquals($result->generationtime, $duedate);
     }
 
     /**
      * Test that report generation is set correctly when report generation is set to due date.
      */
-    public function test_set_generation_time_duedate() {
+    public function test_set_generationtime_duedate() {
         global $DB;
 
         $this->resetAfterTest();
@@ -1384,8 +1384,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Compare submission details.
         $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-        $this->assertEquals($result->to_generate, 1);
-        $this->assertEquals($result->generation_time, $duedate);
+        $this->assertEquals($result->togenerate, 1);
+        $this->assertEquals($result->generationtime, $duedate);
 
         // Edit assignment duedate to be in the past.
         $duedate = time() - (60 * 60 * 2);
@@ -1401,14 +1401,14 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Compare submission details.
         $result = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-        $this->assertEquals($result->to_generate, 1);
-        $this->assertLessThanOrEqual($result->generation_time, time());
+        $this->assertEquals($result->togenerate, 1);
+        $this->assertLessThanOrEqual($result->generationtime, time());
     }
 
     /**
      * Test that the generation date is set correctly when no course module exists.
      */
-    public function test_set_generation_time_no_course_module() {
+    public function test_set_generationtime_no_course_module() {
         global $DB;
 
         $this->resetAfterTest();
@@ -1459,8 +1459,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => $cm->id]);
 
-        $this->assertEquals(0, $record->to_generate);
-        $this->assertEquals(0, $record->generation_time);
+        $this->assertEquals(0, $record->togenerate);
+        $this->assertEquals(0, $record->generationtime);
     }
 
     /**

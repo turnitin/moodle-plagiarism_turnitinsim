@@ -144,7 +144,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?))
+                                    WHERE ((togenerate = ? AND generationtime <= ?) OR (status = ?))
                                         AND c.deletioninprogress = ?
                                         AND turnitinid IS NOT NULL',
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)

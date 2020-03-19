@@ -60,8 +60,8 @@ class provider implements
                 'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_sub:turnitinid',
                 'identifier' => 'privacy:metadata:plagiarism_turnitinsim_sub:identifier',
                 'itemid' => 'privacy:metadata:plagiarism_turnitinsim_sub:itemid',
-                'submitted_time' => 'privacy:metadata:plagiarism_turnitinsim_sub:submitted_time',
-                'overall_score' => 'privacy:metadata:plagiarism_turnitinsim_sub:overall_score'
+                'submittedtime' => 'privacy:metadata:plagiarism_turnitinsim_sub:submittedtime',
+                'overallscore' => 'privacy:metadata:plagiarism_turnitinsim_sub:overallscore'
             ],
             'privacy:metadata:plagiarism_turnitinsim_sub'
         );
@@ -140,8 +140,8 @@ class provider implements
                 turnitinid,
                 identifier,
                 itemid,
-                submitted_time,
-                overall_score
+                submittedtime,
+                overallscore
                   FROM {plagiarism_turnitinsim_sub}
                  WHERE userid = :userid";
         $submissions = $DB->get_records_sql($sql, $params);

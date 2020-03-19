@@ -224,5 +224,37 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020012801, 'plagiarism', 'turnitinsim');
     }
 
+    // This block will rename database fields that have underscores.
+    if ($oldversion < 2020031903) {
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
+
+        $field = new xmldb_field('submitted_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'type');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'submittedtime');
+        }
+
+        $field = new xmldb_field('to_generate', XMLDB_TYPE_INTEGER, '1', null, false, null, 0, 'submitted_time');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'togenerate');
+        }
+
+        $field = new xmldb_field('generation_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'to_generate');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'generationtime');
+        }
+
+        $field = new xmldb_field('overall_score', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'generation_time');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'overallscore');
+        }
+
+        $field = new xmldb_field('requested_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'overall_score');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'requestedtime');
+        }
+
+        upgrade_plugin_savepoint(true, 2020031903, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }

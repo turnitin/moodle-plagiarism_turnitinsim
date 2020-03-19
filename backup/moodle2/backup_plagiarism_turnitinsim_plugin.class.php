@@ -64,8 +64,8 @@ class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
                 'turnitinsim_sub',
                 array('id'),
                 array(
-                    'userid', 'turnitinid', 'status', 'identifier', 'itemid', 'type', 'submitted_time',
-                    'to_generate', 'generation_time', 'overall_score', 'requested_time', 'errormessage', 'contenthash'
+                    'userid', 'turnitinid', 'status', 'identifier', 'itemid', 'type', 'submittedtime',
+                    'togenerate', 'generationtime', 'overallscore', 'requestedtime', 'errormessage', 'contenthash'
                 )
             );
             $pluginelement->add_child($submissions);
@@ -74,7 +74,7 @@ class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
             // Get submission details along with contenthash from files table.
             $submission->set_source_sql(
                 'SELECT PTS.userid, PTS.turnitinid, PTS.status, PTS.identifier, PTS.itemid, PTS.type,
-                PTS.submitted_time, PTS.to_generate, PTS.generation_time, PTS.overall_score, PTS.requested_time,
+                PTS.submittedtime, PTS.togenerate, PTS.generationtime, PTS.overallscore, PTS.requestedtime,
                 PTS.errormessage, F.contenthash
                 FROM {plagiarism_turnitinsim_sub} PTS
                 LEFT JOIN {files} F
