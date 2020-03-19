@@ -253,7 +253,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Build a user array entry from a passed in user object for submission metadata.
      *
-     * @param $user object The user data object.
+     * @param object $user The user data object.
      * @return mixed
      * @throws dml_exception
      */
@@ -427,7 +427,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API create submission response.
      *
-     * @param $params object containing the submission response.
+     * @param object $params containing the submission response.
      * @throws coding_exception
      */
     public function handle_create_submission_response($params) {
@@ -514,8 +514,8 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API submission response and callback from Turnitin.
      *
-     * @param $params object containing the upload response.
-     * @param $filename string The name of the file submitted.
+     * @param object $params containing the upload response.
+     * @param string $filename The name of the file submitted.
      * @throws coding_exception
      * @throws dml_exception
      */
@@ -543,7 +543,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Send digital receipts to the instructors and student.
      *
-     * @param $filename string The name of the file submitted.
+     * @param string $filename The name of the file submitted.
      * @throws coding_exception
      * @throws dml_exception
      */
@@ -673,7 +673,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Handle the API similarity response and callback from Turnitin.
      *
-     * @param $params object containing the similarity score response.
+     * @param object $params containing the similarity score response.
      * @throws coding_exception
      */
     public function handle_similarity_response($params) {
@@ -693,7 +693,7 @@ class plagiarism_turnitinsim_submission {
     /**
      * Get the details for a submission from the Moodle database.
      *
-     * @param $linkarray array The linkarray given by Moodle containing module data.
+     * @param array $linkarray The linkarray given by Moodle containing module data.
      * @return mixed
      * @throws coding_exception
      * @throws dml_exception

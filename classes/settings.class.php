@@ -48,7 +48,7 @@ class plagiarism_turnitinsim_settings {
     /**
      * Add Turnitin settings to module form.
      *
-     * @param $mform object The Moodle form object.
+     * @param object $mform The Moodle form object.
      * @param string $context The context, eg module or course.
      * @param string $modulename The name of the module.
      * @return mixed Moodle form with settings.
@@ -152,7 +152,7 @@ class plagiarism_turnitinsim_settings {
     /**
      * Save Turnitin settings for a module.
      *
-     * @param $data object The settings data to add.
+     * @param object $data The settings data to add.
      * @throws dml_exception
      */
     public function save_module_settings($data) {

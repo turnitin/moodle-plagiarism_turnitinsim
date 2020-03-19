@@ -46,7 +46,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
      * Restore the Turnitin settings for this module.
      * This will only be done if the module is from the same site from where it was backed up.
      *
-     * @param $data object The data we are restoring.
+     * @param object $data object The data we are restoring.
      * @throws dml_exception
      */
     public function process_turnitinsim_mods($data) {
@@ -66,7 +66,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
      * This will only be done if the module is from the same site from where it was backed up
      * and if the Turnitin submission does not currently exist in the database.
      *
-     * @param $data object The data we are restoring.
+     * @param object $data The data we are restoring.
      * @throws dml_exception
      */
     public function process_turnitinsim_subs($data) {
@@ -93,7 +93,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
      * This will only be done if the module is from the same site from where it was backed up
      * and if the Turnitin user id does not currently exist in the database.
      *
-     * @param $data object The data we are restoring.
+     * @param object $data The data we are restoring.
      * @throws dml_exception
      */
     public function process_turnitinsim_usrs($data) {

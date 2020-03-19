@@ -32,6 +32,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 class plagiarism_turnitinsim_callback {
 
+    /**
+     * @var plagiarism_turnitinsim_request|null Request object.
+     */
     public $tsrequest;
 
     /**
@@ -46,8 +49,9 @@ class plagiarism_turnitinsim_callback {
     /**
      * Attempt to retrieve the webhook.
      *
-     * @param $webhookid string The webhookid to check.
+     * @param string $webhookid The webhookid to check.
      * @return bool true if has webhook.
+     * @throws coding_exception
      */
     public function has_webhook($webhookid) {
         // Make request to get webhook.
@@ -86,8 +90,9 @@ class plagiarism_turnitinsim_callback {
     /**
      * Attempt to delete the webhook (not currently used).
      *
-     * @param $webhookid string The webhookid to be deleted.
+     * @param string $webhookid The webhookid to be deleted.
      * @return bool true if webhook has been deleted.
+     * @throws coding_exception
      */
     public function delete_webhook($webhookid) {
         // Make request to get webhook.
@@ -155,7 +160,7 @@ class plagiarism_turnitinsim_callback {
     /**
      * Generate a 64 character length hash of the request string.
      *
-     * @param $requeststring string The request in string format.
+     * @param string $requeststring The request in string format.
      * @return string A 64 character length hash.
      * @throws dml_exception
      */

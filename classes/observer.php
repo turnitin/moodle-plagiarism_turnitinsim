@@ -37,9 +37,9 @@ class plagiarism_turnitinsim_observer {
     /**
      * Build the eventdata array.
      *
-     * @param $event object The event we are handling.
-     * @param $eventtype string The type of event we are handling.
-     * @param $module string The name of the module.
+     * @param object $event The event we are handling.
+     * @param string $eventtype The type of event we are handling.
+     * @param string $module The name of the module.
      * @return mixed
      */
     public static function build_event_data($event, $eventtype, $module = '') {

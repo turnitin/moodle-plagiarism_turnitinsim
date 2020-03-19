@@ -28,8 +28,7 @@ namespace plagiarism_turnitinsim\task;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Task to update local config from Turnitin including testing the webhook, eatures enabled and
- * checking the latest version of the EULA with Turnitin.
+ * Update local configuration from Turnitin.
  */
 class admin_update extends \core\task\scheduled_task {
 

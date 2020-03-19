@@ -299,7 +299,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
      * Check whether the plugin is active.
-     * @param $cm object The course module data.
+     * @param object $cm The course module data.
      * @return bool true if the plugin is active.
      * @throws dml_exception
      */
@@ -336,7 +336,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Render a link to resubmit the file to Turnitin.
      *
-     * @param $submissionid int The ID of the submission.
+     * @param int $submissionid The ID of the submission.
      * @return mixed A link to resubmit the submission.
      * @throws coding_exception
      */
@@ -453,6 +453,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     }
 
     /**
+     * Handler for the submission event.
+     *
      * @param array $eventdata - provided by Moodle, should contain enough data to process a submission.
      * @return bool
      * @throws coding_exception
@@ -657,7 +659,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Event hook for when a module has been changed. Set the generation flag for a submission.
      *
-     * @param $eventdata array containing information from the event being handled.
+     * @param array $eventdata Contains information from the event being handled.
      * @throws coding_exception
      * @throws dml_exception
      */
@@ -707,8 +709,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 /**
  * Override Moodle's mtrace function for methods shared with tasks.
  *
- * @param $string string The message that would otherwise be displayed.
- * @param $eol string end of line.
+ * @param string $string The message that would otherwise be displayed.
+ * @param string $eol end of line.
  * @return bool
  */
 function plagiarism_turnitinsim_mtrace($string, $eol) {

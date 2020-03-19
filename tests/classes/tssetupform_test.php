@@ -33,9 +33,24 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.p
  */
 class plagiarism_tssetupform_class_testcase extends advanced_testcase {
 
+    /**
+     * Plugin enabled.
+     */
     const TURNITINSIM_ENABLED = 1;
+
+    /**
+     * Plugin disabled.
+     */
     const TURNITINSIM_DISABLED = 0;
+
+    /**
+     * Sample API URL used for testing.
+     */
     const TEST_API_URL = 'http://www.example.com';
+
+    /**
+     * Sample API key used for testing.
+     */
     const TEST_API_KEY = 123456;
 
     /**
