@@ -35,7 +35,7 @@ class receipt_instructor {
     /**
      * Send digital receipt to instructor. This message must preserve the anonymity of a submission.
      *
-     * @param $input - used to build message
+     * @param array $input - used to build message
      * @return string
      * @throws \coding_exception
      */
@@ -53,9 +53,9 @@ class receipt_instructor {
     /**
      * Send digital receipt to instructors.
      *
-     * @param $instructors array The instructors to send the receipt message to.
-     * @param $message string The message to send.
-     * @param $courseid int The ID for the course the submission is on.
+     * @param array $instructors The instructors to send the receipt message to.
+     * @param string $message The message to send.
+     * @param int $courseid The ID for the course the submission is on.
      * @throws \coding_exception
      */
     public function send_message($instructors, $message, $courseid) {

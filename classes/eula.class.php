@@ -30,12 +30,16 @@ defined('MOODLE_INTERNAL') || die();
  */
 class plagiarism_turnitinsim_eula {
 
+    /**
+     * @var plagiarism_turnitinsim_request|null The request object.
+     */
     public $tsrequest;
 
     /**
      * plagiarism_turnitinsim_eula constructor.
      *
      * @param plagiarism_turnitinsim_request|null $tsrequest The request we're handling.
+     * @throws dml_exception
      */
     public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
@@ -45,6 +49,7 @@ class plagiarism_turnitinsim_eula {
      * Attempt to retrieve the latest version of the EULA.
      *
      * @return mixed|stdClass
+     * @throws coding_exception
      */
     public function get_latest_version() {
         $responsedata = new stdClass();

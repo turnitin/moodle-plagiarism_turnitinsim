@@ -44,7 +44,7 @@ class plagiarism_turnitinsim_group {
 
     /**
      * plagiarism_turnitinsim_group constructor.
-     * @param $groupid int The ID of the group.
+     * @param int $groupid The ID of the group.
      * @throws dml_exception
      */
     public function __construct($groupid) {

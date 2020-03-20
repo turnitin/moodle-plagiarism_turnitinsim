@@ -33,7 +33,7 @@ class plagiarism_turnitinsim_forum {
     /**
      * Get the text from the database for the submission.
      *
-     * @param $itemid String The itemid for this submission.
+     * @param String $itemid The itemid for this submission.
      * @return mixed The text of the submission.
      * @throws dml_exception
      */
@@ -47,7 +47,7 @@ class plagiarism_turnitinsim_forum {
     /**
      * Get the item id from the database for this submission.
      *
-     * @param $params object The params to call the DB with.
+     * @param object $params The params to call the DB with.
      * @return int The itemid.
      * @throws dml_exception
      */
@@ -69,8 +69,8 @@ class plagiarism_turnitinsim_forum {
     /**
      * Get the actual author of the submission.
      *
-     * @param $userid int The userid as given by Moodle.
-     * @param $relateduserid int The relateduserid as given by Moodle.
+     * @param int $userid The userid as given by Moodle.
+     * @param int $relateduserid The relateduserid as given by Moodle.
      * @return int The authorid.
      */
     public function get_author($userid, $relateduserid) {
@@ -80,7 +80,7 @@ class plagiarism_turnitinsim_forum {
     /**
      * Get the group id that a submission belongs to. - (N/A in forums).
      *
-     * @param $itemid string The itemid for the submission.
+     * @param string $itemid The itemid for the submission.
      * @return int The group id.
      */
     public function get_groupid($itemid) {
@@ -90,7 +90,7 @@ class plagiarism_turnitinsim_forum {
     /**
      * Return whether the submission is a draft. Never the case with a forum submission.
      *
-     * @param $itemid string The itemid for the submission.
+     * @param string $itemid The itemid for the submission.
      * @return bool If the submission is a draft.
      */
     public function is_submission_draft($itemid) {
@@ -100,14 +100,7 @@ class plagiarism_turnitinsim_forum {
     /**
      * Return the due date so we can work out report generation time. Not applicable to forums.
      *
-     * @param $id
-     * @return int
-     */
-
-    /**
-     * Return the due date so we can work out report generation time. Not applicable to forums.
-     *
-     * @param $id int The forum ID we want the due date for.
+     * @param int $id The forum ID we want the due date for.
      * @return int The due date for the assignment.
      */
     public function get_due_date($id) {
@@ -117,9 +110,9 @@ class plagiarism_turnitinsim_forum {
     /**
      * Determines whether the OR links in other posts should be seen.
      *
-     * @param $courseid int The ID for this course.
-     * @param $userid int The userid.
-     * @return bool if showing other posts links.
+     * @param int $courseid The ID for this course.
+     * @param int $userid The userid.
+     * @return bool true if showing other posts links.
      * @throws coding_exception
      */
     public function show_other_posts_links($courseid, $userid) {

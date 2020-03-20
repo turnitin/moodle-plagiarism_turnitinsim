@@ -33,7 +33,7 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the text from the database for the submission.
      *
-     * @param $itemid String The itemid for this submission.
+     * @param String $itemid The itemid for this submission.
      * @return mixed The text of the submission.
      * @throws dml_exception
      */
@@ -48,7 +48,7 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the item id from the database for this submission.
      *
-     * @param $params object The params to call the DB with.
+     * @param object $params The params to call the DB with.
      * @return int The itemid.
      * @throws dml_exception
      */
@@ -70,10 +70,10 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the actual author of the submission.
      *
-     * @param $userid int The userid as given by Moodle.
-     * @param $relateduserid int The relateduserid as given by Moodle.
-     * @param $cm object The course module.
-     * @param $itemid string the itemid for this submission.
+     * @param int $userid The userid as given by Moodle.
+     * @param int $relateduserid The relateduserid as given by Moodle.
+     * @param object $cm The course module.
+     * @param string $itemid The itemid for this submission.
      * @return int The authorid.
      * @throws coding_exception
      * @throws dml_exception
@@ -102,7 +102,7 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the group id that a submission belongs to.
      *
-     * @param $itemid string The itemid for the submission.
+     * @param string $itemid The itemid for the submission.
      * @return int The group id.
      * @throws dml_exception
      */
@@ -142,7 +142,7 @@ class plagiarism_turnitinsim_assign {
     /**
      * Return whether the submission is a draft.
      *
-     * @param $itemid string The itemid for the submission.
+     * @param string $itemid The itemid for the submission.
      * @return bool If the submission is a draft.
      * @throws dml_exception
      */
@@ -157,7 +157,7 @@ class plagiarism_turnitinsim_assign {
     /**
      * Get the assignment due date.
      *
-     * @param $id int The assignment ID we want the due date for.
+     * @param int $id The assignment ID we want the due date for.
      * @return mixed The due date for the assignment.
      * @throws dml_exception
      */
@@ -172,9 +172,9 @@ class plagiarism_turnitinsim_assign {
     /**
      * Determines whether the OR links in other posts should be seen. This is not applicable for assignments.
      *
-     * @param $courseid int The ID for this course.
-     * @param $userid int The userid.
-     * @return bool if showing other posts links.
+     * @param int $courseid The ID for this course.
+     * @param int $userid The userid.
+     * @return bool true if showing other links.
      */
     public function show_other_posts_links($courseid, $userid) {
         return true;

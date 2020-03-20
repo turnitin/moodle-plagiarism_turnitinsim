@@ -35,7 +35,7 @@ class receipt_student {
     /**
      * Build digital receipt to send to student
      *
-     * @param $input - used to build message
+     * @param array $input - used to build message
      * @return string
      * @throws \coding_exception
      */
@@ -55,9 +55,9 @@ class receipt_student {
     /**
      * Send digital receipt to student.
      *
-     * @param $userid int The userid to send the message to.
-     * @param $message string The message to send.
-     * @param $courseid int The ID for the course the submission is on.
+     * @param int $userid The userid to send the message to.
+     * @param string $message The message to send.
+     * @param int $courseid The ID for the course the submission is on.
      * @throws \coding_exception
      */
     public function send_message($userid, $message, $courseid) {

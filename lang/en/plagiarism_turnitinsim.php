@@ -172,8 +172,8 @@ $string['connecttestfailed'] = 'Connection test failed.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub'] = 'Information that links a Moodle submission to a Turnitin submission.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub:userid'] = 'The ID of the user who has made a submission.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub:turnitinid'] = 'The ID used by Turnitin to reference the submission.';
-$string['privacy:metadata:plagiarism_turnitinsim_sub:overall_score'] = 'The overall similarity score of the submission.';
-$string['privacy:metadata:plagiarism_turnitinsim_sub:submitted_time'] = 'A timestamp indicating when the user\'s submission was sent to Turnitin.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:overallscore'] = 'The overall similarity score of the submission.';
+$string['privacy:metadata:plagiarism_turnitinsim_sub:submittedtime'] = 'A timestamp indicating when the user\'s submission was sent to Turnitin.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub:identifier'] = 'A hash used by Moodle to identify the file submitted.';
 $string['privacy:metadata:plagiarism_turnitinsim_sub:itemid'] = 'Id that identifies the submission for the relevant module type.';
 

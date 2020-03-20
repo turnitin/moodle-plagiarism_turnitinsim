@@ -67,7 +67,7 @@ class plagiarism_turnitinsim_logger extends Katzgrau\KLogger\Logger {
     /**
      * Rotate logs, only keep the last KEEPLOGS number of logs.
      *
-     * @param $filepath string The file path for the logs.
+     * @param string $filepath The file path for the logs.
      */
     private function rotate_logs( $filepath ) {
 
