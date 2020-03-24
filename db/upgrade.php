@@ -225,7 +225,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     // This block will rename database fields that have underscores.
-    if ($oldversion < 2020032403) {
+    if ($oldversion < 2020032404) {
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
 
         $field = new xmldb_field('submitted_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'type');
@@ -253,7 +253,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             $dbman->rename_field($table, $field, 'requestedtime');
         }
 
-        upgrade_plugin_savepoint(true, 2020032403, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2020032404, 'plagiarism', 'turnitinsim');
     }
 
     return true;

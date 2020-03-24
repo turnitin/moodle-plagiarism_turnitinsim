@@ -18,6 +18,24 @@
     @template plagiarism_turnitinsim/modal_eula
 
     Shown for a user to accept or decline the EULA.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * title Content for the title
+    * body Content for the body
+    * footer Content for the footer
+
+    Example context (json):
+    {
+        "title": "Example modal",
+        "body": "Some example content for the body",
+        "footer": "Accept, decline buttons."
+    }
 }}
 {{< core/modal }}
     {{$title}}{{# str }} eulaheader, plagiarism_turnitinsim {{/ str }}{{/title}}
