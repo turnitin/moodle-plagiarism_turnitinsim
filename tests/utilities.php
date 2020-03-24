@@ -28,10 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Create and return a file to use for test submissions.
  *
- * @param $itemid string The Moodle item ID for the submission file.
- * @param $usercontextid int The context ID.
- * @param $component string The component the file belongs to.
- * @param $filearea string The file area for the file.
+ * @param string $itemid The Moodle item ID for the submission file.
+ * @param int $usercontextid The context ID.
+ * @param string $component The component the file belongs to.
+ * @param string $filearea The file area for the file.
  * @return mixed
  * @throws coding_exception
  * @throws file_exception

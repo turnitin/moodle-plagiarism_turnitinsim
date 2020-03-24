@@ -32,6 +32,9 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\writer;
 
+/**
+ * Privacy Subsystem implementation for plagiarism_turnitinsim.
+ */
 class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider,
@@ -46,8 +49,8 @@ class provider implements
     /**
      * Return the fields which contain personal data.
      *
-     * @param $collection collection a reference to the collection to use to store the metadata.
-     * @return $collection the updated collection of metadata items.
+     * @param collection $collection A reference to the collection to use to store the metadata.
+     * @return collection The updated collection of metadata items.
      */
     public static function _get_metadata(collection $collection) {
         $collection->add_database_table(
@@ -57,8 +60,8 @@ class provider implements
                 'turnitinid' => 'privacy:metadata:plagiarism_turnitinsim_sub:turnitinid',
                 'identifier' => 'privacy:metadata:plagiarism_turnitinsim_sub:identifier',
                 'itemid' => 'privacy:metadata:plagiarism_turnitinsim_sub:itemid',
-                'submitted_time' => 'privacy:metadata:plagiarism_turnitinsim_sub:submitted_time',
-                'overall_score' => 'privacy:metadata:plagiarism_turnitinsim_sub:overall_score'
+                'submittedtime' => 'privacy:metadata:plagiarism_turnitinsim_sub:submittedtime',
+                'overallscore' => 'privacy:metadata:plagiarism_turnitinsim_sub:overallscore'
             ],
             'privacy:metadata:plagiarism_turnitinsim_sub'
         );
@@ -137,8 +140,8 @@ class provider implements
                 turnitinid,
                 identifier,
                 itemid,
-                submitted_time,
-                overall_score
+                submittedtime,
+                overallscore
                   FROM {plagiarism_turnitinsim_sub}
                  WHERE userid = :userid";
         $submissions = $DB->get_records_sql($sql, $params);

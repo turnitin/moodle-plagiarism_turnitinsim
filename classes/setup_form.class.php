@@ -139,7 +139,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
     /**
      * Save the plugin config data.
      *
-     * @param $data object The data to save.
+     * @param object $data The data to save.
      * @throws coding_exception
      */
     public function save($data) {

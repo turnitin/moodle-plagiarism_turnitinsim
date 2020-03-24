@@ -89,18 +89,16 @@ class plagiarism_turnitinsim_task {
         }
 
         // Get Submissions to send.
-        // Joined with course_modules so that we don't send queued submissions for submissions belonging to deleted course_modules.
-        $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
-                                    JOIN {course_modules} c
-                                    ON s.cm = c.id
-                                    WHERE (status = ? OR status = ?)
-                                        AND c.deletioninprogress = ?
-                                    LIMIT ?',
-            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, 0, TURNITINSIM_SUBMISSION_SEND_LIMIT)
-        );
+        $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub', 'status = ?',
+            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED), '', '*', 0,
+            TURNITINSIM_SUBMISSION_SEND_LIMIT);
 
         // Create each submission in Turnitin and upload submission.
         foreach ($submissions as $submission) {
+            // Skip if the course doesn't exist or the course is pending deletion.
+            if (!$DB->get_record('course_modules', array('id' => $submission->cm, 'deletioninprogress' => 0))) {
+                continue;
+            }
 
             // Reset headers.
             $this->tsrequest->set_headers();
@@ -144,7 +142,7 @@ class plagiarism_turnitinsim_task {
         $submissions = $DB->get_records_sql('SELECT s.id FROM {plagiarism_turnitinsim_sub} s
                                     JOIN {course_modules} c
                                     ON s.cm = c.id
-                                    WHERE ((to_generate = ? AND generation_time <= ?) OR (status = ?))
+                                    WHERE ((togenerate = ? AND generationtime <= ?) OR (status = ?))
                                         AND c.deletioninprogress = ?
                                         AND turnitinid IS NOT NULL',
             array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)

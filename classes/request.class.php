@@ -104,9 +104,9 @@ class plagiarism_turnitinsim_request {
     /**
      * Send request to Turnitin.
      *
-     * @param $endpoint string The endpoint to make a request to.
-     * @param $requestbody string The request body to send.
-     * @param $method string The request method eg GET/POST.
+     * @param string $endpoint The endpoint to make a request to.
+     * @param string $requestbody The request body to send.
+     * @param string $method The request method eg GET/POST.
      * @param string $requesttype The type of request, can be general or submission.
      * @return array|bool|false|mixed|stdClass|string
      */
@@ -192,8 +192,8 @@ class plagiarism_turnitinsim_request {
     /**
      * Test a connection to Turnitin and give an Ajax response.
      *
-     * @param String $apiurl
-     * @param String $apikey
+     * @param string $apiurl The service API URL.
+     * @param string $apikey The service API key.
      *
      * @return string
      * @throws moodle_exception when invalid session key.
@@ -218,7 +218,7 @@ class plagiarism_turnitinsim_request {
     /**
      * Handle API exceptions
      *
-     * @param $e object The exception.
+     * @param object $e The exception.
      * @param string $displaystr The string to display for the error.
      * @throws coding_exception
      */

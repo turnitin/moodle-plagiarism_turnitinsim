@@ -70,7 +70,7 @@ class plagiarism_turnitinsim_defaults_form extends moodleform {
     /**
      * Save the default settings
      *
-     * @param $data object The form data we were passed and need to save.
+     * @param object $data The form data we were passed and need to save.
      * @throws dml_exception
      */
     public function save($data) {

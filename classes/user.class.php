@@ -64,7 +64,7 @@ class plagiarism_turnitinsim_user {
 
     /**
      * plagiarism_turnitinsim_user constructor.
-     * @param $userid int The Moodle user ID.
+     * @param int $userid The Moodle user ID.
      * @throws dml_exception
      */
     public function __construct($userid) {
