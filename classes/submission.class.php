@@ -406,6 +406,16 @@ class plagiarism_turnitinsim_submission {
             );
         }
 
+        // Include role data.
+        $request['owner_default_permission_set'] = TURNITINSIM_ROLE_LEARNER;
+
+        // Send correct user role in request. If owner and submitter are the same, the student submitted.
+        if ($this->get_owner() === $tssubmitter->get_turnitinid()) {
+            $request['submitter_default_permission_set'] = TURNITINSIM_ROLE_LEARNER;
+        } else {
+            $request['submitter_default_permission_set'] = TURNITINSIM_ROLE_INSTRUCTOR;
+        }
+
         // Make request to create submission record in Turnitin.
         try {
             $response = $this->tsrequest->send_request(
