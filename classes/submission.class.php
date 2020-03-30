@@ -163,9 +163,6 @@ class plagiarism_turnitinsim_submission {
     public function update() {
         global $DB;
 
-//        echo '<pre>';
-//        var_dump($this);
-//        echo '</pre>';
         if (!empty($this->id)) {
             $DB->update_record('plagiarism_turnitinsim_sub', $this);
         } else {
