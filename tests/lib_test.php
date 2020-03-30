@@ -219,55 +219,6 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $this->assertEquals('', $plagiarismturnitinsim->get_links($linkarray));
     }
 
-//    /**
-//     * Test that get_links returns a not sent message if the submission was not sent.
-//     */
-//    public function test_get_links_submission_not_sent() {
-//        global $DB;
-//
-//        $this->resetAfterTest();
-//
-//        // Get course module data.
-//        $context = context_module::instance($this->cm->id);
-//        $assign = new assign($context, $this->cm, $this->course);
-//
-//        // Set plugin config.
-//        set_config('turnitinsim_use', 1, 'plagiarism');
-//        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
-//
-//        // Enable plugin for module.
-//        $modsettings = array('cm' => $this->cm->id, 'turnitinenabled' => 1, 'accessstudents' => 1);
-//        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
-//
-//        // Log student1 in.
-//        $this->setUser($this->student1);
-//        $usercontext = context_user::instance($this->student1->id);
-//
-//        // Create assignment submission.
-//        $submission = $assign->get_user_submission($this->student1->id, true);
-//        $data = new stdClass();
-//        $plugin = $assign->get_submission_plugin_by_type('file');
-//        $plugin->save($submission, $data);
-//
-//        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
-//
-//        // Create dummy link array data.
-//        $linkarray = array(
-//            "cmid" => $this->cm->id,
-//            "userid" => $this->student1->id,
-//            "file" => $file,
-//            "objectid" => $submission->id
-//        );
-//
-//        $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-//        $plagiarismturnitinsim->get_links($linkarray);
-//
-//        $this->assertContains(
-//            get_string('submissiondisplaystatus:notsent', 'plagiarism_turnitinsim'),
-//            $plagiarismturnitinsim->get_links($linkarray)
-//        );
-//    }
-
     /**
      * Test that a valid file passed to submit handler gets queued.
      */

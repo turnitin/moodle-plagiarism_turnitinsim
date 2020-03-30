@@ -316,38 +316,4 @@ class workshop_test extends advanced_testcase {
         $this->assertEquals('workshop', $response['other']['modulename']);
         $this->assertEquals(self::TEST_WORKSHOP_TEXT, $response['other']['content']);
     }
-
-
-//    function() {
-//
-//
-//        $this->resetAfterTest();
-//
-//        $this->setAdminUser();
-//
-//        $course = $this->getDataGenerator()->create_course();
-//
-//        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
-//        $this->getDataGenerator()->enrol_user($this->student1->id,
-//            $course->id,
-//            $studentrole->id);
-//
-//        $workshop = $this->getDataGenerator()->create_module('workshop', array('course' => $course));
-//        $cm = get_coursemodule_from_instance('workshop', $workshop->id, $course->id, false, MUST_EXIST);
-//        $this->workshop = new testable_workshop($workshop, $cm, $course);
-//
-//        $workshopgenerator = $this->getDataGenerator()->get_plugin_generator('mod_workshop');
-//
-//        $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
-//
-//        // Get item id.
-//        $tsworkshop = new plagiarism_turnitinsim_workshop();
-//        $params = new stdClass();
-//        $params->moduleid = $workshop->id;
-//        $params->userid = $this->student1->id;
-//        $params->onlinetext = self::TEST_WORKSHOP_TEXT;
-//        $result = $tsworkshop->get_itemid($params);
-//
-//        $this->assertEquals($result, $submissionid);
-//    }
 }
