@@ -139,7 +139,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if (empty($cm) && !empty($linkarray["cmid"])) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
         }
-
+//        echo '<pre>';
+//        echo 'CM:';
+//        var_dump($cm);
+//        echo '</pre>';
         // Check whether the plugin is active.
         static $ispluginactive;
         if (empty($ispluginactive)) {
@@ -173,8 +176,14 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $showresubmitlink = false;
 
             // Get turnitin submission details.
+
             $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
+            echo '<pre>link array and userid and plagiarism file';
+//            var_dump($linkarray);
+//            var_dump($linkarray['userid']);
+//            var_dump($plagiarismfile);
+            echo 'link array and user id and plagiarism file</pre>';
             // The links for forum posts get shown to all users.
             // Return if the logged in user shouldn't see OR scores. E.g. forum posts.
             if (!$moduleobject->show_other_posts_links($cm->course, $linkarray['userid'])) {
@@ -187,6 +196,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 switch ($submission->getstatus()) {
                     case TURNITINSIM_SUBMISSION_STATUS_QUEUED:
+                        echo 'plagiarismfile: ';
+//                        var_dump($plagiarismfile->id);
+                        echo ':plagiarismfile ';
                         $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
                             'plagiarism_turnitinsim'));
                         break;
@@ -276,11 +288,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
 
             } else {
-                // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin.
-                $helpicon = $OUTPUT->help_icon('submissiondisplayerror:notsent', 'plagiarism_turnitinsim');
+                echo 'aaaaa';
+                // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin. Queue it.
 
-                $status = html_writer::tag('span', get_string('submissiondisplaystatus:notsent',
-                    'plagiarism_turnitinsim') . $helpicon);
+                $eventdata = $this->create_submission_data($linkarray);
+                echo '<pre>';
+//                var_dump($eventdata);
+                echo '</pre>';
+                $this->submission_handler($eventdata);
+//                $helpicon = $OUTPUT->help_icon('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
+
+                $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
+                    'plagiarism_turnitinsim'));
             }
 
             // Render a Turnitin logo.
@@ -295,6 +314,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         return html_writer::tag('div', $output, array('class' => 'turnitinsim_links'));
+    }
+
+    public function create_submission_data($linkarray) {
+        $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+
+        // Create module object.
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
+        $moduleobject = new $moduleclass;
+        return $moduleobject->create_submission_event_data($linkarray);
+
     }
 
     /**
@@ -461,6 +490,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws dml_exception
      */
     public function submission_handler($eventdata) {
+
+
+//        foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
+//            echo $pathnamehash;
+//        }
+
+        echo '<pre>submission_handler - eventdata:';
+//        var_dump($eventdata);
+        echo 'end submission_handler eventdata</pre>';
+//        exit();
         global $DB;
 
         // Remove the event if the course module no longer exists.
@@ -505,6 +544,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
+        // remove this
 
         // Get the item ID.
         $itemid = (!empty($eventdata['objectid'])) ? $eventdata['objectid'] : null;
@@ -545,6 +585,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Queue files to submit to Turnitin.
         if (!empty($eventdata['other']['pathnamehashes'])) {
             foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
+                echo $pathnamehash;
                 $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
                 $tssubmission->setcm($cm->id);
                 $tssubmission->setuserid($author);

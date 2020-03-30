@@ -116,4 +116,45 @@ class plagiarism_turnitinsim_workshop {
     public function show_other_posts_links($courseid, $userid) {
         return true;
     }
+
+    /**
+     * Create the submission event data needed to queue a submission if Turnitin is enabled after a submission.
+     *
+     * @param array $linkarray Data passed by Moodle that belongs to a submission.
+     * @return array Event data.
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function create_submission_event_data($linkarray) {
+        global $DB, $USER;
+
+        $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+
+        $eventdata = array();
+        $eventdata['contextinstanceid'] = $linkarray['cmid'];
+
+        $eventdata['eventtype'] = 'assessable_submitted';
+        $eventdata['userid'] = $USER->id;
+
+        if (isset($linkarray['file'])) {
+            $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
+            $eventdata['objectid'] = $linkarray['file']->get_itemid();
+        } else {
+            $params = array('workshopid' => $cm->instance, 'authorid' => $linkarray['userid']);
+            $moodlesubmission = $DB->get_record('workshop_submissions', $params);
+            $eventdata['objectid'] = $moodlesubmission->id;
+        }
+
+        if (isset($linkarray['userid'])) {
+            $eventdata['relateduserid'] = $linkarray['userid'];
+        }
+
+        $eventdata['other']['modulename'] = $cm->modname;
+
+        if (isset($linkarray['content'])) {
+            $eventdata['other']['content'] = $linkarray['content'];
+        }
+
+        return $eventdata;
+    }
 }
