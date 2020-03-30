@@ -139,9 +139,9 @@ class plagiarism_turnitinsim_forum {
      * @throws dml_exception
      */
     public function create_submission_event_data($linkarray) {
-        global $DB, $USER;
+        global $USER;
 
-        $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+        $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];

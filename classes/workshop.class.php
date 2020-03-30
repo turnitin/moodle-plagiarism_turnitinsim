@@ -128,7 +128,7 @@ class plagiarism_turnitinsim_workshop {
     public function create_submission_event_data($linkarray) {
         global $DB, $USER;
 
-        $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+        $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];

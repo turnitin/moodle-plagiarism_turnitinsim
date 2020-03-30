@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
  * Tests for forum module class for plagiarism_turnitinsim component.
@@ -239,5 +240,132 @@ class forum_test extends advanced_testcase {
         $tsforum = new plagiarism_turnitinsim_forum();
         $response = $tsforum->show_other_posts_links($this->course->id, $this->student2->id);
         $this->assertEquals(false, $response);
+    }
+
+    /**
+     * Test that the correct event data is returned when handling a file submission for a forum.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_file_submission() {
+        $this->resetAfterTest();
+
+        // Create a forum.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $forum = $this->getDataGenerator()->create_module('forum', $record);
+
+        $cm = get_coursemodule_from_instance('forum', $forum->id);
+
+        // Log student in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Add discussion to course.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $record->userid = $this->student1->id;
+        $record->forum = $forum->id;
+        $discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        // Add post to discussion.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $record->userid = $this->student1->id;
+        $record->forum = $forum->id;
+        $record->discussion = $discussion->id;
+        $record->message = self::TEST_FORUM_TEXT;
+        $post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
+
+        // Get itemid.
+        $tsforum = new plagiarism_turnitinsim_forum();
+        $params = new stdClass();
+        $params->moduleid = $forum->id;
+        $params->userid = $this->student1->id;
+        $params->onlinetext = self::TEST_FORUM_TEXT;
+        $result = $tsforum->get_itemid($params);
+
+        $this->assertEquals($result, $post->id);
+
+        $file = create_test_file($post->id, $usercontext->id, 'mod_forum', 'submissions');
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "file" => $file,
+            "content" => ''
+        );
+
+        $tsforum = new plagiarism_turnitinsim_forum();
+        $response = $tsforum->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
+        $this->assertEquals($post->id, $response['objectid']);
+        $this->assertEquals($this->student1->id, $response['relateduserid']);
+        $this->assertEquals('forum', $response['other']['modulename']);
+        $this->assertEmpty($response['other']['content']);
+    }
+
+    /**
+     * Test that the correct event data is returned when handling a text submission for a forum.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_text_submission() {
+        $this->resetAfterTest();
+
+        // Create a forum.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $forum = $this->getDataGenerator()->create_module('forum', $record);
+
+        $cm = get_coursemodule_from_instance('forum', $forum->id);
+
+        // Log student in.
+        $this->setUser($this->student1);
+
+        // Add discussion to course.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $record->userid = $this->student1->id;
+        $record->forum = $forum->id;
+        $discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        // Add post to discussion.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $record->userid = $this->student1->id;
+        $record->forum = $forum->id;
+        $record->discussion = $discussion->id;
+        $record->message = self::TEST_FORUM_TEXT;
+        $post = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
+
+        // Get itemid.
+        $tsforum = new plagiarism_turnitinsim_forum();
+        $params = new stdClass();
+        $params->moduleid = $forum->id;
+        $params->userid = $this->student1->id;
+        $params->onlinetext = self::TEST_FORUM_TEXT;
+        $result = $tsforum->get_itemid($params);
+
+        $this->assertEquals($result, $post->id);
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "content" => self::TEST_FORUM_TEXT
+        );
+
+        $tsforum = new plagiarism_turnitinsim_forum();
+        $response = $tsforum->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals($post->id, $response['objectid']);
+        $this->assertEquals($this->student1->id, $response['relateduserid']);
+        $this->assertEquals('forum', $response['other']['modulename']);
+        $this->assertEquals(self::TEST_FORUM_TEXT, $response['other']['content']);
     }
 }

@@ -191,7 +191,7 @@ class plagiarism_turnitinsim_assign {
     public function create_submission_event_data($linkarray) {
         global $DB, $USER;
 
-        $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
+        $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
@@ -203,22 +203,13 @@ class plagiarism_turnitinsim_assign {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
 
             $params = array('id' => $linkarray['file']->get_itemid());
-            $moodlesubmission = $DB->get_record('assign_submission', $params);
-
-            $eventdata['objectid'] = $moodlesubmission->id;
-
-            // As linkarray userid is the submitter for a file, we need to get the user id from the Moodle submission.
-            $eventdata['relateduserid'] = $moodlesubmission->userid;
         } else {
             $params = array('assignment' => $cm->instance, 'userid' => $linkarray['userid'], 'groupid' => 0);
-            $moodlesubmission = $DB->get_record('assign_submission', $params);
-            $eventdata['objectid'] = $moodlesubmission->id;
         }
 
-        if (isset($linkarray['userid'])) {
-            $eventdata['relateduserid'] = $linkarray['userid'];
-        }
-
+        $moodlesubmission = $DB->get_record('assign_submission', $params);
+        $eventdata['objectid'] = $moodlesubmission->id;
+        $eventdata['relateduserid'] = $moodlesubmission->userid;
         $eventdata['other']['modulename'] = $cm->modname;
 
         if (isset($linkarray['content'])) {
