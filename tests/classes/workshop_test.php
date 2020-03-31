@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 require_once($CFG->dirroot . '/mod/workshop/locallib.php');
 require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 
@@ -197,5 +198,122 @@ class workshop_test extends advanced_testcase {
         $tsworkshop = new plagiarism_turnitinsim_workshop();
         $response = $tsworkshop->show_other_posts_links(0, 0);
         $this->assertEquals(true, $response);
+    }
+
+    /**
+     * Test that the correct event data is returned when handling a file submission for a workshop.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_file_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($this->student1->id,
+            $course->id,
+            $studentrole->id);
+
+        $workshop = $this->getDataGenerator()->create_module('workshop', array('course' => $course));
+        $cm = get_coursemodule_from_instance('workshop', $workshop->id, $course->id, false, MUST_EXIST);
+        $this->workshop = new testable_workshop($workshop, $cm, $course);
+
+        $workshopgenerator = $this->getDataGenerator()->get_plugin_generator('mod_workshop');
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
+
+        // Get item id.
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
+        $params = new stdClass();
+        $params->moduleid = $workshop->id;
+        $params->userid = $this->student1->id;
+        $params->onlinetext = self::TEST_WORKSHOP_TEXT;
+        $result = $tsworkshop->get_itemid($params);
+
+        $this->assertEquals($result, $submissionid);
+
+        $file = create_test_file($submissionid, $usercontext->id, 'mod_workshop', 'submissions');
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "file" => $file,
+            "content" => ''
+        );
+
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
+        $response = $tsworkshop->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
+        $this->assertEquals($submissionid, $response['objectid']);
+        $this->assertEquals($this->student1->id, $response['relateduserid']);
+        $this->assertEquals('workshop', $response['other']['modulename']);
+        $this->assertEmpty($response['other']['content']);
+    }
+
+    /**
+     * Test that the correct event data is returned when handling a text submission for a workshop.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_text_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($this->student1->id,
+            $course->id,
+            $studentrole->id);
+
+        $workshop = $this->getDataGenerator()->create_module('workshop', array('course' => $course));
+        $cm = get_coursemodule_from_instance('workshop', $workshop->id, $course->id, false, MUST_EXIST);
+        $this->workshop = new testable_workshop($workshop, $cm, $course);
+
+        $workshopgenerator = $this->getDataGenerator()->get_plugin_generator('mod_workshop');
+
+        $this->setUser($this->student1);
+        $submissionid = $workshopgenerator->create_submission($this->workshop->id, $this->student1->id);
+
+        // Get item id.
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
+        $params = new stdClass();
+        $params->moduleid = $workshop->id;
+        $params->userid = $this->student1->id;
+        $params->onlinetext = self::TEST_WORKSHOP_TEXT;
+        $result = $tsworkshop->get_itemid($params);
+
+        $this->assertEquals($result, $submissionid);
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "content" => self::TEST_WORKSHOP_TEXT
+        );
+
+        $tsworkshop = new plagiarism_turnitinsim_workshop();
+        $response = $tsworkshop->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals($submissionid, $response['objectid']);
+        $this->assertEquals($this->student1->id, $response['relateduserid']);
+        $this->assertEquals('workshop', $response['other']['modulename']);
+        $this->assertEquals(self::TEST_WORKSHOP_TEXT, $response['other']['content']);
     }
 }
