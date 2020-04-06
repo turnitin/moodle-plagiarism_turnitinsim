@@ -20,7 +20,8 @@
                 <FIELD NAME="generationtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="togenerate" NEXT="overallscore"/>
                 <FIELD NAME="overallscore" LENGTH="10" TYPE="int" NOTNULL="false" SEQUENCE="false" PREVIOUS="submittedtime" NEXT="requestedtime"/>
                 <FIELD NAME="requestedtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="overallscore" NEXT="errormessage"/>
-                <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="requestedtime"/>
+                <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="requestedtime" NEXT="errormessage"/>
+                <FIELD NAME="generationattempts" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="errormessage"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

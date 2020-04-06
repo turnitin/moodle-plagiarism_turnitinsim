@@ -118,6 +118,11 @@ class plagiarism_turnitinsim_submission {
     public $errormessage;
 
     /**
+     * @var int The number of attempts to obtain a similarity report.
+     */
+    public $generationattempts;
+
+    /**
      * @var object The request object.
      */
     public $tsrequest;
@@ -154,6 +159,7 @@ class plagiarism_turnitinsim_submission {
             $this->setoverallscore($submission->overallscore);
             $this->setrequestedtime($submission->requestedtime);
             $this->seterrormessage($submission->errormessage);
+            $this->setgenerationattempts($submission->generationattempts);
         }
     }
 
@@ -691,8 +697,44 @@ class plagiarism_turnitinsim_submission {
         mtrace('Turnitin Originality Report score retrieved for: ' . $this->getturnitinid());
 
         if (isset($params->status)) {
-            $this->setstatus($params->status);
+            if ($params->status != "COMPLETE") {
+                echo 'This submission is not complete: '.$this->getturnitinid();
+                // Check if the file actually exists in Turnitin. Make a call here.
+                $response = $this->get_submission_info();
+
+                switch ($response->status) {
+                    case TURNITINSIM_SUBMISSION_STATUS_CREATED:
+                        // Submission has been created but no file has been uploaded. Don't allow retry.
+                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                        $this->setgenerationattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+
+                        // Error message should come from the call for the report.
+                        $this->seterrormessage($params->message);
+
+                        break;
+                    case TURNITINSIM_SUBMISSION_STATUS_ERROR:
+                        // An error occurred during submission processing. Don't allow retry.
+                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                        $this->setgenerationattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+
+                        // Error message should come from the call to get the submission info.
+                        $this->seterrormessage($response->message);
+
+                        break;
+                    case TURNITINSIM_SUBMISSION_STATUS_PROCESSING:
+                        // File contents have been uploaded and the submission is being processed. Allow another try in an hour.
+                        $this->setgenerationattempts($this->getgenerationattempts() + 1);
+                        $this->setgenerationtime(time() + TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS);
+
+                        break;
+                }
+
+            } else {
+                $this->setstatus($params->status);
+                $this->setgenerationattempts($this->getgenerationattempts() + 1);
+            }
         }
+
         if (isset($params->overall_match_percentage)) {
             $this->setoverallscore($params->overall_match_percentage);
             $this->calculate_generation_time(true);
@@ -874,7 +916,27 @@ class plagiarism_turnitinsim_submission {
         }
 
         return $anon;
+    }
 
+    /**
+     * Get the submission details for a submission from Turnitin.
+     *
+     * @return bool|mixed
+     * @throws coding_exception
+     */
+    private function get_submission_info() {
+        try {
+            $endpoint = TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO;
+            $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
+            $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
+
+            return json_decode($response);
+        } catch (Exception $e) {
+            $logger = new plagiarism_turnitinsim_logger();
+            $logger->error(get_string('errorgettingsubmissioninfo', 'plagiarism_turnitinsim'));
+
+            return false;
+        }
     }
 
     /**
@@ -1173,5 +1235,23 @@ class plagiarism_turnitinsim_submission {
      */
     public function setgenerationtime($generationtime) {
         $this->generationtime = $generationtime;
+    }
+
+    /**
+     * Get the number of report generation attempts.
+     *
+     * @return int
+     */
+    public function getgenerationattempts() {
+        return $this->generationattempts;
+    }
+
+    /**
+     * Set the number of report generation attempts.
+     *
+     * @param string $generationattempts
+     */
+    public function setgenerationattempts($generationattempts) {
+        $this->generationattempts = $generationattempts;
     }
 }
