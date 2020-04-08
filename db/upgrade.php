@@ -256,14 +256,20 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020032404, 'plagiarism', 'turnitinsim');
     }
 
-    if ($oldversion < 2020040301) {
+    if ($oldversion < 2020040701) {
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
-        $field = new xmldb_field('generationattempts', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'errormessage');
+        $field = new xmldb_field('tiiattempts', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'errormessage');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_plugin_savepoint(true, 2020040301, 'plagiarism', 'turnitinsim');
+
+        $field = new xmldb_field('tiiretrytime', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'tiiattempts');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_plugin_savepoint(true, 2020040701, 'plagiarism', 'turnitinsim');
     }
     return true;
 }

@@ -42,6 +42,8 @@ switch ($action) {
 
         $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $submissionid);
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+        $tssubmission->settiiattempts(0);
+        $tssubmission->settiiretrytime(0);
         $tssubmission->update();
 
         break;
