@@ -470,7 +470,7 @@ class plagiarism_turnitinsim_submission {
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $this->setsubmittedtime(time());
                 $this->settiiattempts($this->gettiiattempts() + 1);
-                $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
+                $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_SUBMISSION_RETRY_WAIT_SECONDS));
 
                 mtrace(get_string('taskoutputsubmissionnotcreatedeula', 'plagiarism_turnitinsim'));
 
