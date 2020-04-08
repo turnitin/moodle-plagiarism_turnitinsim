@@ -752,6 +752,7 @@ class plagiarism_turnitinsim_submission {
             } else {
                 $this->setstatus($params->status);
                 $this->settiiattempts($this->gettiiattempts() + 1);
+                $this->seterrormessage('');
             }
         }
 

@@ -44,6 +44,7 @@ switch ($action) {
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->settiiattempts(0);
         $tssubmission->settiiretrytime(0);
+        $tssubmission->seterrormessage('');
         $tssubmission->update();
 
         break;
