@@ -717,11 +717,10 @@ class plagiarism_turnitinsim_submission {
      * @throws coding_exception
      */
     public function handle_similarity_response($params) {
-        // Update submission details.
-        mtrace('Turnitin Originality Report score retrieved for: ' . $this->getturnitinid());
-
         if (isset($params->status)) {
             if ($params->status != "COMPLETE") {
+                mtrace('Turnitin Originality Report score could not be retrieved for: ' . $this->getturnitinid());
+
                 // Check if the file actually exists in Turnitin. Make a call here.
                 $response = $this->get_submission_info();
 
@@ -754,6 +753,8 @@ class plagiarism_turnitinsim_submission {
                 }
 
             } else {
+                mtrace('Turnitin Originality Report score retrieved for: ' . $this->getturnitinid());
+
                 $this->setstatus($params->status);
                 $this->settiiattempts($this->gettiiattempts() + 1);
                 $this->seterrormessage('');
