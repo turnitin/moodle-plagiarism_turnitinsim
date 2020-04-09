@@ -442,6 +442,10 @@ class plagiarism_turnitinsim_submission {
         } catch (Exception $e) {
             // This should only ever fail due to a failed connection to Turnitin so we will leave the paper as queued.
             $this->tsrequest->handle_exception($e, 'taskoutputfailedconnection');
+
+            $this->settiiattempts($this->gettiiattempts() + 1);
+            $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_SUBMISSION_RETRY_WAIT_SECONDS));
+            $this->update();
         }
     }
 
