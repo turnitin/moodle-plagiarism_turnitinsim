@@ -118,6 +118,16 @@ class plagiarism_turnitinsim_submission {
     public $errormessage;
 
     /**
+     * @var int The number of attempts to obtain a similarity report.
+     */
+    public $tiiattempts;
+
+    /**
+     * @var int The time of the next retry for this submission.
+     */
+    public $tiiretrytime;
+
+    /**
      * @var object The request object.
      */
     public $tsrequest;
@@ -154,6 +164,8 @@ class plagiarism_turnitinsim_submission {
             $this->setoverallscore($submission->overallscore);
             $this->setrequestedtime($submission->requestedtime);
             $this->seterrormessage($submission->errormessage);
+            $this->settiiattempts($submission->tiiattempts);
+            $this->settiiretrytime($submission->tiiretrytime);
         }
     }
 
@@ -428,9 +440,12 @@ class plagiarism_turnitinsim_submission {
             $this->handle_create_submission_response($responsedata);
 
         } catch (Exception $e) {
-
             // This should only ever fail due to a failed connection to Turnitin so we will leave the paper as queued.
             $this->tsrequest->handle_exception($e, 'taskoutputfailedconnection');
+
+            $this->settiiattempts($this->gettiiattempts() + 1);
+            $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_SUBMISSION_RETRY_WAIT_SECONDS));
+            $this->update();
         }
     }
 
@@ -447,6 +462,7 @@ class plagiarism_turnitinsim_submission {
                 // Handle a TURNITINSIM_HTTP_CREATED response.
                 $this->setturnitinid($params->id);
                 $this->setstatus($params->status);
+                $this->settiiattempts(0);
                 $this->setsubmittedtime(strtotime($params->created_time));
 
                 mtrace(get_string('taskoutputsubmissioncreated', 'plagiarism_turnitinsim', $params->id));
@@ -457,6 +473,8 @@ class plagiarism_turnitinsim_submission {
                 // Handle the response for a user who has not accepted the EULA.
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $this->setsubmittedtime(time());
+                $this->settiiattempts($this->gettiiattempts() + 1);
+                $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_SUBMISSION_RETRY_WAIT_SECONDS));
 
                 mtrace(get_string('taskoutputsubmissionnotcreatedeula', 'plagiarism_turnitinsim'));
 
@@ -464,6 +482,8 @@ class plagiarism_turnitinsim_submission {
 
             default:
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                $this->seterrormessage($params->message);
                 mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
                 break;
         }
@@ -532,6 +552,7 @@ class plagiarism_turnitinsim_submission {
     public function handle_upload_response($params, $filename) {
         // Update submission status.
         mtrace( get_string('taskoutputfileuploaded', 'plagiarism_turnitinsim', $this->getturnitinid()));
+
         if (!empty($params->httpstatus)) {
             $status = ($params->httpstatus == TURNITINSIM_HTTP_ACCEPTED) ?
                 TURNITINSIM_SUBMISSION_STATUS_UPLOADED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
@@ -539,6 +560,15 @@ class plagiarism_turnitinsim_submission {
             $status = (!empty($params->status) && $params->status == TURNITINSIM_SUBMISSION_STATUS_COMPLETE) ?
                 TURNITINSIM_SUBMISSION_STATUS_UPLOADED : TURNITINSIM_SUBMISSION_STATUS_ERROR;
         }
+
+        // On success, reset retries for use in report generation task. On error, never retry.
+        if ($status == TURNITINSIM_SUBMISSION_STATUS_UPLOADED) {
+            $this->settiiattempts(0);
+            $this->settiiretrytime(0);
+        } else {
+            $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+        }
+
         $this->setstatus($status);
 
         // Save error message if request has errored, otherwise send digital receipts.
@@ -687,12 +717,50 @@ class plagiarism_turnitinsim_submission {
      * @throws coding_exception
      */
     public function handle_similarity_response($params) {
-        // Update submission details.
-        mtrace('Turnitin Originality Report score retrieved for: ' . $this->getturnitinid());
-
         if (isset($params->status)) {
-            $this->setstatus($params->status);
+            if ($params->status != "COMPLETE") {
+                mtrace('Turnitin Originality Report score could not be retrieved for: ' . $this->getturnitinid());
+
+                // Check if the file actually exists in Turnitin. Make a call here.
+                $response = $this->get_submission_info();
+
+                switch ($response->status) {
+                    case TURNITINSIM_SUBMISSION_STATUS_CREATED:
+                        // Submission has been created but no file has been uploaded. Don't allow retry.
+                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                        $this->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+
+                        // Error message should come from the call for the report.
+                        $this->seterrormessage($params->message);
+
+                        break;
+                    case TURNITINSIM_SUBMISSION_STATUS_ERROR:
+                        // An error occurred during submission processing. Don't allow retry.
+                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                        $this->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+
+                        // Error message should come from the call to get the submission info.
+                        $this->seterrormessage($response->message);
+
+                        break;
+                    default:
+                        // File contents have been uploaded and the submission is being processed. TURNITINSIM_SUBMISSION_STATUS_PROCESSING.
+                        // Or get_submission_info() returns no response. Allow another try in an hour.
+                        $this->settiiattempts($this->gettiiattempts() + 1);
+                        $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
+
+                        break;
+                }
+
+            } else {
+                mtrace('Turnitin Originality Report score retrieved for: ' . $this->getturnitinid());
+
+                $this->setstatus($params->status);
+                $this->settiiattempts($this->gettiiattempts() + 1);
+                $this->seterrormessage('');
+            }
         }
+
         if (isset($params->overall_match_percentage)) {
             $this->setoverallscore($params->overall_match_percentage);
             $this->calculate_generation_time(true);
@@ -874,7 +942,30 @@ class plagiarism_turnitinsim_submission {
         }
 
         return $anon;
+    }
 
+    /**
+     * Get the submission details for a submission from Turnitin.
+     *
+     * @return bool|mixed
+     * @throws coding_exception
+     */
+    private function get_submission_info() {
+        try {
+            $endpoint = TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO;
+            $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
+            $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
+
+            return json_decode($response);
+        } catch (Exception $e) {
+            $logger = new plagiarism_turnitinsim_logger();
+            $logger->error(get_string('errorgettingsubmissioninfo', 'plagiarism_turnitinsim'));
+
+            $response = new stdClass();
+            $response->status = false;
+
+            return $response;
+        }
     }
 
     /**
@@ -1173,5 +1264,41 @@ class plagiarism_turnitinsim_submission {
      */
     public function setgenerationtime($generationtime) {
         $this->generationtime = $generationtime;
+    }
+
+    /**
+     * Get the number of report generation attempts.
+     *
+     * @return int
+     */
+    public function gettiiattempts() {
+        return $this->tiiattempts;
+    }
+
+    /**
+     * Set the number of report generation attempts.
+     *
+     * @param string $tiiattempts
+     */
+    public function settiiattempts($tiiattempts) {
+        $this->tiiattempts = $tiiattempts;
+    }
+
+    /**
+     * Get the time of the next retry.
+     *
+     * @return int
+     */
+    public function gettiiretrytime() {
+        return $this->tiiretrytime;
+    }
+
+    /**
+     * Set the time of the next retry.
+     *
+     * @param string $tiiretrytime
+     */
+    public function settiiretrytime($tiiretrytime) {
+        $this->tiiretrytime = $tiiretrytime;
     }
 }

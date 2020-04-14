@@ -45,6 +45,16 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     const INVALID_SUBMISSION_ID = 'INVALID_ID';
 
     /**
+     * A sample error message.
+     */
+    const TEST_ERROR_MESSAGE_1 = 'Example error message 1.';
+
+    /**
+     * Another sample error message.
+     */
+    const TEST_ERROR_MESSAGE_2 = 'Example error message 2.';
+
+    /**
      * Set config for use in the tests.
      */
     public function setup() {
@@ -1680,5 +1690,195 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Verify that viewer permissions are true as the config values are set to true.
         $overrides = $tssubmission->create_similarity_overrides();
         $this->assertFalse($overrides['view_settings']['save_changes']);
+    }
+
+    public function test_handle_similarity_response_status_sets_correct_values_if_status_is_complete() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+        $params->overall_match_percentage = 50;
+
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_COMPLETE, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+        $this->assertEquals(50, $record->overallscore);
+    }
+
+    public function test_handle_similarity_response_status_sets_correct_values_if_status_is_created() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $response = '{"status": "CREATED", "message": "'.self::TEST_ERROR_MESSAGE_1.'"}';
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_CREATED;
+        $params->message = self::TEST_ERROR_MESSAGE_2;
+
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+        $this->assertEquals(self::TEST_ERROR_MESSAGE_2, $record->errormessage);
+    }
+
+    public function test_handle_similarity_response_status_sets_correct_values_if_status_is_error() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $response = '{"status": "ERROR", "message": "'.self::TEST_ERROR_MESSAGE_1.'"}';
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_CREATED;
+        $params->message = self::TEST_ERROR_MESSAGE_2;
+
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+        $this->assertEquals(self::TEST_ERROR_MESSAGE_1, $record->errormessage);
+    }
+
+    public function test_handle_similarity_response_status_sets_correct_values_if_status_is_processing() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $response = '{"status": "PROCESSING"}';
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_CREATED;
+
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+    }
+
+    public function test_handle_similarity_response_status_sets_correct_values_if_request_fails() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $response = new stdClass();
+        $response->status = false;
+        $response = json_encode($response);
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_CREATED;
+
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
     }
 }

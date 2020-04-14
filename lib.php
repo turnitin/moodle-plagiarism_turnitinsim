@@ -616,6 +616,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $status = ($sendtoturnitin) ? TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_NOT_SENT;
                 $tssubmission->calculate_generation_time();
                 $tssubmission->setstatus($status);
+                $tssubmission->settiiattempts(0);
+                $tssubmission->settiiretrytime(0);
 
                 $tssubmission->update();
             }
@@ -654,6 +656,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
             $tssubmission->calculate_generation_time();
+            $tssubmission->settiiattempts(0);
+            $tssubmission->settiiretrytime(0);
             $tssubmission->update();
         }
         return true;
