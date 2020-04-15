@@ -89,8 +89,10 @@ class plagiarism_turnitinsim_task {
         }
 
         // Get Submissions to send.
-        $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub', 'status = ?',
-            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED), '', '*', 0,
+        $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub',
+            '(status = ? OR status = ?) AND tiiattempts < ? AND tiiretrytime < ?',
+            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS, time()),
+            '', '*', 0,
             TURNITINSIM_SUBMISSION_SEND_LIMIT);
 
         // Create each submission in Turnitin and upload submission.
@@ -144,8 +146,10 @@ class plagiarism_turnitinsim_task {
                                     ON s.cm = c.id
                                     WHERE ((togenerate = ? AND generationtime <= ?) OR (status = ?))
                                         AND c.deletioninprogress = ?
-                                        AND turnitinid IS NOT NULL',
-            array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0)
+                                        AND turnitinid IS NOT NULL
+                                        AND tiiattempts < ?
+                                        AND tiiretrytime < ?',
+            array(1, time(), TURNITINSIM_SUBMISSION_STATUS_REQUESTED, 0, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, time())
         );
 
         // Request reports be generated or get scores for reports that have been requested.
@@ -158,12 +162,10 @@ class plagiarism_turnitinsim_task {
             // Otherwise retrieve originality score if we haven't received it back within 5 minutes.
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 && $tssubmission->getsubmittedtime() < (time() - $this->get_report_gen_request_delay())) {
-
                 $tssubmission->request_turnitin_report_generation();
 
             } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 && $tssubmission->getrequestedtime() < (time() - $this->get_report_gen_score_delay())) {
-
                 $tssubmission->request_turnitin_report_score();
             }
 

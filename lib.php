@@ -276,11 +276,14 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
 
             } else {
-                // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin.
-                $helpicon = $OUTPUT->help_icon('submissiondisplayerror:notsent', 'plagiarism_turnitinsim');
+                // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin. Queue it.
+                $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
+                $moduleobject = new $moduleclass;
+                $eventdata = $moduleobject->create_submission_event_data($linkarray);
+                $this->submission_handler($eventdata);
 
-                $status = html_writer::tag('span', get_string('submissiondisplaystatus:notsent',
-                    'plagiarism_turnitinsim') . $helpicon);
+                $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
+                    'plagiarism_turnitinsim'));
             }
 
             // Render a Turnitin logo.
@@ -613,6 +616,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $status = ($sendtoturnitin) ? TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_NOT_SENT;
                 $tssubmission->calculate_generation_time();
                 $tssubmission->setstatus($status);
+                $tssubmission->settiiattempts(0);
+                $tssubmission->settiiretrytime(0);
 
                 $tssubmission->update();
             }
@@ -651,6 +656,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
             $tssubmission->calculate_generation_time();
+            $tssubmission->settiiattempts(0);
+            $tssubmission->settiiretrytime(0);
             $tssubmission->update();
         }
         return true;

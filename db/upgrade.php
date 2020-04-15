@@ -228,7 +228,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     if ($oldversion < 2020032404) {
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
 
-        $field = new xmldb_field('submitted_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'type');
+        $field = new xmldb_field('submitted_time', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'type');
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'submittedtime');
         }
@@ -238,7 +238,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             $dbman->rename_field($table, $field, 'togenerate');
         }
 
-        $field = new xmldb_field('generation_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'to_generate');
+        $field = new xmldb_field('generation_time', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'to_generate');
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'generationtime');
         }
@@ -248,7 +248,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             $dbman->rename_field($table, $field, 'overallscore');
         }
 
-        $field = new xmldb_field('requested_time', XMLDB_TYPE_INTEGER, '10', null, false, null, null, 'overall_score');
+        $field = new xmldb_field('requested_time', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'overall_score');
         if ($dbman->field_exists($table, $field)) {
             $dbman->rename_field($table, $field, 'requestedtime');
         }
@@ -256,5 +256,22 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020032404, 'plagiarism', 'turnitinsim');
     }
 
+    if ($oldversion < 2020041501) {
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
+        $field = new xmldb_field('tiiattempts', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'errormessage');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $DB->set_field('plagiarism_turnitinsim_sub', 'tiiattempts', 0);
+        }
+
+        $field = new xmldb_field('tiiretrytime', XMLDB_TYPE_INTEGER, '10', null, false, null, 0, 'tiiattempts');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $DB->set_field('plagiarism_turnitinsim_sub', 'tiiattempts', 0);
+        }
+        upgrade_plugin_savepoint(true, 2020041501, 'plagiarism', 'turnitinsim');
+    }
     return true;
 }

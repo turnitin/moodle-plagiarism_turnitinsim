@@ -192,3 +192,4 @@ $string['privacy:metadata:plagiarism_turnitinsim_client:submission_filename'] = 
 $string['privacy:metadata:plagiarism_turnitinsim_client:submission_content'] = 'Please be aware that the content of a file/submission is sent to Turnitin for processing.';
 
 $string['errorenabledfeatures'] = 'Could not get the list of enabled features.';
+$string['errorgettingsubmissioninfo'] = 'There was an error attempting to get the submission info.';

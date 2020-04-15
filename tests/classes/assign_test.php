@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
  * Tests for assign module class for plagiarism_turnitinsim component.
@@ -391,4 +392,124 @@ class assign_test extends advanced_testcase {
         $this->assertEquals(true, $response);
     }
 
+    /**
+     * Test that the correct event data is returned when handling a file submission for an assignment.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_file_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Add a submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $data->onlinetext_editor = array(
+            'text' => self::TEST_ASSIGN_TEXT,
+            'format' => FORMAT_HTML
+        );
+        $plugin = $assign->get_submission_plugin_by_type('onlinetext');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "file" => $file,
+            "content" => ''
+        );
+
+        $tsassign = new plagiarism_turnitinsim_assign();
+        $response = $tsassign->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
+        $this->assertEquals($submission->id, $response['objectid']);
+        $this->assertEquals($submission->userid, $response['relateduserid']);
+        $this->assertEquals('assign', $response['other']['modulename']);
+        $this->assertEmpty($response['other']['content']);
+    }
+
+    /**
+     * Test that the correct event data is returned when handling a text submission for an assignment.
+     */
+    public function test_create_submission_event_data_returns_correct_data_for_text_submission() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Set plugin config.
+        set_config('turnitinsim_use', 1, 'plagiarism');
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
+
+        // Log new user in.
+        $this->setUser($this->student1);
+
+        // Add a submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $data->onlinetext_editor = array(
+            'text' => self::TEST_ASSIGN_TEXT,
+            'format' => FORMAT_HTML
+        );
+        $plugin = $assign->get_submission_plugin_by_type('onlinetext');
+        $plugin->save($submission, $data);
+
+        // Create dummy link array data.
+        $linkarray = array(
+            "cmid" => $cm->id,
+            "userid" => $this->student1->id,
+            "content" => self::TEST_ASSIGN_TEXT
+        );
+
+        $tsassign = new plagiarism_turnitinsim_assign();
+        $response = $tsassign->create_submission_event_data($linkarray);
+
+        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals($cm->id, $response['contextinstanceid']);
+        $this->assertEquals($this->student1->id, $response['userid']);
+        $this->assertEquals($submission->id, $response['objectid']);
+        $this->assertEquals($submission->userid, $response['relateduserid']);
+        $this->assertEquals('assign', $response['other']['modulename']);
+        $this->assertEquals(self::TEST_ASSIGN_TEXT, $response['other']['content']);
+    }
 }
