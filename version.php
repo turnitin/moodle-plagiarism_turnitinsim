@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2020041501;
+$plugin->version = 2020041701;
 $plugin->release = "v1.1";
 $plugin->requires = 2017051500;
 $plugin->component = 'plagiarism_turnitinsim';
