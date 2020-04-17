@@ -1,3 +1,0 @@
-[submodule "tests/behat"]
-	path = tests/behat
-	url = https://github.com/turnitin/moodle-plagiarism-turnitinsim-behat.git
