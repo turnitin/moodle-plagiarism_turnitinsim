@@ -1,6 +1,19 @@
 ### Date:      2020-April-15
 ### Release:   v2020041501
 
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Plugin successfully installs via zip file.
+
+We have fixed an issue where the plugin may not install if downloaded from the Moodle plugin directory due to it containing an empty behat directory.
+
+---
+
+### Date:      2020-April-15
+### Release:   v2020041501
+
 #### :zap: What's new
 
 ---

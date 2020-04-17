@@ -744,7 +744,8 @@ class plagiarism_turnitinsim_submission {
 
                         break;
                     default:
-                        // File contents have been uploaded and the submission is being processed. TURNITINSIM_SUBMISSION_STATUS_PROCESSING.
+                        // File contents have been uploaded and the submission is being processed.
+                        // Status of TURNITINSIM_SUBMISSION_STATUS_PROCESSING.
                         // Or get_submission_info() returns no response. Allow another try in an hour.
                         $this->settiiattempts($this->gettiiattempts() + 1);
                         $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));

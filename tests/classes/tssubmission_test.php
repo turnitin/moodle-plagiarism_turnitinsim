@@ -1692,6 +1692,9 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertFalse($overrides['view_settings']['save_changes']);
     }
 
+    /**
+     * Test that the similarity response status sets correct values if status is COMPLETE.
+     */
     public function test_handle_similarity_response_status_sets_correct_values_if_status_is_complete() {
         global $DB;
 
@@ -1720,6 +1723,9 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(50, $record->overallscore);
     }
 
+    /**
+     * Test that the similarity response status sets correct values if status is CREATED.
+     */
     public function test_handle_similarity_response_status_sets_correct_values_if_status_is_created() {
         global $DB;
 
@@ -1761,6 +1767,9 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(self::TEST_ERROR_MESSAGE_2, $record->errormessage);
     }
 
+    /**
+     * Test that the similarity response status sets correct values if status is ERROR.
+     */
     public function test_handle_similarity_response_status_sets_correct_values_if_status_is_error() {
         global $DB;
 
@@ -1802,6 +1811,9 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(self::TEST_ERROR_MESSAGE_1, $record->errormessage);
     }
 
+    /**
+     * Test that the similarity response status sets correct values if status is PROCESSING.
+     */
     public function test_handle_similarity_response_status_sets_correct_values_if_status_is_processing() {
         global $DB;
 
@@ -1841,6 +1853,9 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertGreaterThan(time(), $record->tiiretrytime);
     }
 
+    /**
+     * Test that the similarity response status sets correct values if the request fails.
+     */
     public function test_handle_similarity_response_status_sets_correct_values_if_request_fails() {
         global $DB;
 
