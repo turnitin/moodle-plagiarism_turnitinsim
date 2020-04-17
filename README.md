@@ -30,13 +30,17 @@ To configure the plugin go to `"Site administration" > "Plugins" > "Plagiarism" 
 
 Testing
 -
-This plugin contains a full suite of PHPUnit and behat tests which can be run against your moodle installation. 
+This plugin contains a full suite of PHPUnit tests which can be run against your Moodle installation. 
 
 Provided your environment is already configured to run PHPUnit tests, then run the following command from the Moodle root directory:  
 
 `vendor/bin/phpunit --testsuite plagiarism_turnitinsim_testsuite`
 
-Provided your environment is already configured to run Behat tests, then run the following command from the Moodle root directory:
+Provided your environment is already configured to run Behat tests, you can download and install our behat tests from their repository by running the following command from the plugin root directory:
+
+`git clone https://github.com/turnitin/moodle-plagiarism-turnitinsim-behat.git tests/behat`
+
+Then run the following command from the Moodle root directory:
 
 `php admin/tool/behat/cli/run.php --tags=@plagiarism_turnitinsim`
 

@@ -91,7 +91,12 @@ class plagiarism_turnitinsim_task {
         // Get Submissions to send.
         $submissions = $DB->get_records_select('plagiarism_turnitinsim_sub',
             '(status = ? OR status = ?) AND tiiattempts < ? AND tiiretrytime < ?',
-            array(TURNITINSIM_SUBMISSION_STATUS_QUEUED, TURNITINSIM_SUBMISSION_STATUS_CREATED, TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS, time()),
+            array(
+                TURNITINSIM_SUBMISSION_STATUS_QUEUED,
+                TURNITINSIM_SUBMISSION_STATUS_CREATED,
+                TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS,
+                time()
+            ),
             '', '*', 0,
             TURNITINSIM_SUBMISSION_SEND_LIMIT);
 
