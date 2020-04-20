@@ -115,7 +115,9 @@ class plagiarism_turnitinsim_request {
 
         // Attach content type to headers if this is not a submission.
         if ($requesttype == 'general') {
-            $this->headers = array_merge($this->headers, array('Content-Type: application/json'));
+            if (!in_array('Content-Type: application/json', $this->headers)) {
+                $this->headers[] = 'Content-Type: application/json';
+            }
         }
 
         if ($this->logger) {
