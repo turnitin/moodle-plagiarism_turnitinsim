@@ -571,7 +571,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_upload_file_submission_to_turnitin_failure() {
         $this->resetAfterTest();
 
-        // Get the response for a successfully created submission.
+        // Get the response for a failed submission.
         $uploadresponse = file_get_contents(__DIR__ . '/../fixtures/upload_file_to_submission_failure.json');
         $jsonresponse = (array)json_decode($uploadresponse);
 
@@ -609,9 +609,35 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Upload file to submission.
         $tssubmission->upload_submission_to_turnitin();
 
-        // Test that the submission status is uploaded.
+        // Test that the submission status is error.
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $tssubmission->getstatus());
         $this->assertEquals($jsonresponse['message'], $tssubmission->geterrormessage());
+    }
+
+    /**
+     * Test failure to upload a file submission to Turnitin request if the file has been deleted.
+     */
+    public function test_upload_file_submission_to_turnitin_failure_file_deleted() {
+        $this->resetAfterTest();
+
+        $this->setUser($this->student1);
+
+        // Create submission object with status created and an invalid Turnitin Id to simulate a not found error.
+        $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier('test');
+        $tssubmission->setturnitinid(self::INVALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
+
+        // Upload file to submission.
+        $tssubmission->upload_submission_to_turnitin();
+
+        // Test that the submission status is empty/deleted and that it won't retry.
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED, $tssubmission->getstatus());
+        $this->assertEquals(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS, $tssubmission->gettiiattempts());
     }
 
     /**

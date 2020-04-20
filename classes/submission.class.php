@@ -498,6 +498,16 @@ class plagiarism_turnitinsim_submission {
         // Create request body with file attached.
         if ($this->type == "file") {
             $filedetails = $this->get_file_details();
+
+            // Check that the file exists and is not empty.
+            if (!$filedetails) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                $this->update();
+
+                return;
+            }
+
             // Encode filename.
             $filename = str_replace('%20', ' ', rawurlencode($filedetails->get_filename()));
 
