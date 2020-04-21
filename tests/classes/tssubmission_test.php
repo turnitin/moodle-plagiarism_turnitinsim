@@ -1763,12 +1763,12 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_QUEUED, $record->status);
         $this->assertEquals(1, $record->tiiattempts);
-        $this->assertEquals(0, $record->tiiretrytime);
         $this->assertEquals('', $record->errormessage);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
 
         // Prepare to test scenario where max attempts is reached.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
-        $tssubmission->settiiattempts(2);
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
         $tssubmission->update();
 
         $tssubmission->handle_similarity_response($params);
@@ -1866,7 +1866,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertGreaterThan(time(), $record->tiiretrytime);
 
         // Prepare to test scenario where max attempts is reached.
-        $tssubmission->settiiattempts(2);
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
         $tssubmission->update();
 
         $tssubmission->handle_similarity_response($params);

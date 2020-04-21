@@ -731,7 +731,7 @@ class plagiarism_turnitinsim_submission {
                         $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
 
                         // Error message should come from the call for the report.
-                        if ($this->gettiiattempts() == 3) {
+                        if ($this->gettiiattempts() == TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
                             $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
                             $this->seterrormessage($params->message);
                         }
@@ -753,7 +753,7 @@ class plagiarism_turnitinsim_submission {
                         $this->settiiattempts($this->gettiiattempts() + 1);
                         $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
 
-                        if ($this->gettiiattempts() == 3) {
+                        if ($this->gettiiattempts() == TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
                             $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
                             $this->seterrormessage(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'));
                         }
