@@ -1766,7 +1766,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
             ->getMock();
 
         // Mock API send request method.
-        $tsrequest->expects($this->once())
+        $tsrequest->expects($this->exactly(2))
             ->method('send_request')
             ->willReturn($response);
 
@@ -1787,9 +1787,22 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_QUEUED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertEquals('', $record->errormessage);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_CREATED);
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
         $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
-        $this->assertEquals(0, $record->tiiretrytime);
         $this->assertEquals(self::TEST_ERROR_MESSAGE_2, $record->errormessage);
     }
 
@@ -1854,7 +1867,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
             ->getMock();
 
         // Mock API send request method.
-        $tsrequest->expects($this->once())
+        $tsrequest->expects($this->exactly(2))
             ->method('send_request')
             ->willReturn($response);
 
@@ -1877,6 +1890,18 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
         $this->assertEquals(1, $record->tiiattempts);
         $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $tssubmission->handle_similarity_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
     }
 
     /**
