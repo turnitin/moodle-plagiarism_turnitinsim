@@ -47,7 +47,7 @@ class plagiarism_turnitinsim_assign {
             return $moodletextsubmission->onlinetext;
         }
 
-        return false;
+        return null;
     }
 
     /**

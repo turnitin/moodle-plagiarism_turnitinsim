@@ -135,7 +135,7 @@ class assign_test extends advanced_testcase {
         $tsassign = new plagiarism_turnitinsim_assign();
         $result = $tsassign->get_onlinetext(1);
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
     /**

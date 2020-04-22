@@ -100,7 +100,7 @@ class workshop_test extends advanced_testcase {
         $tsassign = new plagiarism_turnitinsim_workshop();
         $result = $tsassign->get_onlinetext(1);
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
     /**

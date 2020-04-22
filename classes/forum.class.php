@@ -46,7 +46,7 @@ class plagiarism_turnitinsim_forum {
             return $forumpost->message;
         }
 
-        return false;
+        return null;
     }
 
     /**

@@ -46,7 +46,7 @@ class plagiarism_turnitinsim_workshop {
             return $submission->content;
         }
 
-        return false;
+        return null;
     }
 
     /**
