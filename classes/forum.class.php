@@ -41,7 +41,12 @@ class plagiarism_turnitinsim_forum {
         global $DB;
 
         $forumpost = $DB->get_record('forum_posts', array('id' => $itemid), 'message');
-        return $forumpost->message;
+
+        if (isset($forumpost->message)) {
+            return $forumpost->message;
+        }
+
+        return null;
     }
 
     /**

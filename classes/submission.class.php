@@ -522,6 +522,15 @@ class plagiarism_turnitinsim_submission {
             // Add text content to request.
             $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
             $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
+
+            // Check that the text exists and is not empty.
+            if (empty($textcontent)) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                $this->update();
+
+                return;
+            }
         }
 
         // Add content to request.

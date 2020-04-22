@@ -42,7 +42,11 @@ class plagiarism_turnitinsim_workshop {
 
         $submission = $DB->get_record('workshop_submissions', array('id' => $itemid), 'content');
 
-        return $submission->content;
+        if (isset($submission->content)) {
+            return $submission->content;
+        }
+
+        return null;
     }
 
     /**
