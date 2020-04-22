@@ -42,7 +42,12 @@ class plagiarism_turnitinsim_assign {
 
         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
             array('submission' => $itemid), 'onlinetext');
-        return $moodletextsubmission->onlinetext;
+
+        if (isset($moodletextsubmission->onlinetext)) {
+            return $moodletextsubmission->onlinetext;
+        }
+
+        return false;
     }
 
     /**

@@ -116,6 +116,18 @@ class forum_test extends advanced_testcase {
     }
 
     /**
+     * Test that online text returns false if no submission is found.
+     */
+    public function test_get_onlinetext_returns_false_if_no_text() {
+        $this->resetAfterTest();
+
+        $tsassign = new plagiarism_turnitinsim_forum();
+        $result = $tsassign->get_onlinetext(1);
+
+        $this->assertFalse($result);
+    }
+
+    /**
      * Test that we get back the correct itemid when get_itemid is called.
      */
     public function test_get_itemid_returns_correct_itemid() {
