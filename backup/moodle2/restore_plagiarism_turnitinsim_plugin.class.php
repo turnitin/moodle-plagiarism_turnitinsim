@@ -137,13 +137,18 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
 
             // Get new itemid for text content.
             if ($data->type == TURNITINSIM_SUBMISSION_TYPE_CONTENT) {
-
                 $cm = get_coursemodule_from_id('', $data->cm);
                 // Create module object and get the online text.
                 $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
                 $moduleobject = new $moduleclass;
 
                 $onlinetext = $moduleobject->get_onlinetext($data->itemid);
+
+                // If there's no text, skip it.
+                if (empty($onlinetext)) {
+                    continue;
+                }
+
                 $data->identifier = sha1($onlinetext);
 
                 // Get new item id.

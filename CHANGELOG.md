@@ -1,3 +1,24 @@
+### Date:      2020-April-22
+### Release:   v2020042201
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Deleted files will no longer cause cron errors
+
+We will now check a file exists before attempting to upload it to Turnitin. This check will prevent cron errors from occurring as it looks for a non-existing file.
+
+#### Files unsuccessfully uploaded to Turnitin will now automatically retry
+
+In the rare instance that a file is unable to be uploaded to Turnitin during submission, we will automatically retry to send it to Turnitin again without further action from the user.
+
+#### Webhooks can now be recreated
+
+We have fixed an issue where webhooks would not be recreated when running the “Update local configuration” scheduled task. This could cause problems when a user would try to change the URL of their Moodle instance.
+
+---
+
 ### Date:      2020-April-17
 ### Release:   v2020041701
 

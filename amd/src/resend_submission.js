@@ -51,7 +51,7 @@ define(['jquery', 'core/str'], function($, str) {
                     success: function() {
                         that.siblings('.turnitinsim_status').removeClass('hidden');
 
-                        str.get_string('submissiondisplaystatusqueued', 'plagiarism_turnitinsim').done(function(text) {
+                        str.get_string('submissiondisplaystatus:queued', 'plagiarism_turnitinsim').done(function(text) {
                             that.siblings('.tii_status_text').html(text);
                         });
 

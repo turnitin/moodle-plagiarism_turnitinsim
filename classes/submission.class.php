@@ -462,7 +462,6 @@ class plagiarism_turnitinsim_submission {
                 // Handle a TURNITINSIM_HTTP_CREATED response.
                 $this->setturnitinid($params->id);
                 $this->setstatus($params->status);
-                $this->settiiattempts(0);
                 $this->setsubmittedtime(strtotime($params->created_time));
 
                 mtrace(get_string('taskoutputsubmissioncreated', 'plagiarism_turnitinsim', $params->id));
@@ -498,6 +497,16 @@ class plagiarism_turnitinsim_submission {
         // Create request body with file attached.
         if ($this->type == "file") {
             $filedetails = $this->get_file_details();
+
+            // Check that the file exists and is not empty.
+            if (!$filedetails) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                $this->update();
+
+                return;
+            }
+
             // Encode filename.
             $filename = str_replace('%20', ' ', rawurlencode($filedetails->get_filename()));
 
@@ -513,6 +522,15 @@ class plagiarism_turnitinsim_submission {
             // Add text content to request.
             $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
             $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
+
+            // Check that the text exists and is not empty.
+            if (empty($textcontent)) {
+                $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                $this->update();
+
+                return;
+            }
         }
 
         // Add content to request.
@@ -726,12 +744,16 @@ class plagiarism_turnitinsim_submission {
 
                 switch ($response->status) {
                     case TURNITINSIM_SUBMISSION_STATUS_CREATED:
-                        // Submission has been created but no file has been uploaded. Don't allow retry.
-                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
-                        $this->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+                        // Submission has been created but no file has been uploaded. Reprocess and allow retry in an hour.
+                        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+                        $this->settiiattempts($this->gettiiattempts() + 1);
+                        $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
 
                         // Error message should come from the call for the report.
-                        $this->seterrormessage($params->message);
+                        if ($this->gettiiattempts() == TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
+                            $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                            $this->seterrormessage($params->message);
+                        }
 
                         break;
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
@@ -750,6 +772,10 @@ class plagiarism_turnitinsim_submission {
                         $this->settiiattempts($this->gettiiattempts() + 1);
                         $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
 
+                        if ($this->gettiiattempts() == TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
+                            $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                            $this->seterrormessage(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'));
+                        }
                         break;
                 }
 
