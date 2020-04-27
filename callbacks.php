@@ -35,11 +35,7 @@ $logger = new plagiarism_turnitinsim_logger();
 $tscallback = new plagiarism_turnitinsim_callback();
 
 // Get headers and body from request.
-$reqheaders = plagiarism_turnitinsim_get_request_headers();
-// There is a strange anomaly with the headers on different environments.
-if (isset($reqheaders['X-Turnitin-Eventtype'])) {
-    $reqheaders['X-Turnitin-EventType'] = $reqheaders['X-Turnitin-Eventtype'];
-}
+$reqheaders = array_change_key_case(plagiarism_turnitinsim_get_request_headers(), CASE_LOWER);
 
 $requeststring = file_get_contents('php://input');
 $params = (object)json_decode($requeststring, true);
@@ -59,7 +55,7 @@ if ($pluginconfig->turnitinenablelogging) {
 }
 
 // Verify that callback is genuine. Exit if not.
-if ($expectedsecret !== $reqheaders['X-Turnitin-Signature']) {
+if ($expectedsecret !== $reqheaders['x-turnitin-signature']) {
     if ($pluginconfig->turnitinenablelogging) {
         $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
     }
@@ -69,7 +65,7 @@ if ($expectedsecret !== $reqheaders['X-Turnitin-Signature']) {
 }
 
 // Handle Submission complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
+if ($reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SUBMISSION_COMPLETE) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->id));
     $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
@@ -86,8 +82,8 @@ if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
 }
 
 // Handle Similarity complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE ||
-    $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
+if ($reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SIMILARITY_COMPLETE ||
+    $reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SIMILARITY_UPDATED) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->submission_id));
     $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
