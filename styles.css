@@ -127,21 +127,3 @@
     background: #db4221;
     color: #fff;
 }
-
-/* Connection Test*/
-.turnitinsim_connection-test-success,
-.turnitinsim_connection-test-failed {
-    background-image: none;
-    color: #fff;
-    text-shadow: none;
-}
-.turnitinsim_connection-test-success button:focus,
-.turnitinsim_connection-test-failed button:focus {
-    outline: 0;
-}
-.turnitinsim_connection-test-success {
-    background-color: #51a351;
-}
-.turnitinsim_connection-test-failed {
-    background-color: #d9534f;
-}
