@@ -45,7 +45,6 @@ define(['jquery', 'core/str'], function($, str) {
                             apikey: $('#id_turnitinapikey').val()
                         },
                         success: function(data) {
-                            // ct.removeClass("btn");
                             ct.removeClass("btn-secondary");
                             if (data.connection_status === 200) {
                                 ct.removeClass("btn-danger");
