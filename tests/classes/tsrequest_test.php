@@ -61,6 +61,17 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
+        //Test connection should return failed if url is missing
+        $result = $tsrequest->test_connection("", "key");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
+        //Test connection should return failed if key is missing
+        $result = $tsrequest->test_connection("url", "");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
+
         // Mock API send request method.
         $tsrequest->expects($this->exactly(2))
             ->method('send_request')

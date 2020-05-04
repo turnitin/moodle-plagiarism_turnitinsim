@@ -102,7 +102,7 @@ class plagiarism_turnitinsim_callback {
             $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'DELETE');
             $responsedata = json_decode($response);
 
-            if ($responsedata->httpstatus == TURNITINSIM_HTTP_NO_CONTENT) {
+            if ($responsedata->httpstatus === TURNITINSIM_HTTP_NO_CONTENT) {
                 mtrace(get_string('taskoutputwebhookdeleted', 'plagiarism_turnitinsim', $webhookid));
                 return true;
             }

@@ -177,7 +177,7 @@ class plagiarism_turnitinsim_request {
         if (is_array($result)) {
             $result["httpstatus"] = $httpstatus;
         } else {
-            $result->httpstatus = $httpstatus || '';
+            $result->httpstatus = $httpstatus || '' ? $httpstatus : '';
         }
 
         $result = json_encode($result);
@@ -201,6 +201,12 @@ class plagiarism_turnitinsim_request {
      * @throws moodle_exception when invalid session key.
      */
     public function test_connection($apiurl, $apikey) {
+
+        if(empty($apikey) || empty($apiurl)) {
+            $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
+            return json_encode($data);
+        }
+
         $this->set_apiurl($apiurl);
         $this->set_apikey($apikey);
         $this->set_headers();
@@ -208,7 +214,7 @@ class plagiarism_turnitinsim_request {
         $response = $this->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
         $responsedata = json_decode($response);
 
-        if (isset($responsedata->httpstatus) && $responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+        if (isset($responsedata->httpstatus) && $responsedata->httpstatus === TURNITINSIM_HTTP_OK) {
             $data["connection_status"] = TURNITINSIM_HTTP_OK;
         } else {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
