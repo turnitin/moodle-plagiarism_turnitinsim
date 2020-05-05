@@ -168,10 +168,20 @@ class plagiarism_turnitinsim_request {
         }
 
         $result = curl_exec($ch);
-        $result = (empty($result)) ? new stdClass() : json_decode($result);
 
         // Add httpstatus to $result.
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (empty($result)) {
+            $result = new stdClass();
+        } else {
+            $result = json_decode($result);
+            // If Json is not valid set httpstatus 400.
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $result = new stdClass();
+                $httpstatus = 400;
+            }
+        }
 
         // The response could be an array or an object.
         if (is_array($result)) {
@@ -202,7 +212,7 @@ class plagiarism_turnitinsim_request {
      */
     public function test_connection($apiurl, $apikey) {
 
-        if(empty($apikey) || empty($apiurl)) {
+        if (empty($apikey) || empty($apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
             return json_encode($data);
         }
