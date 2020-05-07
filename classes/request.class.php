@@ -212,14 +212,14 @@ class plagiarism_turnitinsim_request {
      */
     public function test_connection($apiurl, $apikey) {
 
-        $valid_url_regex = '/.+\.(turnitin\.com|turnitin\.co\.uk|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
 
         if (empty($apikey) || empty($apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
             return json_encode($data);
         }
 
-        if (!preg_match($valid_url_regex, $apiurl)) {
+        if (!preg_match($validurlregex, $apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
 
             if ($this->logger) {

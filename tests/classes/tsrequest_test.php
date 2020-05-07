@@ -110,7 +110,7 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
         $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
 
         // Test connection.
-        $result = $tsrequest->test_connection("http://test.turnitin.co.uk/api", "key");
+        $result = $tsrequest->test_connection("http://test.turnitinuk.com/api", "key");
 
         // Test that the connection was successful.
         $responsesuccessparsed = (array)json_decode($result);
