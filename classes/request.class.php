@@ -168,16 +168,26 @@ class plagiarism_turnitinsim_request {
         }
 
         $result = curl_exec($ch);
-        $result = (empty($result)) ? new stdClass() : json_decode($result);
 
         // Add httpstatus to $result.
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (empty($result)) {
+            $result = new stdClass();
+        } else {
+            $result = json_decode($result);
+            // If Json is not valid set httpstatus 400.
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $result = new stdClass();
+                $httpstatus = 400;
+            }
+        }
 
         // The response could be an array or an object.
         if (is_array($result)) {
             $result["httpstatus"] = $httpstatus;
         } else {
-            $result->httpstatus = $httpstatus || '';
+            $result->httpstatus = $httpstatus || '' ? $httpstatus : '';
         }
 
         $result = json_encode($result);
@@ -201,6 +211,23 @@ class plagiarism_turnitinsim_request {
      * @throws moodle_exception when invalid session key.
      */
     public function test_connection($apiurl, $apikey) {
+
+        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+
+        if (empty($apikey) || empty($apiurl)) {
+            $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
+            return json_encode($data);
+        }
+
+        if (!preg_match($validurlregex, $apiurl)) {
+            $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
+
+            if ($this->logger) {
+                $this->logger->info('Invalid Turnitin URL: ', array($apiurl));
+            }
+            return json_encode($data);
+        }
+
         $this->set_apiurl($apiurl);
         $this->set_apikey($apikey);
         $this->set_headers();
@@ -208,7 +235,7 @@ class plagiarism_turnitinsim_request {
         $response = $this->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
         $responsedata = json_decode($response);
 
-        if (isset($responsedata->httpstatus) && $responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+        if (isset($responsedata->httpstatus) && $responsedata->httpstatus === TURNITINSIM_HTTP_OK) {
             $data["connection_status"] = TURNITINSIM_HTTP_OK;
         } else {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
