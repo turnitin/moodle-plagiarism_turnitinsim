@@ -240,7 +240,7 @@ class plagiarism_turnitinsim_submission {
                     $this->setgenerationtime($duedate);
                 }
 
-                // If the duedate has past and the report has already been generated then we don't want to regenerate.
+                // If the duedate has passed and the report has already been generated then we don't want to regenerate.
                 if ($duedate < time() && $generated) {
                     $this->settogenerate(0);
                     $this->setgenerationtime(null);
