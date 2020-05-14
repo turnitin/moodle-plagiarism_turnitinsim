@@ -305,12 +305,24 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
             $plagiarismturnitinsim->get_links($linkarray)
         );
 
-        // Change submission status to Eula not accpetd and verify that the error message is displayed.
+        // Change submission status to Eula not accepted and verify that the error message is displayed.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
         $tssubmission->update();
+        $output = $plagiarismturnitinsim->get_links($linkarray);
+
         $this->assertContains(
             get_string( 'submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim'),
-            $plagiarismturnitinsim->get_links($linkarray)
+            $output
+        );
+        $this->assertContains(
+            get_string( 'submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
+            $output
+        );
+        // Log instructor in and check they do not see a resubmit link.
+        $this->setUser($this->instructor);
+        $this->assertNotContains(
+            get_string( 'resubmittoturnitin', 'plagiarism_turnitinsim'),
+            $output
         );
 
         // Change submission status to a non constant and verify that the default is displayed.
