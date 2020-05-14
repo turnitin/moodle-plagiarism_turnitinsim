@@ -311,17 +311,17 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $output = $plagiarismturnitinsim->get_links($linkarray);
 
         $this->assertContains(
-            get_string( 'submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim'),
+            get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim'),
             $output
         );
         $this->assertContains(
-            get_string( 'submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
+            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
             $output
         );
         // Log instructor in and check they do not see a resubmit link.
         $this->setUser($this->instructor);
         $this->assertNotContains(
-            get_string( 'resubmittoturnitin', 'plagiarism_turnitinsim'),
+            get_string('resubmittoturnitin', 'plagiarism_turnitinsim'),
             $output
         );
 
