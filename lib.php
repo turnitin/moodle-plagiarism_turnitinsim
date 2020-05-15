@@ -220,7 +220,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                         $helpicon = $OUTPUT->pix_icon(
                             'help',
-                            get_string('submissiondisplayerror:eulanotaccepted', 'plagiarism_turnitinsim'),
+                            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
                             'core',
                             ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
                         );
@@ -232,7 +232,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                             get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim') . $eulalaunch,
                             array('class' => 'tii_status_text tii_status_text_eula')
                         );
-                        $showresubmitlink = true;
+                        $showresubmitlink = false;
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
