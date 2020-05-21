@@ -166,6 +166,7 @@ class plagiarism_turnitinsim_task {
             // webhook callback so ignore anything submitted to Turnitin in the 2 minutes.
             // Otherwise retrieve originality score if we haven't received it back within 5 minutes.
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED
+                && $tssubmission->get_submission_info()->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE
                 && $tssubmission->getsubmittedtime() < (time() - $this->get_report_gen_request_delay())) {
                 $tssubmission->request_turnitin_report_generation();
 
