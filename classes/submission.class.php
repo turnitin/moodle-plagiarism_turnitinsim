@@ -977,7 +977,7 @@ class plagiarism_turnitinsim_submission {
      * @return bool|mixed
      * @throws coding_exception
      */
-    private function get_submission_info() {
+    public function get_submission_info() {
         try {
             $endpoint = TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO;
             $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
