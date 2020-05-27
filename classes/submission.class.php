@@ -617,7 +617,7 @@ class plagiarism_turnitinsim_submission {
         if ($params->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
             $this->reset_retries();
             $issubmissioncomplete = true;
-        } else if ($params->status === TURNITINSIM_SUBMISSION_STATUS_PROCESSING) { // Only possible when running through cron
+        } else if ($params->status === TURNITINSIM_SUBMISSION_STATUS_PROCESSING) {
             $this->update_report_generation_retries();
         } else {
             $this->set_error_with_max_retry_attempts($params->error_code, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
@@ -1381,10 +1381,9 @@ class plagiarism_turnitinsim_submission {
         $this->settiiattempts($this->gettiiattempts() + 1);
         // On first attempt set retry time as 10 minutes.
         if ($this->gettiiattempts() === 1) {
-            $this->settiiretrytime(time() + 600);
+            $this->settiiretrytime(time() + TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS);
         } else if ($this->gettiiattempts() === TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
-            // Todo Create error code for Max retries.
-            $this->set_error_with_max_retry_attempts('', TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+            $this->set_error_with_max_retry_attempts('retrylimitexceeded', TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
         } else {
             $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
         }
