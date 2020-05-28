@@ -1968,10 +1968,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertFalse($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
         $this->assertEquals(1, $record->tiiattempts);
         $this->assertGreaterThan(time(), $record->tiiretrytime);
@@ -1980,10 +1981,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertFalse($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
         $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
         $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
@@ -2009,10 +2011,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertFalse($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
         $this->assertEquals(1, $record->tiiattempts);
         $this->assertGreaterThan(time(), $record->tiiretrytime);
@@ -2021,10 +2024,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertFalse($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
         $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
         $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
@@ -2050,10 +2054,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertTrue($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
         $this->assertEquals(0, $record->tiiattempts);
         $this->assertEquals(0, $record->tiiretrytime);
@@ -2080,10 +2085,11 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
-        $tssubmission->handle_submission_info_response($params);
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
 
         $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
 
+        $this->assertFalse($issubmissioncomplete);
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
         $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
         $this->assertEquals(0, $record->tiiretrytime);
