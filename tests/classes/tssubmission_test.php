@@ -1947,4 +1947,146 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(1, $record->tiiattempts);
         $this->assertGreaterThan(time(), $record->tiiretrytime);
     }
+
+    /**
+     * Test the submission info status when submission is in processing state.
+     */
+    public function test_handle_submission_info_if_submission_is_in_processing_state() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_PROCESSING;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
+    }
+
+    /**
+     * Test the submission info status when turnitin returns error.
+     */
+    public function test_handle_submission_info_if_turnitin_returns_error() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->httpstatus = 500;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
+    }
+
+    /**
+     * Test the submission info status when submission is in complete state.
+     */
+    public function test_handle_submission_info_if_submission_is_complete() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(0, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+    }
+
+    /**
+     * Test the submission info status when submission is in error state.
+     */
+    public function test_handle_submission_info_if_submission_is_in_error_state() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_ERROR;
+        $params->error_code = TURNITINSIM_SUBMISSION_STATUS_TOO_LITTLE_TEXT;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_TOO_LITTLE_TEXT, $record->errormessage);
+    }
 }

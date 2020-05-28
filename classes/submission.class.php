@@ -620,7 +620,8 @@ class plagiarism_turnitinsim_submission {
         } else if ($params->status === TURNITINSIM_SUBMISSION_STATUS_PROCESSING) {
             $this->update_report_generation_retries();
         } else {
-            $this->set_error_with_max_retry_attempts($params->error_code, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+            $error = isset($params->error_code) ? $params->error_code : get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
+            $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
         }
 
         $this->update();
@@ -1383,7 +1384,7 @@ class plagiarism_turnitinsim_submission {
         if ($this->gettiiattempts() === 1) {
             $this->settiiretrytime(time() + TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS);
         } else if ($this->gettiiattempts() === TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
-            $this->set_error_with_max_retry_attempts('retrylimitexceeded', TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+            $this->set_error_with_max_retry_attempts(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
         } else {
             $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
         }
