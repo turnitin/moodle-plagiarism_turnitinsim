@@ -1380,7 +1380,7 @@ class plagiarism_turnitinsim_submission {
 
     private function update_report_generation_retries() {
         $this->settiiattempts($this->gettiiattempts() + 1);
-        // On first attempt set retry time as 10 minutes.
+        // On first attempt set retry time as 15 minutes.
         if ($this->gettiiattempts() === 1) {
             $this->settiiretrytime(time() + TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS);
         } else if ($this->gettiiattempts() === TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
