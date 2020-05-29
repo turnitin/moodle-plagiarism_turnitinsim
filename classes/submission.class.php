@@ -599,6 +599,37 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Handle the API submission info response and callback from Turnitin.
+     *
+     * @param object $params containing the upload response.
+     * @return bool, true if submission status is complete else false.
+     */
+    public function handle_submission_info_response($params) {
+        $issubmissioncomplete = false;
+
+        //Handle scenario if Turnitin API is returning error.
+        //Set status as processing, so it will be retried.
+        if (!empty($params->httpstatus) && ($params->httpstatus !== TURNITINSIM_HTTP_OK)) {
+            $params->status=TURNITINSIM_SUBMISSION_STATUS_PROCESSING;
+        }
+
+        // On success, reset retries. On error, never retry.
+        if ($params->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+            $this->reset_retries();
+            $issubmissioncomplete = true;
+        } else if ($params->status === TURNITINSIM_SUBMISSION_STATUS_PROCESSING) {
+            $this->update_report_generation_retries();
+        } else {
+            $error = isset($params->error_code) ? $params->error_code : get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
+            $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+        }
+
+        $this->update();
+
+        return $issubmissioncomplete;
+    }
+
+    /**
      * Send digital receipts to the instructors and student.
      *
      * @param string $filename The name of the file submitted.
@@ -1327,5 +1358,37 @@ class plagiarism_turnitinsim_submission {
      */
     public function settiiretrytime($tiiretrytime) {
         $this->tiiretrytime = $tiiretrytime;
+    }
+
+    /**
+     * Reset retries.
+     */
+    private function reset_retries() {
+        $this->settiiattempts(0);
+        $this->settiiretrytime(0);
+    }
+
+    /**
+     * Common method to update maximum retry attempts and error Status.
+     *
+     * @param $error string Error code from Turnitin.
+     * @param $retry_attempts int Maximum retry attempts.
+     */
+    private function set_error_with_max_retry_attempts($error, $retry_attempts) {
+        $this->settiiattempts($retry_attempts);
+        $this->seterrormessage($error);
+        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+    }
+
+    private function update_report_generation_retries() {
+        $this->settiiattempts($this->gettiiattempts() + 1);
+        // On first attempt set retry time as 15 minutes.
+        if ($this->gettiiattempts() === 1) {
+            $this->settiiretrytime(time() + TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS);
+        } else if ($this->gettiiattempts() === TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
+            $this->set_error_with_max_retry_attempts(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+        } else {
+            $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
+        }
     }
 }
