@@ -1380,6 +1380,9 @@ class plagiarism_turnitinsim_submission {
         $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
     }
 
+    /**
+     * Update report generation retries limit and time.
+     */
     private function update_report_generation_retries() {
         $this->settiiattempts($this->gettiiattempts() + 1);
         // On first attempt set retry time as 15 minutes.
