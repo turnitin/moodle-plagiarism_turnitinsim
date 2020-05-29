@@ -1369,6 +1369,8 @@ class plagiarism_turnitinsim_submission {
     }
 
     /**
+     * Common method to update maximum retry attempts and error Status.
+     *
      * @param $error string Error code from Turnitin.
      * @param $retry_attempts int Maximum retry attempts.
      */
