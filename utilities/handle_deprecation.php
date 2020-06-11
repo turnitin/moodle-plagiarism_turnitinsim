@@ -49,6 +49,55 @@ class handle_deprecation {
      * @return string representing a UUID.
      */
     public function create_uuid() {
-        return ($this->branch < 38) ? generate_uuid() : \core\uuid::generate();
+        return $this->branch < 38 ? generate_uuid() : \core\uuid::generate();
+    }
+
+    /**
+     * In Moodle 3.9, the config values for enabling and disabling the plugin were changed.
+     * turnitinsim_use is now deprecated and replaced with "enabled" for this plugin.
+     *
+     * This method handles our support for multiple Moodle versions for unsetting the config value.
+     * As this can't be unset until after a user has upgraded Moodle, we must run it on future upgrades.
+     * Until we no longer support 3.8.
+     *
+     */
+    public function unset_turnitinsim_use() {
+        global $CFG;
+
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+
+        if ($CFG->branch >= 39 && !empty($turnitinsimuse)) {
+            unset_config('turnitinsim_use', 'plagiarism');
+        }
+    }
+
+    /**
+     * In Moodle 3.9, the config values for enabling and disabling the plugin were changed.
+     * turnitinsim_use is now deprecated and replaced with "enabled" for this plugin.
+     *
+     * This method handles our support for multiple Moodle versions for setting the config value.
+     *
+     * @param $enabled 1 if enabled, 0 if not.
+     */
+    public static function set_plugin_enabled($enabled) {
+        global $CFG;
+
+        $CFG->branch < 39 ? set_config('turnitinsim_use', $enabled, 'plagiarism')
+            : set_config('enabled', $enabled, 'plagiarism_turnitinsim');
+    }
+
+    /**
+     * In Moodle 3.9, the config values for enabling and disabling the plugin were changed.
+     * turnitinsim_use is now deprecated and replaced with "enabled" for this plugin.
+     *
+     * This method handles our support for multiple Moodle versions for getting the config value.
+     *
+     * @param $enabled 1 if enabled, 0 if not.
+     */
+    public static function get_plugin_enabled() {
+        global $CFG;
+
+        return $CFG->branch < 39 ? get_config('plagiarism', 'turnitinsim_use')
+            : get_config('plagiarism_turnitinsim', 'enabled');
     }
 }
