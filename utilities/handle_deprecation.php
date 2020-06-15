@@ -59,7 +59,6 @@ class handle_deprecation {
      * This method handles our support for multiple Moodle versions for unsetting the config value.
      * As this can't be unset until after a user has upgraded Moodle, we must run it on future upgrades.
      * Until we no longer support 3.8.
-     *
      */
     public function unset_turnitinsim_use() {
         global $CFG;
@@ -77,7 +76,7 @@ class handle_deprecation {
      *
      * This method handles our support for multiple Moodle versions for setting the config value.
      *
-     * @param $enabled 1 if enabled, 0 if not.
+     * @param $enabled int 1 if enabled, 0 if not.
      */
     public static function set_plugin_enabled($enabled) {
         global $CFG;
@@ -91,8 +90,6 @@ class handle_deprecation {
      * turnitinsim_use is now deprecated and replaced with "enabled" for this plugin.
      *
      * This method handles our support for multiple Moodle versions for getting the config value.
-     *
-     * @param $enabled 1 if enabled, 0 if not.
      */
     public static function get_plugin_enabled() {
         global $CFG;
