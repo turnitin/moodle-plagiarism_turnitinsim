@@ -28,6 +28,8 @@ require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once(__DIR__."/locallib.php");
 require_once(__DIR__."/classes/callback.class.php");
+require_once(__DIR__."/classes/logging_request.class.php");
+require_once(__DIR__."/classes/logging_request_event_info.class.php");
 
 $PAGE->set_context(context_system::instance());
 
@@ -58,6 +60,10 @@ if ($pluginconfig->turnitinenablelogging) {
 if ($expectedsecret !== $reqheaders['x-turnitin-signature']) {
     if ($pluginconfig->turnitinenablelogging) {
         $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
+
+        $eventinfo = new logging_request_event_info("callback.php", $reqheaders, $requeststring);
+        $loggingrequest = new logging_request(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
+        $loggingrequest->send_error_to_turnitin(null, $eventinfo, true);
     }
 
     echo get_string('webhookincorrectsignature', 'plagiarism_turnitinsim');

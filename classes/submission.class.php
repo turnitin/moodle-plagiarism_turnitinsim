@@ -31,6 +31,8 @@ use plagiarism_turnitinsim\message\receipt_student;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
 
 /**
  * Submission class for plagiarism_turnitinsim component.
@@ -484,6 +486,9 @@ class plagiarism_turnitinsim_submission {
                 $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
                 $this->seterrormessage($params->message);
                 mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
+                $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION, "POST", null, $params->httpstatus, json_encode($params));
+                $loggingrequest = new logging_request(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
+                $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
                 break;
         }
 
@@ -592,6 +597,10 @@ class plagiarism_turnitinsim_submission {
         // Save error message if request has errored, otherwise send digital receipts.
         if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
             $this->seterrormessage($params->message);
+            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION, "POST", null, $params->httpstatus, json_encode($params));
+            $loggingrequest = new logging_request('Error while uploading the file');
+            $loggingrequest->set_submissionid($this->turnitinid);
+            $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         } else {
             $this->send_digital_receipts($filename);
         }
@@ -622,6 +631,10 @@ class plagiarism_turnitinsim_submission {
         } else {
             $error = isset($params->error_code) ? $params->error_code : get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
             $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO, "GET", null, 500, json_encode($params));
+            $loggingrequest = new logging_request($error);
+            $loggingrequest->set_submissionid($this->turnitinid);
+            $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         }
 
         $this->update();

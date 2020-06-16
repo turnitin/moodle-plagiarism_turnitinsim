@@ -27,6 +27,9 @@ use plagiarism_turnitinsim\message\get_webhook_failure;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
+
 /**
  * Class for handling callbacks from Turnitin.
  */
@@ -150,6 +153,9 @@ class plagiarism_turnitinsim_callback {
                 mtrace(get_string('taskoutputwebhookcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
             } else {
                 mtrace(get_string('taskoutputwebhooknotcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
+                $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_WEBHOOKS, "POST", null, $responsedata->httpstatus, $response);
+                $loggingrequest = new logging_request(get_string('taskoutputwebhooknotcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
+                $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
             }
 
         } catch (Exception $e) {

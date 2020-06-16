@@ -66,6 +66,7 @@ define('TURNITINSIM_ENDPOINT_WEBHOOKS', '/v1/webhooks');
 define('TURNITINSIM_ENDPOINT_GET_WEBHOOK', '/v1/webhooks/{{webhook_id}}');
 define('TURNITINSIM_ENDPOINT_GET_LATEST_EULA', '/v1/eula/latest');
 define('TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED', '/v1/features-enabled');
+define('TURNITINSIM_ENDPOINT_LOGGING', '/remote-logging/api/log');
 
 // URLs.
 define('TURNITINSIM_HELP_LINK', 'https://help.turnitin.com/simcheck/integrations/moodle/moodle-home.htm');
