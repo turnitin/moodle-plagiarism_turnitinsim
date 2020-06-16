@@ -61,11 +61,12 @@ class logging_request_info {
 
     /**
      * logging_request_info constructor.
-     * @param $url
-     * @param $method
-     * @param $headers
-     * @param $response_status
-     * @param $response_body
+     *
+     * @param string $url The url.
+     * @param string $method The Http Method.
+     * @param array $headers Headers.
+     * @param int $response_status The response http status.
+     * @param string $response_body The response body.
      */
     public function __construct($url, $method = null, $headers = null, $response_status = null, $response_body = null) {
         $this->url = $url;

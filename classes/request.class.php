@@ -108,10 +108,10 @@ class plagiarism_turnitinsim_request {
      * @param string $requestbody The request body to send.
      * @param string $method The request method eg GET/POST.
      * @param string $requesttype The type of request, can be general or submission.
-     * @param bool $isasync The
+     * @param bool $isasync The flag to define type of http request.
      * @return array|bool|false|mixed|stdClass|string
      */
-    public function send_request($endpoint, $requestbody, $method, $requesttype = 'general', $isasync = false, $isloggingrequest = false) {
+    public function send_request($endpoint, $requestbody, $method, $requesttype = 'general', $isasync = false) {
         global $CFG;
 
         // Attach content type to headers if this is not a submission.
@@ -121,7 +121,11 @@ class plagiarism_turnitinsim_request {
             }
         }
 
-        $tiiurl = ($isloggingrequest) ? str_replace('/api', '', $this->get_apiurl()) : $this->get_apiurl();
+        $tiiurl = $this->get_apiurl();
+
+        if($requesttype === 'logging') {
+            $tiiurl = str_replace('/api', '', $this->get_apiurl());
+        }
 
         if ($this->logger) {
             $this->logger->info('[' . $method . '] Request to: ' . $tiiurl . $endpoint);

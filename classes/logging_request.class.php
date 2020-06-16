@@ -52,20 +52,28 @@ class logging_request {
     /**
      * Constructor.
      *
-     * @param $message string The error message.
+     * @param string $message The error message.
+     * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
      */
-    public function __construct($message = 'Error') {
-        $this->tsrequest = new plagiarism_turnitinsim_request();
+    public function __construct($message = 'Error', plagiarism_turnitinsim_request $tsrequest = null) {
+        $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
         $this->loggingrequest = array();
         $this->loggingrequest["message"] = $message;
     }
 
     /**
+     * Create remote logging request and send to turnitin.
+     *
      * @param logging_request_info|null $logging_request_info The logging_request_info object.
      * @param logging_request_event_info|null $logging_request_event_info The logging_request_event_info object.
      * @param bool $send_secrets The boolean value, if true send secrets as part of logs.
      */
     public function send_error_to_turnitin(logging_request_info $logging_request_info = null, logging_request_event_info $logging_request_event_info = null, $send_secrets = false) {
+
+        if (!get_config('plagiarism_turnitinsim', 'turnitinenableremotelogging')) {
+            return;
+        }
+
         $this->set_basic_details();
 
         if ($send_secrets) {
@@ -81,8 +89,7 @@ class logging_request {
         }
 
         try {
-            $endpoint = TURNITINSIM_ENDPOINT_LOGGING;
-            $this->tsrequest->send_request($endpoint, json_encode($this->loggingrequest), 'POST', 'general', true, true);
+            $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_LOGGING, json_encode($this->loggingrequest), 'POST', 'logging', true);
         } catch (Exception $e) {
            // Handle silently.
         }
@@ -96,7 +103,7 @@ class logging_request {
 
         $this->loggingrequest["integration_type"] = "Moodle";
         $this->loggingrequest["integration_version"] = get_config('plagiarism_turnitinsim', 'version');
-        $this->loggingrequest["lms_version"] = $CFG->version;
+        $this->loggingrequest["lms_version"] = $CFG->branch;
         $this->loggingrequest["log_level"] = "ERROR";
         $this->loggingrequest["date"] = date("Y-m-d H:i:s");
         $this->loggingrequest["tenant"] = $this->tsrequest->get_apiurl();

@@ -145,6 +145,7 @@ $string['turnitinsiminternet'] = 'Check against internet content';
 $string['turnitinsimprivate'] = 'Check against private content';
 $string['turnitinconfig'] = 'Plugin configuration';
 $string['turnitinenablelogging'] = 'Enable diagnostic mode';
+$string['turnitinenableremotelogging'] = 'Enable remote diagnostic mode';
 $string['turnitinfeatures'] = 'Turnitin Integrity features';
 $string['turnitinfeatures::header'] = 'Turnitin Integrity features';
 $string['turnitinfeatures::moreinfo'] = 'For more information on the enabled features and packages available from Turnitin please see <a href="http://www.turnitin.com" target="_blank">http://www.turnitin.com</a>.';

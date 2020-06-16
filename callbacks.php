@@ -60,11 +60,11 @@ if ($pluginconfig->turnitinenablelogging) {
 if ($expectedsecret !== $reqheaders['x-turnitin-signature']) {
     if ($pluginconfig->turnitinenablelogging) {
         $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
-
-        $eventinfo = new logging_request_event_info("callback.php", $reqheaders, $requeststring);
-        $loggingrequest = new logging_request(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
-        $loggingrequest->send_error_to_turnitin(null, $eventinfo, true);
     }
+
+    $eventinfo = new logging_request_event_info("callback.php", $reqheaders, $requeststring);
+    $loggingrequest = new logging_request('Webhook callback failed as signature is incorrect');
+    $loggingrequest->send_error_to_turnitin(null, $eventinfo, true);
 
     echo get_string('webhookincorrectsignature', 'plagiarism_turnitinsim');
     exit;
@@ -97,4 +97,6 @@ if ($reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SIMILARITY_COMPLETE ||
     $tssubmission->handle_similarity_response($params);
 }
 
-$logger->info('-------- WEBHOOK END --------');
+if ($pluginconfig->turnitinenablelogging) {
+    $logger->info('-------- WEBHOOK END --------');
+}

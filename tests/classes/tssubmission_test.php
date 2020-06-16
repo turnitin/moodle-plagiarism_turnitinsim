@@ -64,6 +64,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
+        set_config('turnitinenableremotelogging', 1, 'plagiarism_turnitinsim');
 
         // Set webhook details so tests don't create one.
         set_config('turnitin_webhook_id', 1, 'plagiarism_turnitinsim');
@@ -2072,11 +2073,22 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $this->resetAfterTest();
 
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->with(TURNITINSIM_ENDPOINT_LOGGING)
+            ->willReturn('');
+
         $params = new stdClass();
         $params->status = TURNITINSIM_SUBMISSION_STATUS_ERROR;
         $params->error_code = TURNITINSIM_SUBMISSION_STATUS_TOO_LITTLE_TEXT;
 
-        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
         $tssubmission->setcm(1);
         $tssubmission->setuserid(1);
         $tssubmission->setsubmitter(1);

@@ -51,9 +51,10 @@ class logging_request_event_info {
 
     /**
      * logging_request_info constructor.
-     * @param $url string The url.
-     * @param $headers array The request headers.
-     * @param $body string The response body.
+     * 
+     * @param string $url The url.
+     * @param array $headers The request headers.
+     * @param string $body The response body.
      */
     public function __construct($url, $headers = null, $body = null) {
         $this->url = $url;

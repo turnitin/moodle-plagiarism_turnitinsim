@@ -46,6 +46,7 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
+        set_config('turnitinenableremotelogging', 0, 'plagiarism_turnitinsim');
 
         $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
     }

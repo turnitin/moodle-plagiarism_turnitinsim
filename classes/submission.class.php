@@ -487,7 +487,7 @@ class plagiarism_turnitinsim_submission {
                 $this->seterrormessage($params->message);
                 mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
                 $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION, "POST", null, $params->httpstatus, json_encode($params));
-                $loggingrequest = new logging_request(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
+                $loggingrequest = new logging_request('The submission could not be created in Turnitin');
                 $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
                 break;
         }
@@ -597,7 +597,7 @@ class plagiarism_turnitinsim_submission {
         // Save error message if request has errored, otherwise send digital receipts.
         if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
             $this->seterrormessage($params->message);
-            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION, "POST", null, $params->httpstatus, json_encode($params));
+            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION, "POST", null, 500, json_encode($params));
             $loggingrequest = new logging_request('Error while uploading the file');
             $loggingrequest->set_submissionid($this->turnitinid);
             $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
@@ -632,7 +632,7 @@ class plagiarism_turnitinsim_submission {
             $error = isset($params->error_code) ? $params->error_code : get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
             $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
             $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO, "GET", null, 500, json_encode($params));
-            $loggingrequest = new logging_request($error);
+            $loggingrequest = new logging_request($error, $this->tsrequest);
             $loggingrequest->set_submissionid($this->turnitinid);
             $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         }
@@ -1384,8 +1384,8 @@ class plagiarism_turnitinsim_submission {
     /**
      * Common method to update maximum retry attempts and error Status.
      *
-     * @param $error string Error code from Turnitin.
-     * @param $retry_attempts int Maximum retry attempts.
+     * @param string $error Error code from Turnitin.
+     * @param int $retry_attempts Maximum retry attempts.
      */
     private function set_error_with_max_retry_attempts($error, $retry_attempts) {
         $this->settiiattempts($retry_attempts);
