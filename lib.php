@@ -715,7 +715,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Wrapper method for Moodle's set_config method for enabling the plugin.
      * This is so that when the deprecation is deleted we only need to change one place.
      *
-     * @param$enabled int 1 if plugin is to be enabled.
+     * @param int $enabled 1 if plugin is to be enabled.
      */
     public static function enable_plugin($enabled) {
         handle_deprecation::set_plugin_enabled($enabled);

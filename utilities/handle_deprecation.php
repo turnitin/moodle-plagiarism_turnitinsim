@@ -76,7 +76,7 @@ class handle_deprecation {
      *
      * This method handles our support for multiple Moodle versions for setting the config value.
      *
-     * @param $enabled int 1 if enabled, 0 if not.
+     * @param int $enabled 1 if enabled, 0 if not.
      */
     public static function set_plugin_enabled($enabled) {
         global $CFG;
