@@ -123,7 +123,7 @@ class plagiarism_turnitinsim_request {
 
         $tiiurl = $this->get_apiurl();
 
-        if($requesttype === 'logging') {
+        if ($requesttype === 'logging') {
             $tiiurl = str_replace('/api', '', $this->get_apiurl());
         }
 

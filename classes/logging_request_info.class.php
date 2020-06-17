@@ -18,8 +18,8 @@
  * Submission class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 Turnitin
- * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2020 Turnitin
+ * @author    Grijesh Saini <gsaini@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -52,12 +52,12 @@ class logging_request_info {
     /**
      * @var int Response http status.
      */
-    private $response_status;
+    private $responsestatus;
 
     /**
      * @var string The response body.
      */
-    private $response_body;
+    private $responsebody;
 
     /**
      * logging_request_info constructor.
@@ -65,15 +65,15 @@ class logging_request_info {
      * @param string $url The url.
      * @param string $method The Http Method.
      * @param array $headers Headers.
-     * @param int $response_status The response http status.
-     * @param string $response_body The response body.
+     * @param int $responsestatus The response http status.
+     * @param string $responsebody The response body.
      */
-    public function __construct($url, $method = null, $headers = null, $response_status = null, $response_body = null) {
+    public function __construct($url, $method = null, $headers = null, $responsestatus = null, $responsebody = null) {
         $this->url = $url;
         $this->method = $method;
         $this->headers = $headers;
-        $this->response_status = $response_status;
-        $this->response_body = $response_body;
+        $this->responsestatus = $responsestatus;
+        $this->responsebody = $responsebody;
     }
 
 
@@ -109,8 +109,8 @@ class logging_request_info {
      *
      * @return int
      */
-    public function get_response_status() {
-        return $this->response_status;
+    public function get_responsestatus() {
+        return $this->responsestatus;
     }
 
     /**
@@ -118,8 +118,8 @@ class logging_request_info {
      *
      * @return string
      */
-    public function get_response_body() {
-        return $this->response_body;
+    public function get_responsebody() {
+        return $this->responsebody;
     }
 
 }

@@ -18,8 +18,8 @@
  * Submission class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 Turnitin
- * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2020 Turnitin
+ * @author    Grijesh Saini <gsaini@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -51,7 +51,7 @@ class logging_request_event_info {
 
     /**
      * logging_request_info constructor.
-     * 
+     *
      * @param string $url The url.
      * @param array $headers The request headers.
      * @param string $body The response body.

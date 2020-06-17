@@ -18,8 +18,8 @@
  * Submission class for plagiarism_turnitinsim component.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 Turnitin
- * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2020 Turnitin
+ * @author    Grijesh Saini <gsaini@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -64,11 +64,12 @@ class logging_request {
     /**
      * Create remote logging request and send to turnitin.
      *
-     * @param logging_request_info|null $logging_request_info The logging_request_info object.
-     * @param logging_request_event_info|null $logging_request_event_info The logging_request_event_info object.
-     * @param bool $send_secrets The boolean value, if true send secrets as part of logs.
+     * @param logging_request_info|null $loggingrequestinfo The logging_request_info object.
+     * @param logging_request_event_info|null $loggingrequesteventinfo The logging_request_event_info object.
+     * @param bool $sendsecrets The boolean value, if true send secrets as part of logs.
      */
-    public function send_error_to_turnitin(logging_request_info $logging_request_info = null, logging_request_event_info $logging_request_event_info = null, $send_secrets = false) {
+    public function send_error_to_turnitin(logging_request_info $loggingrequestinfo = null,
+                                           logging_request_event_info $loggingrequesteventinfo = null, $sendsecrets = false) {
 
         if (!get_config('plagiarism_turnitinsim', 'turnitinenableremotelogging')) {
             return;
@@ -76,22 +77,24 @@ class logging_request {
 
         $this->set_basic_details();
 
-        if ($send_secrets) {
-           $this->set_secrets();
+        if ($sendsecrets) {
+            $this->set_secrets();
         }
 
-        if ($logging_request_info) {
-            $this->set_request_info($logging_request_info);
+        if ($loggingrequestinfo) {
+            $this->set_request_info($loggingrequestinfo);
         }
 
-        if ($logging_request_event_info) {
-            $this->set_event_info($logging_request_event_info);
+        if ($loggingrequesteventinfo) {
+            $this->set_event_info($loggingrequesteventinfo);
         }
 
         try {
-            $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_LOGGING, json_encode($this->loggingrequest), 'POST', 'logging', true);
+            $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_LOGGING, json_encode($this->loggingrequest),
+                'POST', 'logging', true);
         } catch (Exception $e) {
-           // Handle silently.
+            $logger = new plagiarism_turnitinsim_logger();
+            $logger->error('Error while sending logs');
         }
     }
 
@@ -121,25 +124,25 @@ class logging_request {
     /**
      * Set request info details.
      *
-     * @param logging_request_info $logging_request_info The logging_request_info object.
+     * @param logging_request_info $loggingrequestinfo The logging_request_info object.
      */
-    private function set_request_info(logging_request_info $logging_request_info) {
-        $this->loggingrequest["request"]["url"] = $logging_request_info->get_url();
-        $this->loggingrequest["request"]["method"] = $logging_request_info->get_method();
-        $this->loggingrequest["request"]["headers"] = $logging_request_info->get_headers();
-        $this->loggingrequest["request"]["response_status"] = $logging_request_info->get_response_status();
-        $this->loggingrequest["request"]["response_body"] = $logging_request_info->get_response_body();
+    private function set_request_info(logging_request_info $loggingrequestinfo) {
+        $this->loggingrequest["request"]["url"] = $loggingrequestinfo->get_url();
+        $this->loggingrequest["request"]["method"] = $loggingrequestinfo->get_method();
+        $this->loggingrequest["request"]["headers"] = $loggingrequestinfo->get_headers();
+        $this->loggingrequest["request"]["response_status"] = $loggingrequestinfo->get_responsestatus();
+        $this->loggingrequest["request"]["response_body"] = $loggingrequestinfo->get_responsebody();
     }
 
     /**
      * Set event info details.
      *
-     * @param logging_request_event_info $logging_request_event_info The $logging_request_event_info object.
+     * @param logging_request_event_info $loggingrequesteventinfo The $logging_request_event_info object.
      */
-    private function set_event_info(logging_request_event_info $logging_request_event_info) {
-        $this->loggingrequest["event"]["url"] = $logging_request_event_info->get_url();
-        $this->loggingrequest["event"]["headers"] = $logging_request_event_info->get_headers();
-        $this->loggingrequest["event"]["body"] = $logging_request_event_info->get_body();
+    private function set_event_info(logging_request_event_info $loggingrequesteventinfo) {
+        $this->loggingrequest["event"]["url"] = $loggingrequesteventinfo->get_url();
+        $this->loggingrequest["event"]["headers"] = $loggingrequesteventinfo->get_headers();
+        $this->loggingrequest["event"]["body"] = $loggingrequesteventinfo->get_body();
     }
 
     /**
@@ -147,7 +150,7 @@ class logging_request {
      *
      * @param string $submissionid
      */
-    public function set_submissionid($submissionid){
+    public function set_submissionid($submissionid) {
         $this->submissionid = $submissionid;
     }
 
