@@ -77,7 +77,8 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $form->save($data);
 
         // Check settings have been saved.
-        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        $turnitinsimuse = plagiarism_plugin_turnitinsim::plugin_enabled();
+
         $settings = get_config('plagiarism_turnitinsim');
 
         $this->assertEquals(self::TURNITINSIM_ENABLED, $turnitinsimuse);
@@ -105,7 +106,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $form->save($data);
 
         // Check settings have been saved.
-        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        $turnitinsimuse = plagiarism_plugin_turnitinsim::plugin_enabled();
         $settings = get_config('plagiarism_turnitinsim');
 
         $this->assertEquals(self::TURNITINSIM_DISABLED, $turnitinsimuse);
