@@ -273,5 +273,22 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         }
         upgrade_plugin_savepoint(true, 2020041501, 'plagiarism', 'turnitinsim');
     }
-    return true;
+
+    if ($oldversion < 2020061201) {
+        // Convert turnitinsim_use as it is being deprecated.
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        set_config('enabled', empty($turnitinsimuse) ? 0 : 1, 'plagiarism_turnitinsim');
+
+        upgrade_plugin_savepoint(true, 2020061201, 'plagiarism', 'turnitinsim');
+    }
+
+    if ($oldversion < 2020061202) {
+        // This line needs to be included in all future upgrade blocks until we drop 3.8 support.
+        // This is because a user may upgrade Moodle after upgrading to this version.
+        (new handle_deprecation)->unset_turnitinsim_use();
+
+        upgrade_plugin_savepoint(true, 2020061202, 'plagiarism', 'turnitinsim');
+    }
+
+        return true;
 }

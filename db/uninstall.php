@@ -29,8 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * Configuration to remove on install.
  */
 function xmldb_plagiarism_turnitinsim_uninstall() {
-
-    set_config('turnitinsim_use', null, 'plagiarism');
+    plagiarism_plugin_turnitinsim::enable_plugin(null);
 
     // Loop through all modules that support Plagiarism.
     $mods = core_component::get_plugin_list('mod');

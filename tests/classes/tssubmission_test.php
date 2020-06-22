@@ -1113,7 +1113,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1177,7 +1177,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1235,7 +1235,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1303,7 +1303,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1382,7 +1382,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1461,7 +1461,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.

@@ -178,7 +178,8 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         $turnitinviewermatchsubinfo = (!empty($data->permissionoptions['turnitinviewermatchsubinfo'])) ? 1 : 0;
         $turnitinviewersavechanges = (!empty($data->permissionoptions['turnitinviewersavechanges'])) ? 1 : 0;
 
-        set_config('turnitinsim_use', $useplugin, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin($useplugin);
+
         // Loop through all modules that support Plagiarism.
         $mods = core_component::get_plugin_list('mod');
         foreach ($mods as $mod => $modpath) {
