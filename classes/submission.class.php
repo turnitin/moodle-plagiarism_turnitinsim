@@ -694,8 +694,9 @@ class plagiarism_turnitinsim_submission {
 
     /**
      * Request a Turnitin report to be generated.
+     * @param bool $regenerateonduedate if true then set to generate to 0 else calculate generation time.
      */
-    public function request_turnitin_report_generation() {
+    public function request_turnitin_report_generation($regenerateonduedate = false) {
         // Get module settings.
         $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
@@ -750,7 +751,12 @@ class plagiarism_turnitinsim_submission {
             }
 
             $this->setrequestedtime(time());
-            $this->calculate_generation_time(true);
+
+            if ($regenerateonduedate) {
+                $this->settogenerate(0);
+            } else {
+                $this->calculate_generation_time(true);
+            }
             $this->update();
         } catch (Exception $e) {
             $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
