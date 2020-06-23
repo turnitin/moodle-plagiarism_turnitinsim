@@ -69,7 +69,8 @@ class plagiarism_turnitinsim_logging_request {
      * @param bool $sendsecrets The boolean value, if true send secrets as part of logs.
      */
     public function send_error_to_turnitin(plagiarism_turnitinsim_logging_request_info $loggingrequestinfo = null,
-                                           plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo = null, $sendsecrets = false) {
+                                           plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo = null,
+                                           $sendsecrets = false) {
 
         if (!get_config('plagiarism_turnitinsim', 'turnitinenableremotelogging')) {
             return;
