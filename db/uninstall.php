@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
+
 /**
  * Configuration to remove on install.
  */
