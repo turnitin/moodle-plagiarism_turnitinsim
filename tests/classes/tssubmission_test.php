@@ -858,16 +858,13 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
         $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
-        $currenttime = time();
-        $tssubmission->setgenerationtime($currenttime);
-
         // Request report generation.
         $tssubmission->request_turnitin_report_generation(true);
 
         // Test that the submission status is uploaded.
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_REQUESTED, $tssubmission->getstatus());
         $this->assertEquals(0, $tssubmission->gettogenerate());
-        $this->assertEquals($currenttime, $tssubmission->getgenerationtime());
+        $this->assertLessThanOrEqual(time(), $tssubmission->getgenerationtime());
     }
 
     /**

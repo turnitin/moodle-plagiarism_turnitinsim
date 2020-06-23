@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 /**
  * Class for sending error logs to Turnitin.
  */
-class logging_request {
+class plagiarism_turnitinsim_logging_request {
 
     /**
      * @var object The request object.
@@ -64,12 +64,12 @@ class logging_request {
     /**
      * Create remote logging request and send to turnitin.
      *
-     * @param logging_request_info|null $loggingrequestinfo The logging_request_info object.
-     * @param logging_request_event_info|null $loggingrequesteventinfo The logging_request_event_info object.
+     * @param plagiarism_turnitinsim_logging_request_info|null $loggingrequestinfo The logging_request_info object.
+     * @param plagiarism_turnitinsim_logging_request_event_info|null $loggingrequesteventinfo The logging_request_event_info object.
      * @param bool $sendsecrets The boolean value, if true send secrets as part of logs.
      */
-    public function send_error_to_turnitin(logging_request_info $loggingrequestinfo = null,
-                                           logging_request_event_info $loggingrequesteventinfo = null, $sendsecrets = false) {
+    public function send_error_to_turnitin(plagiarism_turnitinsim_logging_request_info $loggingrequestinfo = null,
+                                           plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo = null, $sendsecrets = false) {
 
         if (!get_config('plagiarism_turnitinsim', 'turnitinenableremotelogging')) {
             return;
@@ -124,9 +124,9 @@ class logging_request {
     /**
      * Set request info details.
      *
-     * @param logging_request_info $loggingrequestinfo The logging_request_info object.
+     * @param plagiarism_turnitinsim_logging_request_info $loggingrequestinfo The logging_request_info object.
      */
-    private function set_request_info(logging_request_info $loggingrequestinfo) {
+    private function set_request_info(plagiarism_turnitinsim_logging_request_info $loggingrequestinfo) {
         $this->loggingrequest["request"]["url"] = $loggingrequestinfo->get_url();
         $this->loggingrequest["request"]["method"] = $loggingrequestinfo->get_method();
         $this->loggingrequest["request"]["headers"] = $loggingrequestinfo->get_headers();
@@ -137,9 +137,9 @@ class logging_request {
     /**
      * Set event info details.
      *
-     * @param logging_request_event_info $loggingrequesteventinfo The $logging_request_event_info object.
+     * @param plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo The $logging_request_event_info object.
      */
-    private function set_event_info(logging_request_event_info $loggingrequesteventinfo) {
+    private function set_event_info(plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo) {
         $this->loggingrequest["event"]["url"] = $loggingrequesteventinfo->get_url();
         $this->loggingrequest["event"]["headers"] = $loggingrequesteventinfo->get_headers();
         $this->loggingrequest["event"]["body"] = $loggingrequesteventinfo->get_body();

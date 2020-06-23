@@ -62,8 +62,8 @@ if ($expectedsecret !== $reqheaders['x-turnitin-signature']) {
         $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
     }
 
-    $eventinfo = new logging_request_event_info("callback.php", $reqheaders, $requeststring);
-    $loggingrequest = new logging_request('Webhook callback failed as signature is incorrect');
+    $eventinfo = new plagiarism_turnitinsim_logging_request_event_info("callback.php", $reqheaders, $requeststring);
+    $loggingrequest = new plagiarism_turnitinsim_logging_request('Webhook callback failed as signature is incorrect');
     $loggingrequest->send_error_to_turnitin(null, $eventinfo, true);
 
     echo get_string('webhookincorrectsignature', 'plagiarism_turnitinsim');

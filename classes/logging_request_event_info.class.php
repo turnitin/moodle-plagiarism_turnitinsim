@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 /**
  * Class models event info sent to be logged.
  */
-class logging_request_event_info {
+class plagiarism_turnitinsim_logging_request_event_info {
 
     /**
      * @var string The url.

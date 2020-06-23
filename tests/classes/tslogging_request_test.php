@@ -61,7 +61,7 @@ class plagiarism_turnitinsim_logging_request_class_testcase extends advanced_tes
             ->with(TURNITINSIM_ENDPOINT_LOGGING)
             ->willReturn('');
 
-        $tsloggingrequest = new logging_request('Error', $tsrequest);
+        $tsloggingrequest = new plagiarism_turnitinsim_logging_request('Error', $tsrequest);
 
         $tsloggingrequest->send_error_to_turnitin();
     }
@@ -84,7 +84,7 @@ class plagiarism_turnitinsim_logging_request_class_testcase extends advanced_tes
             ->method('send_request')
             ->willReturn('');
 
-        $tsloggingrequest = new logging_request('Error', $tsrequest);
+        $tsloggingrequest = new plagiarism_turnitinsim_logging_request('Error', $tsrequest);
 
         $tsloggingrequest->send_error_to_turnitin();
     }
