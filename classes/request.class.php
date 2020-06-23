@@ -115,7 +115,7 @@ class plagiarism_turnitinsim_request {
         global $CFG;
 
         // Attach content type to headers if this is not a submission.
-        if ($requesttype == 'general') {
+        if ($requesttype == 'general' || $requesttype === 'logging') {
             if (!in_array('Content-Type: application/json', $this->headers)) {
                 $this->headers[] = 'Content-Type: application/json';
             }
