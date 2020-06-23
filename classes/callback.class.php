@@ -153,9 +153,9 @@ class plagiarism_turnitinsim_callback {
                 mtrace(get_string('taskoutputwebhookcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
             } else {
                 mtrace(get_string('taskoutputwebhooknotcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
-                $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_WEBHOOKS, "POST",
+                $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_WEBHOOKS, "POST",
                     null, $responsedata->httpstatus, $response);
-                $loggingrequest = new logging_request('Webhook could not be created', $this->tsrequest);
+                $loggingrequest = new plagiarism_turnitinsim_logging_request('Webhook could not be created', $this->tsrequest);
                 $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
             }
 

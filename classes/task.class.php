@@ -171,7 +171,10 @@ class plagiarism_turnitinsim_task {
                 if ($tssubmission->handle_submission_info_response($tssubmission->get_submission_info())) {
                     $tssubmission->request_turnitin_report_generation();
                 }
-            } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
+            } else if ($tssubmission->getstatus() === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+                $tssubmission->request_turnitin_report_generation(true);
+            } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_COMPLETE
+                && $tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 && $tssubmission->getrequestedtime() < (time() - $this->get_report_gen_score_delay())) {
                 $tssubmission->request_turnitin_report_score();
             }

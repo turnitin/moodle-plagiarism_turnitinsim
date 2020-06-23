@@ -486,9 +486,9 @@ class plagiarism_turnitinsim_submission {
                 $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
                 $this->seterrormessage($params->message);
                 mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
-                $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION,
+                $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION,
                     "POST", null, $params->httpstatus, json_encode($params));
-                $loggingrequest = new logging_request('The submission could not be created in Turnitin');
+                $loggingrequest = new plagiarism_turnitinsim_logging_request('The submission could not be created in Turnitin');
                 $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
                 break;
         }
@@ -598,9 +598,9 @@ class plagiarism_turnitinsim_submission {
         // Save error message if request has errored, otherwise send digital receipts.
         if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
             $this->seterrormessage($params->message);
-            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION,
+            $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION,
                 "POST", null, 500, json_encode($params));
-            $loggingrequest = new logging_request('Error while uploading the file');
+            $loggingrequest = new plagiarism_turnitinsim_logging_request('Error while uploading the file');
             $loggingrequest->set_submissionid($this->turnitinid);
             $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         } else {
@@ -634,9 +634,9 @@ class plagiarism_turnitinsim_submission {
             $error = isset($params->error_code) ? $params->error_code :
                 get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
             $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
-            $loggingrequestinfo = new logging_request_info(TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO,
+            $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO,
                 "GET", null, 500, json_encode($params));
-            $loggingrequest = new logging_request($error, $this->tsrequest);
+            $loggingrequest = new plagiarism_turnitinsim_logging_request($error, $this->tsrequest);
             $loggingrequest->set_submissionid($this->turnitinid);
             $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         }
@@ -694,8 +694,9 @@ class plagiarism_turnitinsim_submission {
 
     /**
      * Request a Turnitin report to be generated.
+     * @param bool $regenerateonduedate if true then set to generate to 0 else calculate generation time.
      */
-    public function request_turnitin_report_generation() {
+    public function request_turnitin_report_generation($regenerateonduedate = false) {
         // Get module settings.
         $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
@@ -750,7 +751,13 @@ class plagiarism_turnitinsim_submission {
             }
 
             $this->setrequestedtime(time());
-            $this->calculate_generation_time(true);
+
+            if ($regenerateonduedate) {
+                $this->settogenerate(0);
+                $this->setgenerationtime(time());
+            } else {
+                $this->calculate_generation_time(true);
+            }
             $this->update();
         } catch (Exception $e) {
             $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
