@@ -67,6 +67,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $data->turnitinapiurl = self::TEST_API_URL;
         $data->turnitinapikey = self::TEST_API_KEY;
         $data->turnitinenablelogging = self::TURNITINSIM_ENABLED;
+        $data->turnitinenableremotelogging = self::TURNITINSIM_ENABLED;
         $data->turnitinhideidentity = self::TURNITINSIM_ENABLED;
         $data->permissionoptions['turnitinviewerviewfullsource'] = self::TURNITINSIM_ENABLED;
         $data->permissionoptions['turnitinviewermatchsubinfo'] = self::TURNITINSIM_ENABLED;
@@ -86,6 +87,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinmodenabledforum);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinmodenabledworkshop);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinenablelogging);
+        $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinenableremotelogging);
         $this->assertEquals(self::TEST_API_URL, $settings->turnitinapiurl);
         $this->assertEquals(self::TEST_API_KEY, $settings->turnitinapikey);
         $this->assertEquals(self::TURNITINSIM_ENABLED, $settings->turnitinhideidentity);
@@ -116,6 +118,7 @@ class plagiarism_tssetupform_class_testcase extends advanced_testcase {
         $this->assertEquals('', $settings->turnitinapiurl);
         $this->assertEquals('', $settings->turnitinapikey);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinenablelogging);
+        $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinenableremotelogging);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinhideidentity);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinviewerviewfullsource);
         $this->assertEquals(self::TURNITINSIM_DISABLED, $settings->turnitinviewermatchsubinfo);

@@ -108,9 +108,10 @@ class plagiarism_turnitinsim_request {
      * @param string $requestbody The request body to send.
      * @param string $method The request method eg GET/POST.
      * @param string $requesttype The type of request, can be general or submission.
+     * @param bool $isasync The flag to define type of http request.
      * @return array|bool|false|mixed|stdClass|string
      */
-    public function send_request($endpoint, $requestbody, $method, $requesttype = 'general') {
+    public function send_request($endpoint, $requestbody, $method, $requesttype = 'general', $isasync = false) {
         global $CFG;
 
         // Attach content type to headers if this is not a submission.
@@ -120,8 +121,14 @@ class plagiarism_turnitinsim_request {
             }
         }
 
+        $tiiurl = $this->get_apiurl();
+
+        if ($requesttype === 'logging') {
+            $tiiurl = str_replace('/api', '', $this->get_apiurl());
+        }
+
         if ($this->logger) {
-            $this->logger->info('[' . $method . '] Request to: ' . $this->get_apiurl() . $endpoint);
+            $this->logger->info('[' . $method . '] Request to: ' . $tiiurl . $endpoint);
             $this->logger->info('Headers: ', $this->headers);
 
             // Don't log the contents of a file submission as it is the raw file contents.
@@ -131,11 +138,17 @@ class plagiarism_turnitinsim_request {
         }
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->get_apiurl() . $endpoint);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_URL, $tiiurl . $endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        if ($isasync) {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        } else {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        }
 
         if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
