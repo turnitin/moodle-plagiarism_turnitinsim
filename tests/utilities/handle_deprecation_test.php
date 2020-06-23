@@ -65,6 +65,8 @@ class plagiarism_turnitinsim_handle_deprecation_testcase extends advanced_testca
     public function test_unset_turnitinsim_use_unsets_value_in_39() {
         $this->resetAfterTest();
 
+        set_config('branch', 39);
+
         set_config( 'turnitinsim_use', 1, 'plagiarism');
 
         (new handle_deprecation)->unset_turnitinsim_use();

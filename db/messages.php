@@ -37,5 +37,10 @@ $messageproviders = array (
         'capability'  => 'moodle/site:config'
     ),
     // Notify all Turnitin users with a link to accept the new EULA.
-    'new_eula' => array ()
+    'new_eula' => array (
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED,
+            'email' => MESSAGE_PERMITTED
+        ],
+    )
 );
