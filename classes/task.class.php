@@ -102,15 +102,19 @@ class plagiarism_turnitinsim_task {
 
         // Create each submission in Turnitin and upload submission.
         foreach ($submissions as $submission) {
-            // Skip if the course doesn't exist or the course is pending deletion.
-            if (!$DB->get_record('course_modules', array('id' => $submission->cm, 'deletioninprogress' => 0))) {
-                continue;
-            }
-
             // Reset headers.
             $this->tsrequest->set_headers();
 
             $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
+
+            // Skip if the course module doesn't exist or the course is pending deletion.
+            if (!$DB->get_record('course_modules', array('id' => $submission->cm, 'deletioninprogress' => 0))) {
+                $error = get_string('errorprocessingdeletedsubmission', 'plagiarism_turnitinsim');
+                $tssubmission->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+                $tssubmission->update();
+
+                continue;
+            }
 
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
