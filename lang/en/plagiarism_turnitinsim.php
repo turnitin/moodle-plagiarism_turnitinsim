@@ -194,3 +194,4 @@ $string['privacy:metadata:plagiarism_turnitinsim_client:submission_content'] = '
 
 $string['errorenabledfeatures'] = 'Could not get the list of enabled features.';
 $string['errorgettingsubmissioninfo'] = 'There was an error attempting to get the submission info.';
+$string['errorprocessingdeletedsubmission'] = 'This submission belongs to a deleted assignment and cannot be processed.';

@@ -1398,7 +1398,7 @@ class plagiarism_turnitinsim_submission {
      * @param string $error Error code from Turnitin.
      * @param int $retryattempts Maximum retry attempts.
      */
-    private function set_error_with_max_retry_attempts($error, $retryattempts) {
+    public function set_error_with_max_retry_attempts($error, $retryattempts) {
         $this->settiiattempts($retryattempts);
         $this->seterrormessage($error);
         $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
