@@ -89,6 +89,8 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
             array(0, 1)
         );
 
+        // Add tool tip.
+        $mform->addHelpButton('turnitinenableremotelogging', 'turnitinenableremotelogging', 'plagiarism_turnitinsim');
         $mform->setDefault('turnitinenableremotelogging', 1);
 
         // Toggle Student Data Privacy.
