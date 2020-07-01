@@ -47,6 +47,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Get the fields to be used in the form to configure each module's Turnitin settings.
      *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
+     *
      * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
@@ -103,6 +106,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
      * Save the data associated with the plugin from the module's mod_form.
+     *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
      *
      * @param object $data the form data to save
      * @throws dml_exception
@@ -738,6 +744,30 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     public static function plugin_enabled() {
         return handle_deprecation::get_plugin_enabled();
     }
+}
+
+/**
+ * Add the Turnitin settings form to an add/edit activity page
+ *
+ * @param moodleform $formwrapper Moodleform wrapper
+ * @param MoodleQuickForm $mform Moodle Mform that we want to add our code to.
+ */
+function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
+    $context = context_course::instance($formwrapper->get_course()->id);
+
+    (new plagiarism_plugin_turnitinsim())->get_form_elements_module($mform, $context);
+}
+
+/**
+ * Handle saving data from the Turnitin settings form..
+ *
+ * @param stdClass $data The form data.
+ * @param stdClass $course The course the call is made from.
+ */
+function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
+    (new plagiarism_plugin_turnitinsim())->save_form_elements($data);
+
+    return $data;
 }
 
 /**
