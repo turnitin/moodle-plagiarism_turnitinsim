@@ -69,7 +69,6 @@ define('TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED', '/v1/features-enabled');
 define('TURNITINSIM_ENDPOINT_LOGGING', '/remote-logging/api/log');
 
 // URLs.
-define('TURNITINSIM_HELP_LINK', 'https://help.turnitin.com/simcheck/integrations/moodle/moodle-home.htm');
 define('TURNITINSIM_EULA', '/plagiarism/turnitinsim/eula.php?cmd=displayeula');
 define('TURNITINSIM_CALLBACK_URL', $CFG->wwwroot.'/plagiarism/turnitinsim/callbacks.php');
 
