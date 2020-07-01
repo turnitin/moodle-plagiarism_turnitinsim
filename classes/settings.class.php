@@ -140,7 +140,7 @@ class plagiarism_turnitinsim_settings {
 
         // Show link to guides.
         $link = html_writer::link(
-            get_string('helplink', 'plagiarism_turnitinsim'),
+            get_string('help_link', 'plagiarism_turnitinsim'),
             get_string('settingslearnmore', 'plagiarism_turnitinsim'),
             array('target' => '_blank')
         );
