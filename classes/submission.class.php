@@ -920,7 +920,8 @@ class plagiarism_turnitinsim_submission {
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
-            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) && !$this->is_submission_anonymous() ? true : false,
+            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) &&
+            !$this->is_submission_anonymous() ? true : false,
             'may_view_save_viewer_changes' => (!empty($turnitinviewersavechanges)) ? true : false
         );
     }
@@ -930,11 +931,11 @@ class plagiarism_turnitinsim_submission {
      *
      * These are true but may be configurable in the future.
      *
-     * @param $viewer_default_permission_set string The user role.
+     * @param string $viewerdefaultpermissionset The user role.
      * @return array
      * @throws dml_exception
      */
-    public function create_similarity_overrides($viewer_default_permission_set) {
+    public function create_similarity_overrides($viewerdefaultpermissionset) {
         $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
@@ -943,7 +944,8 @@ class plagiarism_turnitinsim_submission {
                 'all_sources' => true
             ),
             "view_settings" => array(
-                "save_changes"  => (!empty($turnitinviewersavechanges) && $viewer_default_permission_set !== TURNITINSIM_ROLE_LEARNER) ? true : false
+                "save_changes"  => (!empty($turnitinviewersavechanges) &&
+                    $viewerdefaultpermissionset !== TURNITINSIM_ROLE_LEARNER) ? true : false
             )
         );
     }

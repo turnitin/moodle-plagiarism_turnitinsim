@@ -1768,7 +1768,6 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setcm($cm->id);
         $tssubmission->setuserid($this->student1->id);
 
-
         // Verify that viewer permissions are true as the config values are set to true.
         $permissions = $tssubmission->create_report_viewer_permissions();
         $this->assertEquals(true, $tssubmission->is_submission_anonymous());
