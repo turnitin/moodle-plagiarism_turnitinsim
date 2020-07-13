@@ -920,7 +920,8 @@ class plagiarism_turnitinsim_submission {
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
-            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) ? true : false,
+            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) &&
+            !$this->is_submission_anonymous() ? true : false,
             'may_view_save_viewer_changes' => (!empty($turnitinviewersavechanges)) ? true : false
         );
     }
@@ -930,10 +931,11 @@ class plagiarism_turnitinsim_submission {
      *
      * These are true but may be configurable in the future.
      *
+     * @param string $viewerdefaultpermissionset The user role.
      * @return array
      * @throws dml_exception
      */
-    public function create_similarity_overrides() {
+    public function create_similarity_overrides($viewerdefaultpermissionset) {
         $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
@@ -942,7 +944,8 @@ class plagiarism_turnitinsim_submission {
                 'all_sources' => true
             ),
             "view_settings" => array(
-                "save_changes"  => (!empty($turnitinviewersavechanges)) ? true : false
+                "save_changes"  => (!empty($turnitinviewersavechanges) &&
+                    $viewerdefaultpermissionset !== TURNITINSIM_ROLE_LEARNER) ? true : false
             )
         );
     }
@@ -977,15 +980,14 @@ class plagiarism_turnitinsim_submission {
         // Send correct user role in request.
         if (has_capability('plagiarism/turnitinsim:viewfullreport', context_module::instance($this->getcm()))) {
             $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_INSTRUCTOR;
+            // Override viewer permissions depending on admin options.
+            $request['viewer_permissions'] = $this->create_report_viewer_permissions();
         } else {
             $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_LEARNER;
         }
 
-        // Override viewer permissions depending on admin options.
-        $request['viewer_permissions'] = $this->create_report_viewer_permissions();
-
         // Add similarity overrides - all true for now but this may change in future.
-        $request['similarity'] = $this->create_similarity_overrides();
+        $request['similarity'] = $this->create_similarity_overrides($request['viewer_default_permission_set']);
 
         // Make request to get Cloud Viewer URL.
         try {

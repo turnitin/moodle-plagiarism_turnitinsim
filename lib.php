@@ -64,7 +64,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $location = ($context == context_system::instance()) ? 'defaults' : 'module';
 
         // Get whether plugin is enabled for this module.
-        $moduletiienabled = empty($modulename) ? "0" : get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.substr($modulename, 4));
+        $moduletiienabled = empty($modulename) ? "0" : get_config('plagiarism_turnitinsim',
+            'turnitinmodenabled'.substr($modulename, 4));
 
         // Exit if Turnitin is not being used for this activity type and location is not default.
         if ($location === 'module' && $moduletiienabled === "0") {
