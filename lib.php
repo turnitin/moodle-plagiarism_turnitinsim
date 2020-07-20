@@ -53,11 +53,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
+     * @param bool $moodle39plus - True if being called from Moodle 3.9+
      * @return void of settings fields.
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
+    public function get_form_elements_module($mform, $context, $modulename = "", $moodle39plus = false) {
+        global $CFG;
+
+        // Return in 3.9+ unless being called by the new 3.9+ method - to avoid showing the settings twice.
+        if ($CFG->branch >= 39 && !$moodle39plus) {
+            return;
+        }
 
         $cmid = optional_param('update', 0, PARAM_INT);
 
@@ -754,9 +761,21 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
  * @param MoodleQuickForm $mform Moodle Mform that we want to add our code to.
  */
 function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
+    global $CFG;
+
+    // Continue using the 3.8 method if we detect an older version of Moodle.
+    if ($CFG->branch < 39) {
+        return;
+    }
+
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    (new plagiarism_plugin_turnitinsim())->get_form_elements_module($mform, $context);
+    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
+        $mform,
+        $context,
+        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '',
+        true
+    );
 }
 
 /**
