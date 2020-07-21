@@ -45,16 +45,17 @@ define(['jquery', 'core/str'], function($, str) {
                             apikey: $('#id_turnitinapikey').val()
                         },
                         success: function(data) {
+                            ct.removeClass("btn-secondary");
                             if (data.connection_status === 200) {
-                                ct.removeClass("connection-test-failed");
-                                ct.addClass("connection-test-success");
+                                ct.removeClass("btn-danger");
+                                ct.addClass("btn-success");
 
                                 str.get_string('connecttestsuccess', 'plagiarism_turnitinsim').done(function(text) {
                                     changeString(ct, text);
                                 });
                             } else {
-                                ct.removeClass("connection-test-success");
-                                ct.addClass("connection-test-failed");
+                                ct.removeClass("btn-success");
+                                ct.addClass("btn-danger");
 
                                 str.get_string('connecttestfailed', 'plagiarism_turnitinsim').done(function(text) {
                                     changeString(ct, text);
@@ -62,9 +63,10 @@ define(['jquery', 'core/str'], function($, str) {
                             }
 
                             // Fade out classes and swap back values.
-                            ct.delay(1000).fadeOut("slow", function() {
-                                $(this).removeClass("turnitinsim_connection-test-failed");
-                                $(this).removeClass("turnitinsim_connection-test-success");
+                            ct.delay(3000).fadeOut("slow", function() {
+                                ct.removeClass("btn-danger");
+                                ct.removeClass("btn-success");
+                                $(this).addClass("btn-secondary");
 
                                 str.get_string('connecttest', 'plagiarism_turnitinsim').done(function(text) {
                                     changeString(ct, text);

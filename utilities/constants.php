@@ -66,9 +66,9 @@ define('TURNITINSIM_ENDPOINT_WEBHOOKS', '/v1/webhooks');
 define('TURNITINSIM_ENDPOINT_GET_WEBHOOK', '/v1/webhooks/{{webhook_id}}');
 define('TURNITINSIM_ENDPOINT_GET_LATEST_EULA', '/v1/eula/latest');
 define('TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED', '/v1/features-enabled');
+define('TURNITINSIM_ENDPOINT_LOGGING', '/remote-logging/api/log');
 
 // URLs.
-define('TURNITINSIM_HELP_LINK', 'https://help.turnitin.com/simcheck/integrations/moodle/moodle-home.htm');
 define('TURNITINSIM_EULA', '/plagiarism/turnitinsim/eula.php?cmd=displayeula');
 define('TURNITINSIM_CALLBACK_URL', $CFG->wwwroot.'/plagiarism/turnitinsim/callbacks.php');
 
@@ -101,6 +101,7 @@ define('TURNITINSIM_REPORT_GEN_SCORE_DELAY_TESTING', 20);
 define('TURNITINSIM_REPORT_GEN_EXCLUDE_SELF_GROUP', 'GROUP_CONTEXT');
 define('TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS', 3);
 define('TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS', 3600);
+define('TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS', 900);
 
 // Metadata.
 define('TURNITINSIM_GROUP_TYPE_ASSIGNMENT', 'ASSIGNMENT');

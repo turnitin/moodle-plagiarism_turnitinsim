@@ -64,6 +64,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
+        set_config('turnitinenableremotelogging', 1, 'plagiarism_turnitinsim');
 
         // Set webhook details so tests don't create one.
         set_config('turnitin_webhook_id', 1, 'plagiarism_turnitinsim');
@@ -789,6 +790,84 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
+     * Test successful report generation request on due date.
+     */
+    public function test_request_turnitin_report_generation_success_on_due_date() {
+        $this->resetAfterTest();
+
+        // Get the response for a successfully created submission.
+        $reportgenresponse = file_get_contents(__DIR__ . '/../fixtures/request_report_generation_success.json');
+
+        // Mock API create submission request class and send call.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->getMock();
+
+        // Add submission ID to endpoint.
+        $endpoint = TURNITINSIM_ENDPOINT_SIMILARITY_REPORT;
+        $endpoint = str_replace('{{submission_id}}', self::VALID_SUBMISSION_ID, $endpoint);
+
+        // Mock send request method for upload.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->with($endpoint)
+            ->willReturn($reportgenresponse);
+
+        // Log student in.
+        $this->setUser($this->student1);
+        $usercontext = context_user::instance($this->student1->id);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->submissiondrafts = 0;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Create assignment submission.
+        $submission = $assign->get_user_submission($this->student1->id, true);
+        $data = new stdClass();
+        $plugin = $assign->get_submission_plugin_by_type('file');
+        $plugin->save($submission, $data);
+
+        $file = create_test_file($submission->id, $usercontext->id, 'mod_assign', 'submissions');
+
+        // Create data object for cm assignment.
+        $data = new stdClass();
+        $data->coursemodule = $cm->id;
+        $data->turnitinenabled = 1;
+        $data->checkinternet = 1;
+        $data->checkprivate = 1;
+
+        // Save Module Settings.
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
+
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+        $tssubmission->setsubmitter($this->student1->id);
+        $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setitemid($submission->id);
+        $tssubmission->setturnitinid(self::VALID_SUBMISSION_ID);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
+
+        // Request report generation.
+        $tssubmission->request_turnitin_report_generation(true);
+
+        // Test that the submission status is uploaded.
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_REQUESTED, $tssubmission->getstatus());
+        $this->assertEquals(0, $tssubmission->gettogenerate());
+        $this->assertLessThanOrEqual(time(), $tssubmission->getgenerationtime());
+    }
+
+    /**
      * Test report generation request failure with invalid ID.
      */
     public function test_request_turnitin_report_generation_failure_invalid_id() {
@@ -1112,7 +1191,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1176,7 +1255,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1234,7 +1313,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1302,7 +1381,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1381,7 +1460,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1460,7 +1539,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $assign = new assign($context, $cm, $record->course);
 
         // Set plugin config.
-        set_config('turnitinsim_use', 1, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
         set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
 
         // Enable plugin for module.
@@ -1667,6 +1746,36 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
+     * Test that the viewer permissions returned are true if enabled.
+     */
+    public function test_viewer_permissions_may_view_match_info_false_if_anonymous() {
+        $this->resetAfterTest();
+
+        set_config('turnitinviewerviewfullsource', 1, 'plagiarism_turnitinsim');
+        set_config('turnitinviewermatchsubinfo', 1, 'plagiarism_turnitinsim');
+
+        // Create assign module with blind marking on.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->blindmarking = 1;
+
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+
+        // Verify that viewer permissions are true as the config values are set to true.
+        $permissions = $tssubmission->create_report_viewer_permissions();
+        $this->assertEquals(true, $tssubmission->is_submission_anonymous());
+        $this->assertEquals(true, $permissions['may_view_submission_full_source']);
+        $this->assertEquals(false, $permissions['may_view_match_submission_info']);
+    }
+
+    /**
      * Test that the similarity overrides are true when configured as such.
      */
     public function test_similarity_overrides_are_true() {
@@ -1687,7 +1796,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $overrides = $tssubmission->create_similarity_overrides();
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_INSTRUCTOR);
         $this->assertTrue($overrides['modes']['match_overview']);
         $this->assertTrue($overrides['modes']['all_sources']);
         $this->assertTrue($overrides['view_settings']['save_changes']);
@@ -1714,7 +1823,37 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $overrides = $tssubmission->create_similarity_overrides();
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_INSTRUCTOR);
+        $this->assertTrue($overrides['modes']['match_overview']);
+        $this->assertTrue($overrides['modes']['all_sources']);
+        $this->assertFalse($overrides['view_settings']['save_changes']);
+    }
+
+
+    /**
+     * Test that the similarity overrides are true when configured as such.
+     */
+    public function test_similarity_overrides_save_change_is_false_when_role_is_learner() {
+        $this->resetAfterTest();
+
+        set_config('turnitinviewersavechanges', 1, 'plagiarism_turnitinsim');
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        // Verify that viewer permissions are true as the config values are set to true.
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_LEARNER);
+        $this->assertTrue($overrides['modes']['match_overview']);
+        $this->assertTrue($overrides['modes']['all_sources']);
         $this->assertFalse($overrides['view_settings']['save_changes']);
     }
 
@@ -1946,5 +2085,164 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
         $this->assertEquals(1, $record->tiiattempts);
         $this->assertGreaterThan(time(), $record->tiiretrytime);
+    }
+
+    /**
+     * Test the submission info status when submission is in processing state.
+     */
+    public function test_handle_submission_info_if_submission_is_in_processing_state() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_PROCESSING;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertFalse($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertFalse($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
+    }
+
+    /**
+     * Test the submission info status when turnitin returns error.
+     */
+    public function test_handle_submission_info_if_turnitin_returns_error() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->httpstatus = 500;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertFalse($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(1, $record->tiiattempts);
+        $this->assertGreaterThan(time(), $record->tiiretrytime);
+
+        // Prepare to test scenario where max attempts is reached.
+        $tssubmission->settiiattempts(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS - 1);
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertFalse($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'), $record->errormessage);
+    }
+
+    /**
+     * Test the submission info status when submission is in complete state.
+     */
+    public function test_handle_submission_info_if_submission_is_complete() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_COMPLETE;
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertTrue($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_UPLOADED, $record->status);
+        $this->assertEquals(0, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+    }
+
+    /**
+     * Test the submission info status when submission is in error state.
+     */
+    public function test_handle_submission_info_if_submission_is_in_error_state() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->with(TURNITINSIM_ENDPOINT_LOGGING)
+            ->willReturn('');
+
+        $params = new stdClass();
+        $params->status = TURNITINSIM_SUBMISSION_STATUS_ERROR;
+        $params->error_code = TURNITINSIM_SUBMISSION_STATUS_TOO_LITTLE_TEXT;
+
+        $tssubmission = new plagiarism_turnitinsim_submission($tsrequest);
+        $tssubmission->setcm(1);
+        $tssubmission->setuserid(1);
+        $tssubmission->setsubmitter(1);
+        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
+        $tssubmission->setidentifier('6be293577b6b42bd04accd034bb40a8ca0b4bdd6');
+        $tssubmission->calculate_generation_time();
+        $tssubmission->update();
+
+        $issubmissioncomplete = $tssubmission->handle_submission_info_response($params);
+
+        $record = $DB->get_record('plagiarism_turnitinsim_sub', ['cm' => 1]);
+
+        $this->assertFalse($issubmissioncomplete);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_ERROR, $record->status);
+        $this->assertEquals(TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS, $record->tiiattempts);
+        $this->assertEquals(0, $record->tiiretrytime);
+        $this->assertEquals(TURNITINSIM_SUBMISSION_STATUS_TOO_LITTLE_TEXT, $record->errormessage);
     }
 }

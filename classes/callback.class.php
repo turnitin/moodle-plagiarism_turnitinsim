@@ -27,6 +27,9 @@ use plagiarism_turnitinsim\message\get_webhook_failure;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
+
 /**
  * Class for handling callbacks from Turnitin.
  */
@@ -102,7 +105,7 @@ class plagiarism_turnitinsim_callback {
             $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'DELETE');
             $responsedata = json_decode($response);
 
-            if ($responsedata->httpstatus == TURNITINSIM_HTTP_NO_CONTENT) {
+            if ($responsedata->httpstatus === TURNITINSIM_HTTP_NO_CONTENT) {
                 mtrace(get_string('taskoutputwebhookdeleted', 'plagiarism_turnitinsim', $webhookid));
                 return true;
             }
@@ -150,6 +153,10 @@ class plagiarism_turnitinsim_callback {
                 mtrace(get_string('taskoutputwebhookcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
             } else {
                 mtrace(get_string('taskoutputwebhooknotcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
+                $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_WEBHOOKS, "POST",
+                    null, $responsedata->httpstatus, $response);
+                $loggingrequest = new plagiarism_turnitinsim_logging_request('Webhook could not be created', $this->tsrequest);
+                $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
             }
 
         } catch (Exception $e) {

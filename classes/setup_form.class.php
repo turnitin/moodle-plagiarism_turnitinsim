@@ -79,6 +79,20 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
             array(0, 1)
         );
 
+        // Toggle Remote Logging.
+        $mform->addElement(
+            'advcheckbox',
+            'turnitinenableremotelogging',
+            get_string('turnitinenableremotelogging', 'plagiarism_turnitinsim'),
+            '',
+            null,
+            array(0, 1)
+        );
+
+        // Add tool tip.
+        $mform->addHelpButton('turnitinenableremotelogging', 'turnitinenableremotelogging', 'plagiarism_turnitinsim');
+        $mform->setDefault('turnitinenableremotelogging', 1);
+
         // Toggle Student Data Privacy.
         $mform->addElement(
             'advcheckbox',
@@ -160,12 +174,14 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         $turnitinapiurl = (!empty($data->turnitinapiurl)) ? $data->turnitinapiurl : '';
         $turnitinapikey = (!empty($data->turnitinapikey)) ? $data->turnitinapikey : '';
         $turnitinenablelogging = (!empty($data->turnitinenablelogging)) ? $data->turnitinenablelogging : 0;
+        $turnitinenableremotelogging = (!empty($data->turnitinenableremotelogging)) ? $data->turnitinenableremotelogging : 0;
         $turnitinhideidentity = (!empty($data->turnitinhideidentity)) ? $data->turnitinhideidentity : 0;
         $turnitinviewerviewfullsource = (!empty($data->permissionoptions['turnitinviewerviewfullsource'])) ? 1 : 0;
         $turnitinviewermatchsubinfo = (!empty($data->permissionoptions['turnitinviewermatchsubinfo'])) ? 1 : 0;
         $turnitinviewersavechanges = (!empty($data->permissionoptions['turnitinviewersavechanges'])) ? 1 : 0;
 
-        set_config('turnitinsim_use', $useplugin, 'plagiarism');
+        plagiarism_plugin_turnitinsim::enable_plugin($useplugin);
+
         // Loop through all modules that support Plagiarism.
         $mods = core_component::get_plugin_list('mod');
         foreach ($mods as $mod => $modpath) {
@@ -176,6 +192,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism_turnitinsim');
         set_config('turnitinapikey', $turnitinapikey, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism_turnitinsim');
+        set_config('turnitinenableremotelogging', $turnitinenableremotelogging, 'plagiarism_turnitinsim');
         set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism_turnitinsim');
         set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism_turnitinsim');
         set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism_turnitinsim');

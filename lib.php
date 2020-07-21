@@ -47,6 +47,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * Get the fields to be used in the form to configure each module's Turnitin settings.
      *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
+     *
      * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
@@ -55,10 +58,25 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws dml_exception
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
+        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed twice.
+        // TODO: Remove once this method is removed.
+        static $hassettings;
+        if ($hassettings) {
+            return;
+        }
 
         $cmid = optional_param('update', 0, PARAM_INT);
 
         $location = ($context == context_system::instance()) ? 'defaults' : 'module';
+
+        // Get whether plugin is enabled for this module.
+        $moduletiienabled = empty($modulename) ? "0" : get_config('plagiarism_turnitinsim',
+            'turnitinmodenabled'.substr($modulename, 4));
+
+        // Exit if Turnitin is not being used for this activity type and location is not default.
+        if ($location === 'module' && $moduletiienabled === "0") {
+            return;
+        }
 
         $form = new plagiarism_turnitinsim_settings();
         $form->add_settings_to_module($mform, $location, $modulename);
@@ -91,10 +109,15 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $mform->setDefault($element, $value);
             }
         }
+        // TODO: Remove once this method is removed.
+        $hassettings = true;
     }
 
     /**
      * Save the data associated with the plugin from the module's mod_form.
+     *
+     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
+     * See https://tracker.moodle.org/browse/MDL-67526
      *
      * @param object $data the form data to save
      * @throws dml_exception
@@ -220,7 +243,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                         $helpicon = $OUTPUT->pix_icon(
                             'help',
-                            get_string('submissiondisplayerror:eulanotaccepted', 'plagiarism_turnitinsim'),
+                            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
                             'core',
                             ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
                         );
@@ -232,7 +255,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                             get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim') . $eulalaunch,
                             array('class' => 'tii_status_text tii_status_text_eula')
                         );
-                        $showresubmitlink = true;
+                        $showresubmitlink = false;
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
@@ -711,6 +734,53 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
     }
 
+    /**
+     * Wrapper method for Moodle's set_config method for enabling the plugin.
+     * This is so that when the deprecation is deleted we only need to change one place.
+     *
+     * @param int $enabled 1 if plugin is to be enabled.
+     */
+    public static function enable_plugin($enabled) {
+        handle_deprecation::set_plugin_enabled($enabled);
+    }
+
+    /**
+     * Wrapper method for Moodle's get_config method for checking if the plugin is enabled.
+     * This is so that when the deprecation is deleted we only need to change one place.
+     *
+     * @return mixed
+     */
+    public static function plugin_enabled() {
+        return handle_deprecation::get_plugin_enabled();
+    }
+}
+
+/**
+ * Add the Turnitin settings form to an add/edit activity page
+ *
+ * @param moodleform $formwrapper Moodleform wrapper
+ * @param MoodleQuickForm $mform Moodle Mform that we want to add our code to.
+ */
+function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
+    $context = context_course::instance($formwrapper->get_course()->id);
+
+    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
+        $mform,
+        $context,
+        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : ''
+    );
+}
+
+/**
+ * Handle saving data from the Turnitin settings form..
+ *
+ * @param stdClass $data The form data.
+ * @param stdClass $course The course the call is made from.
+ */
+function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
+    (new plagiarism_plugin_turnitinsim())->save_form_elements($data);
+
+    return $data;
 }
 
 /**

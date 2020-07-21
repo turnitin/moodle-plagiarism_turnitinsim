@@ -61,20 +61,69 @@ class plagiarism_tsrequest_testcase extends advanced_testcase {
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
+        // Test connection should return failed if url is missing.
+        $result = $tsrequest->test_connection("", "key");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
+        // Test connection should return failed if key is missing.
+        $result = $tsrequest->test_connection("url", "");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
+        // Test connection should return failed if url is invalid TII url.
+        $result = $tsrequest->test_connection("http://abcd.tii.com", "key");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
+        // Test connection should return failed if url doesn't end with /api.
+        $result = $tsrequest->test_connection("http://abcd.turnitin.com", "key");
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_BAD_REQUEST, $responsesuccessparsed['connection_status']);
+
         // Mock API send request method.
-        $tsrequest->expects($this->exactly(2))
+        $tsrequest->expects($this->exactly(6))
             ->method('send_request')
-            ->willReturnOnConsecutiveCalls($responsesuccess, $responsefailure);
+            ->willReturnOnConsecutiveCalls($responsesuccess, $responsesuccess, $responsesuccess, $responsesuccess,
+                $responsesuccess, $responsefailure);
 
         // Test connection.
-        $result = $tsrequest->test_connection("url", "key");
+        $result = $tsrequest->test_connection("http://test.turnitin.com/api", "key");
+
+        // Test that the connection was successful.
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
+
+        // Test connection.
+        $result = $tsrequest->test_connection("http://test.turnitin.org/api", "key");
+
+        // Test that the connection was successful.
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
+
+        // Test connection.
+        $result = $tsrequest->test_connection("http://test.turnitin.dev/api", "key");
+
+        // Test that the connection was successful.
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
+
+        // Test connection.
+        $result = $tsrequest->test_connection("http://test.turnitinuk.com/api", "key");
+
+        // Test that the connection was successful.
+        $responsesuccessparsed = (array)json_decode($result);
+        $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
+
+        // Test connection.
+        $result = $tsrequest->test_connection("http://test.tii-sandbox.com/api", "key");
 
         // Test that the connection was successful.
         $responsesuccessparsed = (array)json_decode($result);
         $this->assertEquals(TURNITINSIM_HTTP_OK, $responsesuccessparsed['connection_status']);
 
         // Test connection when expecting a failure.
-        $result = $tsrequest->test_connection("url", "key");
+        $result = $tsrequest->test_connection("http://test.turnitin.com/api", "key");
 
         // Test that the connection failed.
         $responsefailedparsed = (array)json_decode($result);

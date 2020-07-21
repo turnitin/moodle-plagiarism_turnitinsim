@@ -41,8 +41,7 @@ define(['jquery', 'core/str'], function($, str) {
                 });
 
                 // Launch the Cloud Viewer in a new window.
-                // It is being done this way as in the future we may have to listen for it closing and act on it.
-                var dvWindow = window.open('', 'cvWindow');
+                var cvWindow = window.open();
                 var loading = '<div class="tii_dv_loading" style="text-align:center;">';
                 var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiIcon.svg';
                 loading += '<img src="' + icon + '" style="width:100px; height: 100px">';
@@ -53,7 +52,7 @@ define(['jquery', 'core/str'], function($, str) {
                 });
 
                 loading += '</div>';
-                $(dvWindow.document.body).html(loading);
+                $(cvWindow.document.body).html(loading);
 
                 $.ajax({
                     type: "GET",
@@ -66,16 +65,16 @@ define(['jquery', 'core/str'], function($, str) {
                     },
                     success: function(data) {
                         // Redirect opened window to returned URL.
-                        dvWindow.location = data.viewer_url;
-                        this.checkDVClosed(dvWindow);
+                        cvWindow.location = data.viewer_url;
+                        this.checkDVClosed(cvWindow);
                     },
-                    checkDVClosed: function(dvWindow) {
+                    checkDVClosed: function(cvWindow) {
                         var that = this;
-                        if (dvWindow.closed) {
+                        if (cvWindow.closed) {
                             window.location = window.location;
                         } else {
                             setTimeout(function() {
-                                that.checkDVClosed(dvWindow);
+                                that.checkDVClosed(cvWindow);
                             }, 500);
                         }
                     }

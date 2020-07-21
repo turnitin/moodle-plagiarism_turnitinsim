@@ -31,6 +31,8 @@ use plagiarism_turnitinsim\message\receipt_student;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
 
 /**
  * Submission class for plagiarism_turnitinsim component.
@@ -240,7 +242,7 @@ class plagiarism_turnitinsim_submission {
                     $this->setgenerationtime($duedate);
                 }
 
-                // If the duedate has past and the report has already been generated then we don't want to regenerate.
+                // If the duedate has passed and the report has already been generated then we don't want to regenerate.
                 if ($duedate < time() && $generated) {
                     $this->settogenerate(0);
                     $this->setgenerationtime(null);
@@ -484,6 +486,10 @@ class plagiarism_turnitinsim_submission {
                 $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
                 $this->seterrormessage($params->message);
                 mtrace(get_string('taskoutputsubmissionnotcreatedgeneral', 'plagiarism_turnitinsim'));
+                $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_CREATE_SUBMISSION,
+                    "POST", null, $params->httpstatus, json_encode($params));
+                $loggingrequest = new plagiarism_turnitinsim_logging_request('The submission could not be created in Turnitin');
+                $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
                 break;
         }
 
@@ -592,10 +598,52 @@ class plagiarism_turnitinsim_submission {
         // Save error message if request has errored, otherwise send digital receipts.
         if ($status == TURNITINSIM_SUBMISSION_STATUS_ERROR) {
             $this->seterrormessage($params->message);
+            $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION,
+                "POST", null, 500, json_encode($params));
+            $loggingrequest = new plagiarism_turnitinsim_logging_request('Error while uploading the file');
+            $loggingrequest->set_submissionid($this->turnitinid);
+            $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
         } else {
             $this->send_digital_receipts($filename);
         }
         $this->update();
+    }
+
+    /**
+     * Handle the API submission info response and callback from Turnitin.
+     *
+     * @param object $params containing the upload response.
+     * @return bool, true if submission status is complete else false.
+     */
+    public function handle_submission_info_response($params) {
+        $issubmissioncomplete = false;
+
+        // Handle scenario if Turnitin API is returning error.
+        // Set status as processing, so it will be retried.
+        if (!empty($params->httpstatus) && ($params->httpstatus !== TURNITINSIM_HTTP_OK)) {
+            $params->status = TURNITINSIM_SUBMISSION_STATUS_PROCESSING;
+        }
+
+        // On success, reset retries. On error, never retry.
+        if ($params->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+            $this->reset_retries();
+            $issubmissioncomplete = true;
+        } else if ($params->status === TURNITINSIM_SUBMISSION_STATUS_PROCESSING) {
+            $this->update_report_generation_retries();
+        } else {
+            $error = isset($params->error_code) ? $params->error_code :
+                get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim');
+            $this->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+            $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO,
+                "GET", null, 500, json_encode($params));
+            $loggingrequest = new plagiarism_turnitinsim_logging_request($error, $this->tsrequest);
+            $loggingrequest->set_submissionid($this->turnitinid);
+            $loggingrequest->send_error_to_turnitin($loggingrequestinfo);
+        }
+
+        $this->update();
+
+        return $issubmissioncomplete;
     }
 
     /**
@@ -646,8 +694,9 @@ class plagiarism_turnitinsim_submission {
 
     /**
      * Request a Turnitin report to be generated.
+     * @param bool $regenerateonduedate if true then set to generate to 0 else calculate generation time.
      */
-    public function request_turnitin_report_generation() {
+    public function request_turnitin_report_generation($regenerateonduedate = false) {
         // Get module settings.
         $plugin = new plagiarism_plugin_turnitinsim();
         $modulesettings = $plugin->get_settings($this->getcm());
@@ -702,7 +751,13 @@ class plagiarism_turnitinsim_submission {
             }
 
             $this->setrequestedtime(time());
-            $this->calculate_generation_time(true);
+
+            if ($regenerateonduedate) {
+                $this->settogenerate(0);
+                $this->setgenerationtime(time());
+            } else {
+                $this->calculate_generation_time(true);
+            }
             $this->update();
         } catch (Exception $e) {
             $this->tsrequest->handle_exception($e, 'taskoutputfailedreportrequest', $this->getturnitinid());
@@ -865,7 +920,8 @@ class plagiarism_turnitinsim_submission {
 
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
-            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) ? true : false,
+            'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) &&
+            !$this->is_submission_anonymous() ? true : false,
             'may_view_save_viewer_changes' => (!empty($turnitinviewersavechanges)) ? true : false
         );
     }
@@ -875,10 +931,11 @@ class plagiarism_turnitinsim_submission {
      *
      * These are true but may be configurable in the future.
      *
+     * @param string $viewerdefaultpermissionset The user role.
      * @return array
      * @throws dml_exception
      */
-    public function create_similarity_overrides() {
+    public function create_similarity_overrides($viewerdefaultpermissionset) {
         $turnitinviewersavechanges = get_config('plagiarism_turnitinsim', 'turnitinviewersavechanges');
 
         return array(
@@ -887,7 +944,8 @@ class plagiarism_turnitinsim_submission {
                 'all_sources' => true
             ),
             "view_settings" => array(
-                "save_changes"  => (!empty($turnitinviewersavechanges)) ? true : false
+                "save_changes"  => (!empty($turnitinviewersavechanges) &&
+                    $viewerdefaultpermissionset !== TURNITINSIM_ROLE_LEARNER) ? true : false
             )
         );
     }
@@ -922,15 +980,14 @@ class plagiarism_turnitinsim_submission {
         // Send correct user role in request.
         if (has_capability('plagiarism/turnitinsim:viewfullreport', context_module::instance($this->getcm()))) {
             $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_INSTRUCTOR;
+            // Override viewer permissions depending on admin options.
+            $request['viewer_permissions'] = $this->create_report_viewer_permissions();
         } else {
             $request['viewer_default_permission_set'] = TURNITINSIM_ROLE_LEARNER;
         }
 
-        // Override viewer permissions depending on admin options.
-        $request['viewer_permissions'] = $this->create_report_viewer_permissions();
-
         // Add similarity overrides - all true for now but this may change in future.
-        $request['similarity'] = $this->create_similarity_overrides();
+        $request['similarity'] = $this->create_similarity_overrides($request['viewer_default_permission_set']);
 
         // Make request to get Cloud Viewer URL.
         try {
@@ -977,7 +1034,7 @@ class plagiarism_turnitinsim_submission {
      * @return bool|mixed
      * @throws coding_exception
      */
-    private function get_submission_info() {
+    public function get_submission_info() {
         try {
             $endpoint = TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO;
             $endpoint = str_replace('{{submission_id}}', $this->getturnitinid(), $endpoint);
@@ -1327,5 +1384,41 @@ class plagiarism_turnitinsim_submission {
      */
     public function settiiretrytime($tiiretrytime) {
         $this->tiiretrytime = $tiiretrytime;
+    }
+
+    /**
+     * Reset retries.
+     */
+    private function reset_retries() {
+        $this->settiiattempts(0);
+        $this->settiiretrytime(0);
+    }
+
+    /**
+     * Common method to update maximum retry attempts and error Status.
+     *
+     * @param string $error Error code from Turnitin.
+     * @param int $retryattempts Maximum retry attempts.
+     */
+    public function set_error_with_max_retry_attempts($error, $retryattempts) {
+        $this->settiiattempts($retryattempts);
+        $this->seterrormessage($error);
+        $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+    }
+
+    /**
+     * Update report generation retries limit and time.
+     */
+    private function update_report_generation_retries() {
+        $this->settiiattempts($this->gettiiattempts() + 1);
+        // On first attempt set retry time as 15 minutes.
+        if ($this->gettiiattempts() === 1) {
+            $this->settiiretrytime(time() + TURNITINSIM_REPORT_GEN_FIRST_ATTEMPT_RETRY_WAIT_SECONDS);
+        } else if ($this->gettiiattempts() === TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS) {
+            $this->set_error_with_max_retry_attempts(get_string('submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'),
+                TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+        } else {
+            $this->settiiretrytime(time() + ($this->gettiiattempts() * TURNITINSIM_REPORT_GEN_RETRY_WAIT_SECONDS));
+        }
     }
 }

@@ -102,15 +102,19 @@ class plagiarism_turnitinsim_task {
 
         // Create each submission in Turnitin and upload submission.
         foreach ($submissions as $submission) {
-            // Skip if the course doesn't exist or the course is pending deletion.
-            if (!$DB->get_record('course_modules', array('id' => $submission->cm, 'deletioninprogress' => 0))) {
-                continue;
-            }
-
             // Reset headers.
             $this->tsrequest->set_headers();
 
             $tssubmission = new plagiarism_turnitinsim_submission($this->tsrequest, $submission->id);
+
+            // Skip if the course module doesn't exist or the course is pending deletion.
+            if (!$DB->get_record('course_modules', array('id' => $submission->cm, 'deletioninprogress' => 0))) {
+                $error = get_string('errorprocessingdeletedsubmission', 'plagiarism_turnitinsim');
+                $tssubmission->set_error_with_max_retry_attempts($error, TURNITINSIM_REPORT_GEN_MAX_ATTEMPTS);
+                $tssubmission->update();
+
+                continue;
+            }
 
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
@@ -167,9 +171,14 @@ class plagiarism_turnitinsim_task {
             // Otherwise retrieve originality score if we haven't received it back within 5 minutes.
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 && $tssubmission->getsubmittedtime() < (time() - $this->get_report_gen_request_delay())) {
-                $tssubmission->request_turnitin_report_generation();
-
-            } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
+                // If submission status has completed then request for report generation.
+                if ($tssubmission->handle_submission_info_response($tssubmission->get_submission_info())) {
+                    $tssubmission->request_turnitin_report_generation();
+                }
+            } else if ($tssubmission->getstatus() === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+                $tssubmission->request_turnitin_report_generation(true);
+            } else if ($tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_COMPLETE
+                && $tssubmission->getstatus() != TURNITINSIM_SUBMISSION_STATUS_UPLOADED
                 && $tssubmission->getrequestedtime() < (time() - $this->get_report_gen_score_delay())) {
                 $tssubmission->request_turnitin_report_score();
             }

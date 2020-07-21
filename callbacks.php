@@ -28,6 +28,8 @@ require_once(__DIR__."/../../config.php");
 require_once(__DIR__."/lib.php");
 require_once(__DIR__."/locallib.php");
 require_once(__DIR__."/classes/callback.class.php");
+require_once(__DIR__."/classes/logging_request.class.php");
+require_once(__DIR__."/classes/logging_request_event_info.class.php");
 
 $PAGE->set_context(context_system::instance());
 
@@ -35,11 +37,7 @@ $logger = new plagiarism_turnitinsim_logger();
 $tscallback = new plagiarism_turnitinsim_callback();
 
 // Get headers and body from request.
-$reqheaders = plagiarism_turnitinsim_get_request_headers();
-// There is a strange anomaly with the headers on different environments.
-if (isset($reqheaders['X-Turnitin-Eventtype'])) {
-    $reqheaders['X-Turnitin-EventType'] = $reqheaders['X-Turnitin-Eventtype'];
-}
+$reqheaders = array_change_key_case(plagiarism_turnitinsim_get_request_headers(), CASE_LOWER);
 
 $requeststring = file_get_contents('php://input');
 $params = (object)json_decode($requeststring, true);
@@ -59,17 +57,21 @@ if ($pluginconfig->turnitinenablelogging) {
 }
 
 // Verify that callback is genuine. Exit if not.
-if ($expectedsecret !== $reqheaders['X-Turnitin-Signature']) {
+if ($expectedsecret !== $reqheaders['x-turnitin-signature']) {
     if ($pluginconfig->turnitinenablelogging) {
         $logger->error(get_string('webhookincorrectsignature', 'plagiarism_turnitinsim'));
     }
+
+    $eventinfo = new plagiarism_turnitinsim_logging_request_event_info("callback.php", $reqheaders, $requeststring);
+    $loggingrequest = new plagiarism_turnitinsim_logging_request('Webhook callback failed as signature is incorrect');
+    $loggingrequest->send_error_to_turnitin(null, $eventinfo, true);
 
     echo get_string('webhookincorrectsignature', 'plagiarism_turnitinsim');
     exit;
 }
 
 // Handle Submission complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
+if ($reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SUBMISSION_COMPLETE) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->id));
     $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
@@ -86,8 +88,8 @@ if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SUBMISSION_COMPLETE) {
 }
 
 // Handle Similarity complete callback.
-if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE ||
-    $reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_UPDATED) {
+if ($reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SIMILARITY_COMPLETE ||
+    $reqheaders['x-turnitin-eventtype'] == TURNITINSIM_SIMILARITY_UPDATED) {
     // Get Moodle submission id from Turnitin id.
     $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', 'turnitinid = ?', array($params->submission_id));
     $tssubmission = new plagiarism_turnitinsim_submission( new plagiarism_turnitinsim_request(), $submission->id );
@@ -95,4 +97,6 @@ if ($reqheaders['X-Turnitin-EventType'] == TURNITINSIM_SIMILARITY_COMPLETE ||
     $tssubmission->handle_similarity_response($params);
 }
 
-$logger->info('-------- WEBHOOK END --------');
+if ($pluginconfig->turnitinenablelogging) {
+    $logger->info('-------- WEBHOOK END --------');
+}
