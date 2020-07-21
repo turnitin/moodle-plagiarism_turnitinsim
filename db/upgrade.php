@@ -290,5 +290,5 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020061202, 'plagiarism', 'turnitinsim');
     }
 
-        return true;
+    return true;
 }
