@@ -23,6 +23,8 @@ Students in a Moodle assignment can upload up to 20 files to the same assignment
 
 #### :wrench: Fixes and enhancements
 
+---
+
 #### Collusion check on Due Date
 
 A bug had prevented some collusion checks from running on the due date. Collusion checks will now work as intended and a new report is generated for all submissions in a Moodle assignment once the due date has passed. This will only apply when the setting to regenerate on due date is turned on.
