@@ -29,7 +29,7 @@ Students in a Moodle assignment can upload up to 20 files to the same assignment
 
 A bug had prevented some collusion checks from running on the due date. Collusion checks will now work as intended and a new report is generated for all submissions in a Moodle assignment once the due date has passed. This will only apply when the setting to regenerate on due date is turned on.
 
-#### Submit on behalf of a student when they have rejected the Turnitin EULA
+#### Resubmit link removed when a student rejects the Turnitin EULA
 
 When a student rejects the Turnitin EULA, we provide a message saying the EULA has not been accepted rather than process the file for Similarity and return a 451 error. However, when an instructor then tried to submit a file on behalf of that student using the resubmit link, the file would be queued for processing but then return a 451 error.
 
