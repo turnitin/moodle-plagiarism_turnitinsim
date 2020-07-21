@@ -33,7 +33,7 @@ A bug had prevented some collusion checks from running on the due date. Collusio
 
 When a student rejects the Turnitin EULA, we provide a message saying the EULA has not been accepted rather than process the file for Similarity and return a 451 error. However, when an instructor then tried to submit a file on behalf of that student using the resubmit link, the file would be queued for processing but then return a 451 error.
 
-We recommend checking your institution's privacy policies and determine the copyright status of the student’s file first, but instructors will now be able to resubmit on behalf of a student when they have rejected the EULA.
+Now, when a student rejects the EULA, no option to resubmit will be shown.
 
 #### More reliable API connection check
 
