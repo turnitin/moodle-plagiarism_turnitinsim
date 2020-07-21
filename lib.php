@@ -58,6 +58,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws dml_exception
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
+        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed twice.
+        // TODO: Remove once this method is removed.
+        static $hassettings;
+        if ($hassettings) {
+            return;
+        }
 
         $cmid = optional_param('update', 0, PARAM_INT);
 
@@ -103,6 +109,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $mform->setDefault($element, $value);
             }
         }
+        // TODO: Remove once this method is removed.
+        $hassettings = true;
     }
 
     /**
@@ -756,7 +764,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    (new plagiarism_plugin_turnitinsim())->get_form_elements_module($mform, $context);
+    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
+        $mform,
+        $context,
+        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : ''
+    );
 }
 
 /**
