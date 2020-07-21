@@ -1,3 +1,48 @@
+### Date:       2020-July-21
+### Release:    v2020072101
+
+#### :zap: What's new
+
+---
+
+#### We now support Moodle 3.9
+
+You can find out more about Moodle 3.9 via Moodle's [release notes](https://docs.moodle.org/dev/Moodle_3.9_release_notes).
+
+#### EULA update notifications will no longer automatically email users
+
+When we make an update to our EULA, we send a Moodle message to users so they can read any changes and make sure they are comfortable with them before continuing to use Turnitin. Moodle messages had defaulted to also send an email when these messages were received. After user feedback, we’ve changed how the Turnitin Integrity Plugin interacts with the Moodle Message API to default this setting to Off and making emails now opt-in.
+
+If you’d like your users to continue getting an email when these changes happen, navigate to Site administration > Messaging > Notification settings and enable the setting for your integration.
+
+This change will only apply to users created after this plugin update.
+
+#### Multi-task with submissions from the same student
+
+Students in a Moodle assignment can upload up to 20 files to the same assignment. As a part of your grading workflow, you may want to view some of these documents side-by-side to compare them directly. We’ve enabled this option so that you’ll be able to open multiple windows with submissions from the same student at the same time.
+
+#### :wrench: Fixes and enhancements
+
+#### Collusion check on Due Date
+
+A bug had prevented some collusion checks from running on the due date. Collusion checks will now work as intended and a new report is generated for all submissions in a Moodle assignment once the due date has passed. This will only apply when the setting to regenerate on due date is turned on.
+
+#### Submit on behalf of a student when they have rejected the Turnitin EULA
+
+When a student rejects the Turnitin EULA, we provide a message saying the EULA has not been accepted rather than process the file for Similarity and return a 451 error. However, when an instructor then tried to submit a file on behalf of that student using the resubmit link, the file would be queued for processing but then return a 451 error.
+
+We recommend checking your institution's privacy policies and determine the copyright status of the student’s file first, but instructors will now be able to resubmit on behalf of a student when they have rejected the EULA.
+
+#### More reliable API connection check
+
+As a part of the plugin configuration, we run a quick check of the details your provide to make sure they connection correctly to Turnitin. We’ve improved this checker to ensure that it is constantly reliable and accurately shows your connection status.
+
+#### Turn off Turnitin for Forums and Workshops at the global level
+
+When disabled on the global configuration page, plagiarism/turnitincheck/settings.php it had been possible to still add Turnitin to a Workshop or Forum. We’ve now made sure this setting will update the permission settings when adding one of these settings so you can turn off Turnitin when you need to.
+
+---
+
 ### Date:      2020-April-22
 ### Release:   v2020042201
 
