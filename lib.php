@@ -78,7 +78,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         if ($location === 'module') {
             // Exit if Turnitin is not being used for this activity type and location is not default.
-            if ($moduletiienabled === "0") {
+            if (empty($moduletiienabled)) {
                 return;
             }
 
