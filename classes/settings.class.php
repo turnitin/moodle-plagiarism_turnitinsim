@@ -49,12 +49,13 @@ class plagiarism_turnitinsim_settings {
      * Add Turnitin settings to module form.
      *
      * @param object $mform The Moodle form object.
+     * @param boolean $canconfigureplugin If this user has permission to configure the plugin.
      * @param string $context The context, eg module or course.
      * @param string $modulename The name of the module.
      * @return mixed Moodle form with settings.
      * @throws coding_exception
      */
-    public function add_settings_to_module($mform, $context = 'module', $modulename = '') {
+    public function add_settings_to_module($mform, $canconfigureplugin = false, $context = 'module', $modulename = '') {
         global $PAGE;
 
         if ($context == 'module') {
@@ -145,6 +146,15 @@ class plagiarism_turnitinsim_settings {
             array('target' => '_blank')
         );
         $mform->addElement('html', html_writer::tag('div', $link));
+
+        if (!$canconfigureplugin) {
+            $mform->freeze('turnitinenabled');
+            $mform->freeze('excludeoptions');
+            $mform->freeze('indexoptions');
+            $mform->freeze('reportgenoptions');
+            $mform->freeze('accessoptions');
+            $mform->freeze('queuedrafts');
+        }
 
         return $mform;
     }
