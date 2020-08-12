@@ -89,7 +89,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             }
 
             // Exit if this user does not have permissions to configure the plugin.
-            if (has_capability('plagiarism/turnitinsim:enable', context_module::instance($courseid))) {
+            if (has_capability('plagiarism/turnitinsim:enable', context_course::instance($courseid))) {
                 $canconfigureplugin = true;
             }
         }
