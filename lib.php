@@ -173,11 +173,28 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
         $output = '';
 
+        // If this is a quiz, retrieve the cmid
+        $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
+        if ($component == "qtype_essay" && !empty($linkarray['area'])) {
+            $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
+
+            // Try to get cm using the questions owning context.
+            $context = $questions->get_owning_context();
+            if (empty($linkarray['cmid']) && $context->contextlevel == CONTEXT_MODULE) {
+                $linkarray['cmid'] = $context->instanceid;
+            }
+        }
+        echo '<pre>';
+        var_dump($linkarray);
+        echo '</pre>';
+
         // Get course module details.
         static $cm;
         if (empty($cm) && !empty($linkarray["cmid"])) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
         }
+
+
 
         // Check whether the plugin is active.
         static $ispluginactive;
@@ -347,6 +364,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      */
     public function is_plugin_active($cm) {
         // Get whether plugin is enabled for this module.
+        echo 'Mod name: '.$cm->modname.'|';
         $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$cm->modname);
 
         // Exit if Turnitin is not being used for this activity type.
@@ -549,6 +567,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Get the item ID.
+//        if ($eventdata[])
+        echo '<pre>';
+        var_dump($eventdata);
+        echo $eventdata['objectid'];
+        echo 'objectid:'.$eventdata['objectid'].'|';
+        echo '</pre>';
+
+        if ($eventdata['eventtype'] == 'quiz_submitted') {
+            exit();
+        }
         $itemid = (!empty($eventdata['objectid'])) ? $eventdata['objectid'] : null;
 
         // If this is a user confirming a final submission then revert the submission to

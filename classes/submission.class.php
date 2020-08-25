@@ -30,6 +30,7 @@ use plagiarism_turnitinsim\message\receipt_student;
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/quiz.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
@@ -500,6 +501,8 @@ class plagiarism_turnitinsim_submission {
      * Uploads a file to the Turnitin submission.
      */
     public function upload_submission_to_turnitin() {
+        global $CFG;
+
         // Create request body with file attached.
         if ($this->type == "file") {
             $filedetails = $this->get_file_details();
@@ -523,12 +526,23 @@ class plagiarism_turnitinsim_submission {
 
             // Create module object.
             $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
-            $moduleobject = new $moduleclass;
 
+            if ($cm->modname == "quiz") {
+//Quiz handling code will live here.
+
+
+
+
+            } else {
+            $moduleobject = new $moduleclass;
+echo '$moduleclass: '.$moduleclass.'|';
             // Add text content to request.
             $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
+echo '$moduleclass: '.$filename.'|';
             $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
-
+echo '$textcontent: '.$textcontent.'|';
+            }
+exit();
             // Check that the text exists and is not empty.
             if (empty($textcontent)) {
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
