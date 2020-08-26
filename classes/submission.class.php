@@ -528,21 +528,23 @@ class plagiarism_turnitinsim_submission {
             $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
 
             if ($cm->modname == "quiz") {
-//Quiz handling code will live here.
-
-
-
-
+                require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+                $attempt = quiz_attempt::create($this->getitemid());
+                foreach ($attempt->get_slots() as $slot) {
+                    $qa = $attempt->get_question_attempt($slot);
+                    if ($this->getidentifier() == sha1($qa->get_response_summary())) {
+                        $textcontent = html_to_text($qa->get_response_summary());
+                        $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
+                        break;
+                    }
+                }
             } else {
-            $moduleobject = new $moduleclass;
-echo '$moduleclass: '.$moduleclass.'|';
-            // Add text content to request.
-            $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
-echo '$moduleclass: '.$filename.'|';
-            $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
-echo '$textcontent: '.$textcontent.'|';
+                $moduleobject = new $moduleclass;
+                // Add text content to request.
+                $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
+                $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
             }
-exit();
+
             // Check that the text exists and is not empty.
             if (empty($textcontent)) {
                 $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
