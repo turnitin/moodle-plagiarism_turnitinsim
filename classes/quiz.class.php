@@ -40,34 +40,37 @@ class plagiarism_turnitinsim_quiz {
     public function get_onlinetext($itemid) {
         global $DB;
 
-        $submission = $DB->get_record('question_attempts', array('id' => $itemid), 'responsesummary');
+        $moodletextsubmission = $DB->get_record('question_attempts', array('id' => $itemid), 'responsesummary');
 
-        if (isset($submission->content)) {
-            return $submission->content;
+        if (isset($moodletextsubmission->responsesummary)) {
+            return $moodletextsubmission->responsesummary;
         }
-
-        return null;
     }
 
-//    /**
-//     * Get the item id from the database for this submission.
-//     *
-//     * @param object $params The params to call the DB with.
-//     * @return int The itemid.
-//     * @throws dml_exception
-//     */
-//    public function get_itemid($params) {
-//        global $DB;
-//
-//        $item = $DB->get_record_sql('SELECT id FROM {question_attempts}
-//                                    WHERE workshopid = ?
-//                                    AND authorid = ?
-//                                    AND content = ?',
-//            array($params->moduleid, $params->userid, $params->onlinetext)
-//        );
-//
-//        return ($item) ? $item->id : 0;
-//    }
+    /**
+     * Get the item id from the database for this submission.
+     *
+     * @param object $params The params to call the DB with.
+     * @return int The itemid.
+     * @throws dml_exception
+     */
+    public function get_itemid($params) {
+        global $DB;
+
+        $item = $DB->get_record_sql('SELECT DISTINCT(a.id) FROM {question_attempt_steps} s
+                                    RIGHT JOIN {question_attempts} a
+                                    ON s.questionattemptid = a.id
+                                    RIGHT JOIN {quiz_attempts} q
+                                    ON a.questionusageid = q.uniqueid
+                                    WHERE q.quiz = ?
+                                    AND s.userid = ?
+                                    AND a.responsesummary = ?
+                                    AND q.state = ?',
+            array($params->moduleid, $params->userid, $params->onlinetext, 'finished')
+        );
+
+        return ($item) ? $item->id : 0;
+    }
 
     /**
      * Get the actual author of the submission.
@@ -130,7 +133,7 @@ class plagiarism_turnitinsim_quiz {
      * @throws dml_exception
      */
     public function create_submission_event_data($linkarray) {
-        global $DB, $USER;
+        global $USER;
 
         $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
@@ -144,11 +147,12 @@ class plagiarism_turnitinsim_quiz {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
             $eventdata['objectid'] = $linkarray['file']->get_itemid();
         } else {
-            $params = array('workshopid' => $cm->instance, 'authorid' => $linkarray['userid']);
-            $moodlesubmission = $DB->get_record('workshop_submissions', $params);
-            $eventdata['objectid'] = $moodlesubmission->id;
+            $params = new stdClass();
+            $params->moduleid = $cm->instance;
+            $params->userid = $linkarray['userid'];
+            $params->onlinetext = $linkarray['content'];
+            $eventdata['objectid'] = $this->get_itemid($params);
         }
-
         if (isset($linkarray['userid'])) {
             $eventdata['relateduserid'] = $linkarray['userid'];
         }

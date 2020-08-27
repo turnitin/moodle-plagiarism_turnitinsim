@@ -529,6 +529,7 @@ class plagiarism_turnitinsim_submission {
 
             if ($cm->modname == "quiz") {
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
                 $attempt = quiz_attempt::create($this->getitemid());
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);

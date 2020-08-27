@@ -191,8 +191,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
         }
 
-
-
         // Check whether the plugin is active.
         static $ispluginactive;
         if (empty($ispluginactive)) {
@@ -599,82 +597,79 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Queue files to submit to Turnitin.
         if (!empty($eventdata['other']['pathnamehashes'])) {
-            if ($eventdata['eventtype'] == 'quiz_submitted') {
+            foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
+                $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
+                $tssubmission->setcm($cm->id);
+                $tssubmission->setuserid($author);
+                $tssubmission->setgroupid($groupid);
+                $tssubmission->setsubmitter($submitter->userid);
+                $tssubmission->setitemid($itemid);
+                $tssubmission->setidentifier($pathnamehash);
+                $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
 
-                foreach ($eventdata['other']['pathnamehashes'] as $pathnamehash) {
-                    $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
-                    $tssubmission->setcm($cm->id);
-                    $tssubmission->setuserid($author);
-                    $tssubmission->setgroupid($groupid);
-                    $tssubmission->setsubmitter($submitter->userid);
-                    $tssubmission->setitemid($itemid);
-                    $tssubmission->setidentifier($pathnamehash);
-                    $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
-
-                    // Check if this file has been submitted previously and re-use record.
-                    $query = ' cm = ? AND userid = ? AND identifier = ? ';
-                    $params = array($cm->id, $author, $pathnamehash);
-                    if (!is_null($groupid)) {
-                        $query .= ' AND groupid = ?';
-                        $params[] = $groupid;
-                    }
-                    $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
-                    $filedetails = $tssubmission->get_file_details();
-
-                    // Check that the file exists and is not empty.
-                    if (!$filedetails) {
-                        $tssubmission->settogenerate(0);
-                        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
-                        $tssubmission->update();
-                        continue;
-                    }
-
-                    if (!empty($submission)) {
-                        $tssubmission->setid($submission->id);
-
-                        // Only re-queue previously submitted files if they have been modified since original submission.
-                        if ($filedetails->get_timemodified() < $submission->submittedtime
-                            && $submission->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
-                            continue;
-                        }
-                    }
-
-                    // Check that the file is not a directory.
-                    if ($filedetails->get_filename() === '.') {
-                        $tssubmission->settogenerate(0);
-                        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
-                        $tssubmission->update();
-                        continue;
-                    }
-
-                    // Check that the file does not exceed the maximum file size.
-                    if ($filedetails->get_filesize() > TURNITINSIM_SUBMISSION_MAX_FILE_UPLOAD_SIZE) {
-                        $tssubmission->settogenerate(0);
-                        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
-                        $tssubmission->seterrormessage(TURNITINSIM_SUBMISSION_STATUS_TOO_LARGE);
-                        $tssubmission->update();
-                        continue;
-                    }
-
-                    // If the submitter has not accepted the EULA then flag accordingly.
-                    if ((empty($submitter->get_lasteulaaccepted()) ||
-                            $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
-                        (bool)$features->tenant->require_eula
-                    ) {
-                        $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
-                        $tssubmission->update();
-                        continue;
-                    }
-
-                    // If this is to be sent then queue, otherwise mark as not sent.
-                    $status = ($sendtoturnitin) ? TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_NOT_SENT;
-                    $tssubmission->calculate_generation_time();
-                    $tssubmission->setstatus($status);
-                    $tssubmission->settiiattempts(0);
-                    $tssubmission->settiiretrytime(0);
-
-                    $tssubmission->update();
+                // Check if this file has been submitted previously and re-use record.
+                $query = ' cm = ? AND userid = ? AND identifier = ? ';
+                $params = array($cm->id, $author, $pathnamehash);
+                if (!is_null($groupid)) {
+                    $query .= ' AND groupid = ?';
+                    $params[] = $groupid;
                 }
+                $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
+                $filedetails = $tssubmission->get_file_details();
+
+                // Check that the file exists and is not empty.
+                if (!$filedetails) {
+                    $tssubmission->settogenerate(0);
+                    $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                    $tssubmission->update();
+                    continue;
+                }
+
+                if (!empty($submission)) {
+                    $tssubmission->setid($submission->id);
+
+                    // Only re-queue previously submitted files if they have been modified since original submission.
+                    if ($filedetails->get_timemodified() < $submission->submittedtime
+                        && $submission->status === TURNITINSIM_SUBMISSION_STATUS_COMPLETE) {
+                        continue;
+                    }
+                }
+
+                // Check that the file is not a directory.
+                if ($filedetails->get_filename() === '.') {
+                    $tssubmission->settogenerate(0);
+                    $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EMPTY_DELETED);
+                    $tssubmission->update();
+                    continue;
+                }
+
+                // Check that the file does not exceed the maximum file size.
+                if ($filedetails->get_filesize() > TURNITINSIM_SUBMISSION_MAX_FILE_UPLOAD_SIZE) {
+                    $tssubmission->settogenerate(0);
+                    $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                    $tssubmission->seterrormessage(TURNITINSIM_SUBMISSION_STATUS_TOO_LARGE);
+                    $tssubmission->update();
+                    continue;
+                }
+
+                // If the submitter has not accepted the EULA then flag accordingly.
+                if ((empty($submitter->get_lasteulaaccepted()) ||
+                        $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
+                    (bool)$features->tenant->require_eula
+                ) {
+                    $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
+                    $tssubmission->update();
+                    continue;
+                }
+
+                // If this is to be sent then queue, otherwise mark as not sent.
+                $status = ($sendtoturnitin) ? TURNITINSIM_SUBMISSION_STATUS_QUEUED : TURNITINSIM_SUBMISSION_STATUS_NOT_SENT;
+                $tssubmission->calculate_generation_time();
+                $tssubmission->setstatus($status);
+                $tssubmission->settiiattempts(0);
+                $tssubmission->settiiretrytime(0);
+
+                $tssubmission->update();
             }
         }
 

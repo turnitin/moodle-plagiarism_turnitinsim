@@ -45,7 +45,7 @@ class plagiarism_turnitinsim_observer {
     public static function build_event_data($event, $eventtype, $module = '') {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = $eventtype;
-        echo '$eventdata[\'eventtype\'] '.$eventdata['eventtype'].'|';
+
         if ($module != '') {
             $eventdata['other']['modulename'] = $module;
         }
