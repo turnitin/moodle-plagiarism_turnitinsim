@@ -524,7 +524,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->print_disclosure($this->cm->id));
+        $this->assertContains(
+            get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
+            $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }
 
     /**
@@ -554,7 +556,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->print_disclosure($this->cm->id));
+        $this->assertContains(
+            get_string('eulanotrequired', 'plagiarism_turnitinsim'),
+            $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }
 
     /**
