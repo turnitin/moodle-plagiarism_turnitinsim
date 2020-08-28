@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Helper class for plagiarism_turnitinsim component in workshops
+ * Helper class for plagiarism_turnitinsim component in quizzes.
  */
 class plagiarism_turnitinsim_quiz {
 
@@ -57,7 +57,7 @@ class plagiarism_turnitinsim_quiz {
     public function get_itemid($params) {
         global $DB;
 
-        $item = $DB->get_record_sql('SELECT DISTINCT(a.id) FROM {question_attempt_steps} s
+        $item = $DB->get_record_sql('SELECT DISTINCT(q.id) FROM {question_attempt_steps} s
                                     RIGHT JOIN {question_attempts} a
                                     ON s.questionattemptid = a.id
                                     RIGHT JOIN {quiz_attempts} q
@@ -149,6 +149,7 @@ class plagiarism_turnitinsim_quiz {
         } else {
             $params = new stdClass();
             $params->moduleid = $cm->instance;
+
             $params->userid = $linkarray['userid'];
             $params->onlinetext = $linkarray['content'];
             $eventdata['objectid'] = $this->get_itemid($params);

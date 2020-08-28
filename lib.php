@@ -159,7 +159,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws moodle_exception
      */
     public function get_links($linkarray) {
-        global $OUTPUT, $PAGE;
+        global $DB, $OUTPUT, $PAGE;
 
         // Require the relevant JS modules.  Only include once.
         static $jsloaded;
@@ -173,7 +173,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
         $output = '';
 
-        // If this is a quiz, retrieve the cmid
+        // If this is a quiz, retrieve the cmid.
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
         if ($component == "qtype_essay" && !empty($linkarray['area'])) {
             $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
@@ -216,6 +216,15 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $plagiarismsettings = $this->get_settings($cm->id);
         if (!$instructor && empty($plagiarismsettings->accessstudents)) {
             return $output;
+        }
+
+        // Get the user ID for a quiz submission as it does not exist in the linkarray.
+        if (!empty($linkarray['file']) && $cm->modname == "quiz") {
+            $linkarray['userid'] = $DB->get_record(
+                'files',
+                ['id' => $linkarray['file']->get_id()],
+                'userid'
+            )->userid;
         }
 
         // Display cv link and OR score or status.
@@ -330,6 +339,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin. Queue it.
                 $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
                 $moduleobject = new $moduleclass;
+
                 $eventdata = $moduleobject->create_submission_event_data($linkarray);
                 $this->submission_handler($eventdata);
 
@@ -718,6 +728,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         return true;
     }
 
+    /**
+     * Specific method for handling the quiz_submitted event type.
+     * This is because a quiz might have many questions to queue.
+     *
+     * @param object $cm - The course module data.
+     * @param array $eventdata - The data associated with this event.
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function quiz_handler($cm, $eventdata) {
         global $DB;
 
