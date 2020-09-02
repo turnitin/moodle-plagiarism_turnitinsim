@@ -432,8 +432,21 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
         $user = new plagiarism_turnitinsim_user($USER->id);
         $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
-        if ($user->get_lasteulaaccepted() == $eulaversion || !(bool)$features->tenant->require_eula) {
-            return '';
+
+        if ($user->get_lasteulaaccepted() == $eulaversion) {
+            return html_writer::tag(
+                'div',
+                get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
+                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            );
+        }
+
+        if (!(bool)$features->tenant->require_eula) {
+            return html_writer::tag(
+                'div',
+                get_string('eulanotrequired', 'plagiarism_turnitinsim'),
+                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            );
         }
 
         // Require the JS module to handle the user's eula response.
