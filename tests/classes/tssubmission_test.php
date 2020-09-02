@@ -1746,6 +1746,36 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     }
 
     /**
+     * Test that the viewer permissions returned are true if enabled.
+     */
+    public function test_viewer_permissions_may_view_match_info_false_if_anonymous() {
+        $this->resetAfterTest();
+
+        set_config('turnitinviewerviewfullsource', 1, 'plagiarism_turnitinsim');
+        set_config('turnitinviewermatchsubinfo', 1, 'plagiarism_turnitinsim');
+
+        // Create assign module with blind marking on.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $record->blindmarking = 1;
+
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+        $tssubmission->setuserid($this->student1->id);
+
+        // Verify that viewer permissions are true as the config values are set to true.
+        $permissions = $tssubmission->create_report_viewer_permissions();
+        $this->assertEquals(true, $tssubmission->is_submission_anonymous());
+        $this->assertEquals(true, $permissions['may_view_submission_full_source']);
+        $this->assertEquals(false, $permissions['may_view_match_submission_info']);
+    }
+
+    /**
      * Test that the similarity overrides are true when configured as such.
      */
     public function test_similarity_overrides_are_true() {
@@ -1766,7 +1796,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $overrides = $tssubmission->create_similarity_overrides();
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_INSTRUCTOR);
         $this->assertTrue($overrides['modes']['match_overview']);
         $this->assertTrue($overrides['modes']['all_sources']);
         $this->assertTrue($overrides['view_settings']['save_changes']);
@@ -1793,7 +1823,37 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setcm($cm->id);
 
         // Verify that viewer permissions are true as the config values are set to true.
-        $overrides = $tssubmission->create_similarity_overrides();
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_INSTRUCTOR);
+        $this->assertTrue($overrides['modes']['match_overview']);
+        $this->assertTrue($overrides['modes']['all_sources']);
+        $this->assertFalse($overrides['view_settings']['save_changes']);
+    }
+
+
+    /**
+     * Test that the similarity overrides are true when configured as such.
+     */
+    public function test_similarity_overrides_save_change_is_false_when_role_is_learner() {
+        $this->resetAfterTest();
+
+        set_config('turnitinviewersavechanges', 1, 'plagiarism_turnitinsim');
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+
+        // Create submission object.
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        // Verify that viewer permissions are true as the config values are set to true.
+        $overrides = $tssubmission->create_similarity_overrides(TURNITINSIM_ROLE_LEARNER);
+        $this->assertTrue($overrides['modes']['match_overview']);
+        $this->assertTrue($overrides['modes']['all_sources']);
         $this->assertFalse($overrides['view_settings']['save_changes']);
     }
 
