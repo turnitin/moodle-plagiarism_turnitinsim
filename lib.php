@@ -756,10 +756,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $qa = $attempt->get_question_attempt($slot);
             $eventdata['other']['content'] = $qa->get_response_summary();
 
+            // Set identifier for this submission.
+            $identifier = sha1($eventdata['other']['content']);
+
             // Check if user has submitted text content for this item previously.
             $submission = $DB->get_record_select('plagiarism_turnitinsim_sub',
-                'cm = ? AND userid = ? AND itemid = ? AND type = ?',
-                array($cm->id, $author, $eventdata['objectid'], TURNITINSIM_SUBMISSION_TYPE_CONTENT));
+                'cm = ? AND userid = ? AND itemid = ? AND identifier = ? AND type = ?',
+                array($cm->id, $author, $eventdata['objectid'], $identifier, TURNITINSIM_SUBMISSION_TYPE_CONTENT));
 
             if (!empty($submission)) {
                 return true;
@@ -770,8 +773,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $tssubmission->setgroupid($groupid);
                 $tssubmission->setsubmitter($submitter->userid);
                 $tssubmission->setitemid($eventdata['objectid']);
-
-                $identifier = sha1($eventdata['other']['content']);
 
                 $tssubmission->setidentifier($identifier);
                 $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
