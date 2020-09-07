@@ -92,6 +92,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             if (has_capability('plagiarism/turnitinsim:enable', context_course::instance($courseid))) {
                 $canconfigureplugin = true;
             }
+        } else {
+            $canconfigureplugin = true;
         }
 
         $form = new plagiarism_turnitinsim_settings();
