@@ -931,15 +931,7 @@ class plagiarism_turnitinsim_submission {
                     'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
-//        $test = $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
-//            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
-//
-//        echo '<pre>';
-//        var_dump($test);
-//        var_dump(array('userid' => $linkarray['userid'],
-//            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
-//        echo '</pre>';
-////        exit();
+
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
 
