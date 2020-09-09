@@ -22,7 +22,8 @@
                 <FIELD NAME="requestedtime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="overallscore" NEXT="errormessage"/>
                 <FIELD NAME="errormessage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="requestedtime" NEXT="errormessage"/>
                 <FIELD NAME="tiiattempts" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="errormessage" NEXT="tiiretrytime"/>
-                <FIELD NAME="tiiretrytime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="tiiattempts"/>
+                <FIELD NAME="tiiretrytime" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="tiiattempts" NEXT="quizanswer"/>
+                <FIELD NAME="quizanswer" TYPE="char" LENGTH="32" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="tiiretrytime"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

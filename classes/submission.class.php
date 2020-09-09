@@ -131,6 +131,11 @@ class plagiarism_turnitinsim_submission {
     public $tiiretrytime;
 
     /**
+     * @var string The quiz answer unique key, made up for questionusageid and slot number.
+     */
+    public $quizanswer;
+
+    /**
      * @var object The request object.
      */
     public $tsrequest;
@@ -169,6 +174,7 @@ class plagiarism_turnitinsim_submission {
             $this->seterrormessage($submission->errormessage);
             $this->settiiattempts($submission->tiiattempts);
             $this->settiiretrytime($submission->tiiretrytime);
+            $this->setquizanswer($submission->quizanswer);
         }
     }
 
@@ -878,8 +884,10 @@ class plagiarism_turnitinsim_submission {
      */
     public static function get_submission_details($linkarray) {
         global $DB;
-
         static $cm;
+
+        $quizanswer = 0;
+
         if (empty($cm)) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
 
@@ -910,18 +918,32 @@ class plagiarism_turnitinsim_submission {
                 }
             }
         } else if (!empty($linkarray["content"])) {
+            if ($linkarray["component"] == "qtype_essay") {
+                // To uniquely identify the quiz answer.
+                $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
+            }
 
             $identifier = sha1($linkarray['content']);
 
             // If user id is empty this must be a group submission.
             if (empty($linkarray['userid'])) {
                 return $DB->get_record('plagiarism_turnitinsim_sub', array('identifier' => $identifier,
-                    'type' => 'content', 'cm' => $linkarray['cmid']));
+                    'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
-
+//        $test = $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
+//            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+//
+//        echo '<pre>';
+//        var_dump($test);
+//        var_dump(array('userid' => $linkarray['userid'],
+//            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+//        echo '</pre>';
+////        exit();
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
-            'cm' => $linkarray['cmid'], 'identifier' => $identifier));
+            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+
+
     }
 
     /**
@@ -1401,6 +1423,24 @@ class plagiarism_turnitinsim_submission {
      */
     public function settiiretrytime($tiiretrytime) {
         $this->tiiretrytime = $tiiretrytime;
+    }
+
+    /**
+     * Get the key for the quiz answer.
+     *
+     * @return string
+     */
+    public function getquizanswer() {
+        return $this->quizanswer;
+    }
+
+    /**
+     * Set the key for the quiz answer.
+     *
+     * @param string $quizanswer The key for the quiz answer, made up of questionusageid and slot.
+     */
+    public function setquizanswer($quizanswer) {
+        $this->quizanswer = $quizanswer;
     }
 
     /**

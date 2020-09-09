@@ -270,6 +270,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->setoverallscore(100);
         $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
         $tssubmission->settogenerate(1);
+        $tssubmission->setquizanswer(0);
         $tssubmission->update();
 
         // The HTML returned should contain the queued status and a Tii icon.
