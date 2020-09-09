@@ -72,6 +72,8 @@ switch ($action) {
                 $data->id     = $submission->id;
                 $data->status = TURNITINSIM_SUBMISSION_STATUS_QUEUED;
                 $data->cm     = $context->instanceid;
+                $data->tiiattempts = 0;
+                $data->tiiretrytime = 0;
 
                 $DB->update_record('plagiarism_turnitinsim_sub', $data);
             }
