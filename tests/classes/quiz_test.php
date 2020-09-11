@@ -242,14 +242,13 @@ class quiz_test extends advanced_testcase {
         $tsquiz = new plagiarism_turnitinsim_quiz();
         $response = $tsquiz->create_submission_event_data($linkarray);
 
-        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals('quiz_submitted', $response['eventtype']);
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
         $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
         $this->assertEquals($file->get_itemid(), $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
-        $this->assertEmpty($response['other']['content']);
     }
 
     /**
@@ -296,13 +295,12 @@ class quiz_test extends advanced_testcase {
         $itemid = $tsquiz->get_itemid($params);
 
         $response = $tsquiz->create_submission_event_data($linkarray);
-        $this->assertEquals('assessable_submitted', $response['eventtype']);
+        $this->assertEquals('quiz_submitted', $response['eventtype']);
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
         $this->assertEquals($itemid, $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
-        $this->assertEquals(self::QUIZ_ANSWER_TEXT, $response['other']['content']);
     }
 
     /**
