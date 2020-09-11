@@ -767,16 +767,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
             $tssubmission->setquizanswer($qa->get_usage_id().'-'.$qa->get_slot());
 
-            // Resubmit text content if this submission is being edited.
-            if (!empty($submission)) {
-                $tssubmission->setid($submission->id);
-            }
-
             // If the submitter has not accepted the EULA then flag accordingly.
             if ($submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
                 $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $tssubmission->update();
-                return true;
+                continue;
             }
 
             $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);

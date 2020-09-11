@@ -140,7 +140,7 @@ class plagiarism_turnitinsim_quiz {
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
 
-        $eventdata['eventtype'] = 'assessable_submitted';
+        $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['userid'] = $USER->id;
 
         if (isset($linkarray['file'])) {
@@ -159,10 +159,6 @@ class plagiarism_turnitinsim_quiz {
         }
 
         $eventdata['other']['modulename'] = $cm->modname;
-
-        if (isset($linkarray['content'])) {
-            $eventdata['other']['content'] = $linkarray['content'];
-        }
 
         return $eventdata;
     }
