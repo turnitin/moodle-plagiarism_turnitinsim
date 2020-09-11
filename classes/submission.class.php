@@ -507,7 +507,7 @@ class plagiarism_turnitinsim_submission {
      * Uploads a file to the Turnitin submission.
      */
     public function upload_submission_to_turnitin() {
-        global $CFG;
+        global $DB, $CFG;
 
         // Create request body with file attached.
         if ($this->type == "file") {
@@ -536,6 +536,20 @@ class plagiarism_turnitinsim_submission {
             if ($cm->modname == "quiz") {
                 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
+                $quizattempt = $DB->get_record('quiz_attempts', array('id' => $this->getitemid()));
+                if (!$quizattempt) {
+                    // If the quiz attempt doesn't exist, we don't want to break the cron.
+                    mtrace(get_string('taskoutputfailedupload', 'plagiarism_turnitinsim', $this->getturnitinid()));
+
+                    $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                    $this->seterrormessage(get_string('errorquizattemptnotfound', 'plagiarism_turnitinsim'));
+                    $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                    $this->update();
+
+                    return;
+                }
+
+                // Queue each answer to a question.
                 $attempt = quiz_attempt::create($this->getitemid());
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);

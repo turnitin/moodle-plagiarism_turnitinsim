@@ -724,9 +724,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Quizzes don't pass the content in their event and work differently.
-        if ($eventdata['eventtype'] == 'quiz_submitted') {
+        if (($eventdata['eventtype'] == 'quiz_submitted') ||
+            (isset($eventdata['other']['modulename']) && $eventdata['other']['modulename'] == 'quiz')) {
             $this->quiz_handler($cm, $eventdata);
         }
+
         return true;
     }
 
