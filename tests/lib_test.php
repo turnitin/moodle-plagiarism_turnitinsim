@@ -216,7 +216,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->get_links($linkarray));
+        $this->assertEquals('<div class="turnitinsim_links"></div>', $plagiarismturnitinsim->get_links($linkarray));
     }
 
     /**

@@ -202,16 +202,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
              context_module::instance($cm->id)
         );
 
-        // If the user is a student and they are not allowed to view reports then return empty output.
-        $plagiarismsettings = $this->get_settings($cm->id);
-        if (!$instructor && empty($plagiarismsettings->accessstudents)) {
-            return $output;
-        }
 
         // Display cv link and OR score or status.
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
             $submissionid = '';
             $showresubmitlink = false;
+            $submission = null;
 
             // Get turnitin submission details.
             $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
@@ -222,10 +218,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 return $output;
             }
 
-            // Render the OR score or current submission status.
             if ($plagiarismfile) {
                 $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
+            }
 
+            // If the user is a student and they are not allowed to view reports, and they have accepted the EULA then return empty output.
+            $plagiarismsettings = $this->get_settings($cm->id);
+            if (!$instructor && empty($plagiarismsettings->accessstudents) && $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                return $output;
+            }
+
+            // Render the OR score or current submission status.
+            if ($submission) {
                 switch ($submission->getstatus()) {
                     case TURNITINSIM_SUBMISSION_STATUS_QUEUED:
                         $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
