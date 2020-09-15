@@ -932,7 +932,7 @@ class plagiarism_turnitinsim_submission {
                 }
             }
         } else if (!empty($linkarray["content"])) {
-            if ($linkarray["component"] == "qtype_essay") {
+            if (!empty($linkarray["component"] && $linkarray["component"] == "qtype_essay") {
                 // To uniquely identify the quiz answer.
                 $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
             }
