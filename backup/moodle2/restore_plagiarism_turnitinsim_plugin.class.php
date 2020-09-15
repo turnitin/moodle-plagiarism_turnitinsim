@@ -156,7 +156,7 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
                 $params->moduleid = $cm->instance;
                 $params->userid = $data->userid;
                 $params->onlinetext = $onlinetext;
-                $data->itemid = $moduleobject->get_itemid($cm->instance, $data->userid);
+                $data->itemid = $moduleobject->get_itemid($params);
             }
 
             $DB->insert_record('plagiarism_turnitinsim_sub', $data);

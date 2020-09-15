@@ -1225,6 +1225,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->setidentifier($file->get_pathnamehash());
         $tssubmission->settogenerate(1);
+        $tssubmission->setquizanswer(0);
         $tssubmission->update();
 
         // Compare submission details.
@@ -1282,7 +1283,8 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
             "cmid" => $cm->id,
             "userid" => $this->student1->id,
             "content" => $textcontent,
-            "objectid" => $submission->id
+            "objectid" => $submission->id,
+            "component" => "assign"
         );
 
         // Compare submission details.
@@ -1346,6 +1348,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setsubmitter($this->student1->id);
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setquizanswer(0);
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
@@ -1415,6 +1418,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setsubmitter($this->student1->id);
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
         $tssubmission->setidentifier($file->get_pathnamehash());
+        $tssubmission->setquizanswer(0);
         $tssubmission->calculate_generation_time();
         $tssubmission->update();
 
@@ -1494,6 +1498,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
         $tssubmission->setidentifier($file->get_pathnamehash());
         $tssubmission->calculate_generation_time();
+        $tssubmission->setquizanswer(0);
         $tssubmission->update();
 
         // Compare submission details.

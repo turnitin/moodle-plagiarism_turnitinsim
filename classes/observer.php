@@ -45,6 +45,7 @@ class plagiarism_turnitinsim_observer {
     public static function build_event_data($event, $eventtype, $module = '') {
         $eventdata = $event->get_data();
         $eventdata['eventtype'] = $eventtype;
+
         if ($module != '') {
             $eventdata['other']['modulename'] = $module;
         }
@@ -97,6 +98,16 @@ class plagiarism_turnitinsim_observer {
         \mod_workshop\event\assessable_uploaded $event) {
         $plugin = new plagiarism_plugin_turnitinsim();
         $plugin->submission_handler(self::build_event_data($event, 'assessable_submitted', 'workshop'));
+    }
+
+    /**
+     * Observer function to handle the quiz_submitted event in mod_quiz.
+     * @param \mod_quiz\event\attempt_submitted $event
+     */
+    public static function quiz_submitted(
+        \mod_quiz\event\attempt_submitted $event) {
+        $plugin = new plagiarism_plugin_turnitinsim();
+        $plugin->submission_handler(self::build_event_data($event, 'quiz_submitted', 'quiz'));
     }
 
     /**

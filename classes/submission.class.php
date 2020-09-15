@@ -30,6 +30,7 @@ use plagiarism_turnitinsim\message\receipt_student;
 
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/assign.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/forum.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/quiz.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/workshop.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/logging_request_info.class.php');
@@ -130,6 +131,11 @@ class plagiarism_turnitinsim_submission {
     public $tiiretrytime;
 
     /**
+     * @var string The quiz answer unique key, made up for questionusageid and slot number.
+     */
+    public $quizanswer;
+
+    /**
      * @var object The request object.
      */
     public $tsrequest;
@@ -168,6 +174,7 @@ class plagiarism_turnitinsim_submission {
             $this->seterrormessage($submission->errormessage);
             $this->settiiattempts($submission->tiiattempts);
             $this->settiiretrytime($submission->tiiretrytime);
+            $this->setquizanswer($submission->quizanswer);
         }
     }
 
@@ -500,6 +507,8 @@ class plagiarism_turnitinsim_submission {
      * Uploads a file to the Turnitin submission.
      */
     public function upload_submission_to_turnitin() {
+        global $DB, $CFG;
+
         // Create request body with file attached.
         if ($this->type == "file") {
             $filedetails = $this->get_file_details();
@@ -523,11 +532,39 @@ class plagiarism_turnitinsim_submission {
 
             // Create module object.
             $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
-            $moduleobject = new $moduleclass;
 
-            // Add text content to request.
-            $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
-            $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
+            if ($cm->modname == "quiz") {
+                require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+                $quizattempt = $DB->get_record('quiz_attempts', array('id' => $this->getitemid()));
+                if (!$quizattempt) {
+                    // If the quiz attempt doesn't exist, we don't want to break the cron.
+                    mtrace(get_string('taskoutputfailedupload', 'plagiarism_turnitinsim', $this->getturnitinid()));
+
+                    $this->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
+                    $this->seterrormessage(get_string('errorquizattemptnotfound', 'plagiarism_turnitinsim'));
+                    $this->settiiattempts(TURNITINSIM_SUBMISSION_MAX_SEND_ATTEMPTS);
+                    $this->update();
+
+                    return;
+                }
+
+                // Queue each answer to a question.
+                $attempt = quiz_attempt::create($this->getitemid());
+                foreach ($attempt->get_slots() as $slot) {
+                    $qa = $attempt->get_question_attempt($slot);
+                    if ($this->getidentifier() == sha1($qa->get_response_summary())) {
+                        $textcontent = html_to_text($qa->get_response_summary());
+                        $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
+                        break;
+                    }
+                }
+            } else {
+                $moduleobject = new $moduleclass;
+                // Add text content to request.
+                $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
+                $textcontent = html_to_text($moduleobject->get_onlinetext($this->getitemid()));
+            }
 
             // Check that the text exists and is not empty.
             if (empty($textcontent)) {
@@ -861,8 +898,10 @@ class plagiarism_turnitinsim_submission {
      */
     public static function get_submission_details($linkarray) {
         global $DB;
-
         static $cm;
+
+        $quizanswer = 0;
+
         if (empty($cm)) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
 
@@ -893,18 +932,24 @@ class plagiarism_turnitinsim_submission {
                 }
             }
         } else if (!empty($linkarray["content"])) {
+            if ($linkarray["component"] == "qtype_essay") {
+                // To uniquely identify the quiz answer.
+                $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
+            }
 
             $identifier = sha1($linkarray['content']);
 
             // If user id is empty this must be a group submission.
             if (empty($linkarray['userid'])) {
                 return $DB->get_record('plagiarism_turnitinsim_sub', array('identifier' => $identifier,
-                    'type' => 'content', 'cm' => $linkarray['cmid']));
+                    'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
 
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
-            'cm' => $linkarray['cmid'], 'identifier' => $identifier));
+            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+
+
     }
 
     /**
@@ -1384,6 +1429,24 @@ class plagiarism_turnitinsim_submission {
      */
     public function settiiretrytime($tiiretrytime) {
         $this->tiiretrytime = $tiiretrytime;
+    }
+
+    /**
+     * Get the key for the quiz answer.
+     *
+     * @return string
+     */
+    public function getquizanswer() {
+        return $this->quizanswer;
+    }
+
+    /**
+     * Set the key for the quiz answer.
+     *
+     * @param string $quizanswer The key for the quiz answer, made up of questionusageid and slot.
+     */
+    public function setquizanswer($quizanswer) {
+        $this->quizanswer = $quizanswer;
     }
 
     /**

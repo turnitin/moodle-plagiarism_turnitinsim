@@ -161,7 +161,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws moodle_exception
      */
     public function get_links($linkarray) {
-        global $OUTPUT, $PAGE;
+        global $DB, $OUTPUT, $PAGE;
 
         // Require the relevant JS modules.  Only include once.
         static $jsloaded;
@@ -174,6 +174,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inboxEulaLaunch');
         }
         $output = '';
+
+        // If this is a quiz, retrieve the cmid.
+        $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
+        if ($component == "qtype_essay" && !empty($linkarray['area'])) {
+            $questions = question_engine::load_questions_usage_by_activity($linkarray['area']);
+
+            // Try to get cm using the questions owning context.
+            $context = $questions->get_owning_context();
+            if (empty($linkarray['cmid']) && $context->contextlevel == CONTEXT_MODULE) {
+                $linkarray['cmid'] = $context->instanceid;
+            }
+        }
 
         // Get course module details.
         static $cm;
@@ -202,6 +214,15 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
              context_module::instance($cm->id)
         );
 
+
+        // Get the user ID for a quiz submission as it does not exist in the linkarray.
+        if (!empty($linkarray['file']) && $cm->modname == "quiz") {
+            $linkarray['userid'] = $DB->get_record(
+                'files',
+                ['id' => $linkarray['file']->get_id()],
+                'userid'
+            )->userid;
+        }
 
         // Display cv link and OR score or status.
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
@@ -324,6 +345,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin. Queue it.
                 $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
                 $moduleobject = new $moduleclass;
+
                 $eventdata = $moduleobject->create_submission_event_data($linkarray);
                 $this->submission_handler($eventdata);
 
@@ -567,7 +589,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $groupid = $moduleobject->get_groupid($eventdata['objectid']);
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
-        // Get the item ID.
         $itemid = (!empty($eventdata['objectid'])) ? $eventdata['objectid'] : null;
 
         // If this is a user confirming a final submission then revert the submission to
@@ -614,6 +635,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $tssubmission->setitemid($itemid);
                 $tssubmission->setidentifier($pathnamehash);
                 $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
+                $tssubmission->setquizanswer(0);
 
                 // Check if this file has been submitted previously and re-use record.
                 $query = ' cm = ? AND userid = ? AND identifier = ? ';
@@ -662,7 +684,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 // If the submitter has not accepted the EULA then flag accordingly.
                 if ((empty($submitter->get_lasteulaaccepted()) ||
-                    $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
+                        $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
                     (bool)$features->tenant->require_eula
                 ) {
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
@@ -689,6 +711,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $tssubmission->setgroupid($groupid);
             $tssubmission->setsubmitter($submitter->userid);
             $tssubmission->setitemid($itemid);
+            $tssubmission->setquizanswer(0);
 
             $identifier = sha1($eventdata['other']['content']);
 
@@ -718,7 +741,64 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $tssubmission->settiiretrytime(0);
             $tssubmission->update();
         }
+
+        // Quizzes don't pass the content in their event and work differently.
+        if (($eventdata['eventtype'] == 'quiz_submitted') ||
+            (isset($eventdata['other']['modulename']) && $eventdata['other']['modulename'] == 'quiz')) {
+            $this->quiz_handler($cm, $eventdata);
+        }
+
         return true;
+    }
+
+    /**
+     * Specific method for handling the quiz_submitted event type.
+     * This is because a quiz might have many questions to queue.
+     *
+     * @param object $cm - The course module data.
+     * @param array $eventdata - The data associated with this event.
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function quiz_handler($cm, $eventdata) {
+        // Create module object.
+        $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
+        $moduleobject = new $moduleclass;
+
+        // Set the author, submitter and group (if applicable).
+        $author = $moduleobject->get_author($eventdata['userid'], $eventdata['relateduserid'], $cm, $eventdata['objectid']);
+        $groupid = $moduleobject->get_groupid($eventdata['objectid']);
+        $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
+
+        // Queue every question submitted in a quiz attempt.
+        $attempt = quiz_attempt::create($eventdata['objectid']);
+        foreach ($attempt->get_slots() as $slot) {
+            $qa = $attempt->get_question_attempt($slot);
+
+            $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
+            $tssubmission->setcm($cm->id);
+            $tssubmission->setuserid($author);
+            $tssubmission->setgroupid($groupid);
+            $tssubmission->setsubmitter($submitter->userid);
+            $tssubmission->setitemid($eventdata['objectid']);
+            $tssubmission->setidentifier(sha1($qa->get_response_summary()));
+            $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
+            $tssubmission->setquizanswer($qa->get_usage_id().'-'.$qa->get_slot());
+
+            // If the submitter has not accepted the EULA then flag accordingly.
+            if ($submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
+                $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
+                $tssubmission->update();
+                continue;
+            }
+
+            $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_QUEUED);
+            $tssubmission->calculate_generation_time();
+            $tssubmission->settiiattempts(0);
+            $tssubmission->settiiretrytime(0);
+            $tssubmission->update();
+        }
     }
 
     /**
