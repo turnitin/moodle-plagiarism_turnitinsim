@@ -144,6 +144,7 @@ class plagiarism_turnitinsim_quiz {
         $eventdata['userid'] = $USER->id;
 
         if (isset($linkarray['file'])) {
+            $eventdata['eventtype'] = 'quiz_submitted_file';
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
             $eventdata['objectid'] = $linkarray['file']->get_itemid();
         } else {
