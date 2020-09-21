@@ -181,6 +181,9 @@ class plagiarism_turnitinsim_request {
         }
 
         $result = curl_exec($ch);
+        if ($result === false) {
+            $this->logger->error('Curl error: ' . curl_error($ch));
+        }
 
         // Add httpstatus to $result.
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -193,6 +196,7 @@ class plagiarism_turnitinsim_request {
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $result = new stdClass();
                 $httpstatus = 400;
+                $this->logger->error('The JSON returned was not valid.');
             }
         }
 
