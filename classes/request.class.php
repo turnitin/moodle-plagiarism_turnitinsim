@@ -182,32 +182,39 @@ class plagiarism_turnitinsim_request {
 
         $result = curl_exec($ch);
         if ($result === false) {
-            $this->logger->error('Curl error: ' . curl_error($ch));
+            if ($this->logger) {
+                $this->logger->error('Curl error: ' . curl_error($ch));
+            }
         }
 
         // Add httpstatus to $result.
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (empty($result)) {
-            $result = new stdClass();
+            $decodedresult = new stdClass();
         } else {
-            $result = json_decode($result);
+            $decodedresult = json_decode($result);
+            var_dump(json_last_error());
             // If Json is not valid set httpstatus 400.
             if (json_last_error() !== JSON_ERROR_NONE) {
-                $result = new stdClass();
+                if ($this->logger) {
+                    $this->logger->error('The JSON returned was not valid.');
+                    $this->logger->info('Returned JSON: '. $result);
+                }
+
+                $decodedresult = new stdClass();
                 $httpstatus = 400;
-                $this->logger->error('The JSON returned was not valid.');
             }
         }
 
         // The response could be an array or an object.
-        if (is_array($result)) {
-            $result["httpstatus"] = $httpstatus;
+        if (is_array($decodedresult)) {
+            $decodedresult["httpstatus"] = $httpstatus;
         } else {
-            $result->httpstatus = $httpstatus || '' ? $httpstatus : '';
+            $decodedresult->httpstatus = $httpstatus || '' ? $httpstatus : '';
         }
 
-        $result = json_encode($result);
+        $result = json_encode($decodedresult);
 
         curl_close($ch);
 
