@@ -198,8 +198,7 @@ class plagiarism_turnitinsim_request {
             // If Json is not valid set httpstatus 400.
             if (json_last_error() !== JSON_ERROR_NONE) {
                 if ($this->logger) {
-                    $this->logger->error('The JSON returned was not valid.');
-                    $this->logger->info('Returned JSON: '. $result);
+                    $this->logger->error('The JSON returned was not valid. Returned JSON: '. $result);
                 }
 
                 $decodedresult = new stdClass();
