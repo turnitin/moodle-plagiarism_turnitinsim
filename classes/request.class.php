@@ -180,8 +180,12 @@ class plagiarism_turnitinsim_request {
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, sprintf('%s:%s', $CFG->proxyuser, $CFG->proxypassword));
         }
 
+        // Set the default for whether a response was found.
+        $responsefound = true;
+
         $result = curl_exec($ch);
         if ($result === false) {
+            $responsefound = false;
             if ($this->logger) {
                 $this->logger->error('Curl error: ' . curl_error($ch));
             }
@@ -191,34 +195,39 @@ class plagiarism_turnitinsim_request {
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (empty($result)) {
-            $decodedresult = new stdClass();
+            $result = new stdClass();
         } else {
-            $decodedresult = json_decode($result);
-            var_dump(json_last_error());
+            $originaljson = $result;
+            $result = json_decode($result);
+
             // If Json is not valid set httpstatus 400.
             if (json_last_error() !== JSON_ERROR_NONE) {
                 if ($this->logger) {
-                    $this->logger->error('The JSON returned was not valid. Returned JSON: '. $result);
+                    $this->logger->error('The JSON returned was not valid. Returned JSON: '. $originaljson);
                 }
 
-                $decodedresult = new stdClass();
+                $result = new stdClass();
                 $httpstatus = 400;
             }
         }
 
         // The response could be an array or an object.
-        if (is_array($decodedresult)) {
-            $decodedresult["httpstatus"] = $httpstatus;
+        if (is_array($result)) {
+            $result["httpstatus"] = $httpstatus;
         } else {
-            $decodedresult->httpstatus = $httpstatus || '' ? $httpstatus : '';
+            $result->httpstatus = $httpstatus || '' ? $httpstatus : '';
         }
 
-        $result = json_encode($decodedresult);
+        $result = json_encode($result);
 
         curl_close($ch);
 
         if ($this->logger) {
-            $this->logger->info('Response: ', array($result));
+            if ($responsefound) {
+                $this->logger->info('Response: ', array($result));
+            } else {
+                $this->logger->info('Response: There was no response from this request.');
+            }
         }
 
         return $result;
