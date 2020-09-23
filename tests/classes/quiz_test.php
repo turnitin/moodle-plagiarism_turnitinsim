@@ -236,7 +236,8 @@ class quiz_test extends advanced_testcase {
             "cmid" => $cm->id,
             "userid" => $this->student1->id,
             "file" => $file,
-            "content" => ''
+            "content" => '',
+            "area" => 1
         );
 
         $tsquiz = new plagiarism_turnitinsim_quiz();
@@ -246,7 +247,7 @@ class quiz_test extends advanced_testcase {
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
         $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
-        $this->assertEquals($file->get_itemid(), $response['objectid']);
+        $this->assertEquals($linkarray['area'], $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
     }
@@ -282,23 +283,17 @@ class quiz_test extends advanced_testcase {
         $linkarray = array(
             "cmid" => $cm->id,
             "userid" => $this->student1->id,
-            "content" => self::QUIZ_ANSWER_TEXT
+            "content" => self::QUIZ_ANSWER_TEXT,
+            "area" => 1
         );
 
         $tsquiz = new plagiarism_turnitinsim_quiz();
-
-        // Get the itemid we'll later expect.
-        $params = new stdClass();
-        $params->moduleid = $quiz->id;
-        $params->userid = $this->student1->id;
-        $params->onlinetext = self::QUIZ_ANSWER_TEXT;
-        $itemid = $tsquiz->get_itemid($params);
 
         $response = $tsquiz->create_submission_event_data($linkarray);
         $this->assertEquals('quiz_submitted', $response['eventtype']);
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
-        $this->assertEquals($itemid, $response['objectid']);
+        $this->assertEquals($linkarray['area'], $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
     }

@@ -912,6 +912,11 @@ class plagiarism_turnitinsim_submission {
             }
         }
 
+        // To uniquely identify the quiz answer.
+        if (!empty($linkarray["component"]) && $linkarray["component"] == "qtype_essay") {
+            $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
+        }
+
         if (!empty($linkarray['file'])) {
             $file = $linkarray['file'];
             $itemid = $file->get_itemid();
@@ -932,11 +937,6 @@ class plagiarism_turnitinsim_submission {
                 }
             }
         } else if (!empty($linkarray["content"])) {
-            if (!empty($linkarray["component"]) && $linkarray["component"] == "qtype_essay") {
-                // To uniquely identify the quiz answer.
-                $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
-            }
-
             $identifier = sha1($linkarray['content']);
 
             // If user id is empty this must be a group submission.
@@ -945,7 +945,6 @@ class plagiarism_turnitinsim_submission {
                     'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
-
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
 

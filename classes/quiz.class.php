@@ -142,17 +142,16 @@ class plagiarism_turnitinsim_quiz {
 
         $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['userid'] = $USER->id;
+        $eventdata['objectid'] = $linkarray['area'];
 
         if (isset($linkarray['file'])) {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
-            $eventdata['objectid'] = $linkarray['file']->get_itemid();
         } else {
             $params = new stdClass();
             $params->moduleid = $cm->instance;
 
             $params->userid = $linkarray['userid'];
             $params->onlinetext = $linkarray['content'];
-            $eventdata['objectid'] = $this->get_itemid($params);
         }
         if (isset($linkarray['userid'])) {
             $eventdata['relateduserid'] = $linkarray['userid'];
