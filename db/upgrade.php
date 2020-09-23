@@ -290,7 +290,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020061202, 'plagiarism', 'turnitinsim');
     }
 
-    if ($oldversion < 2020090801) {
+    if ($oldversion < 2020092301) {
         (new handle_deprecation)->unset_turnitinsim_use();
 
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
@@ -301,7 +301,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
             $DB->set_field('plagiarism_turnitinsim_sub', 'quizanswer', 0);
         }
 
-        upgrade_plugin_savepoint(true, 2020090801, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2020092301, 'plagiarism', 'turnitinsim');
     }
 
     return true;

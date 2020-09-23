@@ -214,7 +214,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
              context_module::instance($cm->id)
         );
 
-
         // Get the user ID for a quiz submission as it does not exist in the linkarray.
         if (!empty($linkarray['file']) && $cm->modname == "quiz") {
             $linkarray['userid'] = $DB->get_record(
@@ -243,9 +242,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
             }
 
-            // If the user is a student and they are not allowed to view reports, and they have accepted the EULA then return empty output.
+            // If the user is a student and they are not allowed to view reports,
+            // and they have accepted the EULA then return empty output.
             $plagiarismsettings = $this->get_settings($cm->id);
-            if (!$instructor && empty($plagiarismsettings->accessstudents) && $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+            if (!$instructor && empty($plagiarismsettings->accessstudents) &&
+                $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                 return $output;
             }
 

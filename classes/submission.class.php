@@ -948,7 +948,6 @@ class plagiarism_turnitinsim_submission {
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
 
-
     }
 
     /**
