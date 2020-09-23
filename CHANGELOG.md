@@ -15,7 +15,7 @@ The [Moodle Privacy API](https://docs.moodle.org/dev/Privacy_API) helps plugins 
 
 Thanks to [thepurpleblob](https://github.com/turnitin/moodle-mod_turnitintooltwo/issues/464) for the catch!
 
-#### Permission to use the Turnitin Integrity plugin can limited to individual instructors
+#### Permission to use the Turnitin Integrity plugin can be limited to individual instructors
 
 Two new permission settings can now be configured that will allow you to specify certain users who have access to the Turnitin Integrity plugin. This can be used to limit use to certain departments or schools within your organization.
 
