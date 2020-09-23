@@ -216,7 +216,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         );
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->get_links($linkarray));
+        $this->assertEquals('<div class="turnitinsim_links"></div>', $plagiarismturnitinsim->get_links($linkarray));
     }
 
     /**
@@ -270,6 +270,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->setoverallscore(100);
         $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_FILE);
         $tssubmission->settogenerate(1);
+        $tssubmission->setquizanswer(0);
         $tssubmission->update();
 
         // The HTML returned should contain the queued status and a Tii icon.
@@ -524,7 +525,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->print_disclosure($this->cm->id));
+        $this->assertContains(
+            get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
+            $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }
 
     /**
@@ -554,7 +557,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        $this->assertEquals('', $plagiarismturnitinsim->print_disclosure($this->cm->id));
+        $this->assertContains(
+            get_string('eulanotrequired', 'plagiarism_turnitinsim'),
+            $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }
 
     /**

@@ -1,3 +1,48 @@
+### Date:       2020-September-23
+### Release:    v2020092301
+
+#### :zap: What's new
+
+---
+
+#### Support for Moodle Quizzes
+
+Turnitin will be usable as a part of a Moodle quiz when Moodle releases the feature. When enabled for your account, simply add an essay question as one of the quiz questions. A similarity report will be generated when the student submits the quiz. Track this release on the [Moodle Tracker](https://tracker.moodle.org/browse/MDL-32226).
+
+#### Privacy API declartion now includes the submission’s contents
+
+The [Moodle Privacy API](https://docs.moodle.org/dev/Privacy_API) helps plugins report what user data a plugin uses so they cna make informed decisions about their personal information. As a part of the Privacy API declartion, we will now includethe contents of the submission to fully support the Privacy APIs goals.
+
+Thanks to [thepurpleblob](https://github.com/turnitin/moodle-mod_turnitintooltwo/issues/464) for the catch!
+
+#### Permission to use the Turnitin Integrity plugin can be limited to individual instructors
+
+Two new permission settings can now be configured that will allow you to specify certain users who have access to the Turnitin Integrity plugin. This can be used to limit use to certain departments or schools within your organization.
+
+You are now able to choose if a user is able to Enable Turnitin Integrity for an assignment, and choose if they are able to view any generated similarity reports.
+
+You can take advantage of this new setting by navigation to Site Administration > Users > Permissions > Check system permissions for the user your wish to give access to.
+
+#### Support for Korean, Japanese, Chinese (Traditional), and Chinese (Simplified)
+
+Our interface has been fully localized into four new languages. Check out our help site for full step-by-step guides in these languages too
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### EULA screen is now not blank after accepting the Turnitin EULA
+
+Rather than seeing a blank screen, we’ll now show you a simple message confirming that you have accepted our EULA when navigating to <Your Moodle Instance’s URL>/plagiarism/turnitinsim/eula.php?cmd=displayeula
+
+#### Turnitin will only show on activity types we support
+
+Turnitin only supports Moodle assignments, forums, and workshops (and quizzes once released by Moodle!). However, it was possible that the option to enable Turnitin would show on the settings page for activity types we don't support.
+
+To help clear up any confusion, the option to enable Turnitin will now only show on activity types we support.
+
+---
+
 ### Date:       2020-July-21
 ### Release:    v2020072101
 

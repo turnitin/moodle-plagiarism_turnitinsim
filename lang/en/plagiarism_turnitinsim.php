@@ -34,8 +34,10 @@ $string['defaultsettings'] = 'Default settings';
 $string['errortoolarge'] = 'This file will not be submitted to Turnitin as it exceeds the maximum size of {$a} allowed';
 $string['eulaaccept'] = 'I accept the Turnitin EULA';
 $string['eulaaccepted'] = 'Thank you for accepting the new Turnitin EULA. All future submissions will now be sent to Turnitin for processing.';
+$string['eulaalreadyaccepted'] = 'You have already accepted the latest Turnitin EULA.';
 $string['euladecline'] = 'I decline the Turnitin EULA';
 $string['euladeclined'] = 'Your submissions will not be sent to Turnitin as you have not accepted the Turnitin End User Licence Agreement.';
+$string['eulanotrequired'] = 'You are not required to accept the Turnitin EULA.';
 $string['eulaheader'] = 'Turnitin End User Licence Agreement';
 $string['eulalink'] = 'For this submission to be sent to Turnitin, you must accept the <a href="{$a}" target="_blank">Turnitin End User Licence Agreement</a>.';
 $string['eulalinkgeneric'] = 'If you would like any of your future submissions to be sent to Turnitin, you must accept the <a href="{$a}" target="_blank">Turnitin End User Licence Agreement</a>.';
@@ -196,4 +198,5 @@ $string['privacy:metadata:plagiarism_turnitinsim_client:submission_content'] = '
 $string['errorenabledfeatures'] = 'Could not get the list of enabled features.';
 $string['errorgettingsubmissioninfo'] = 'There was an error attempting to get the submission info.';
 $string['errorprocessingdeletedsubmission'] = 'This submission belongs to a deleted assignment and cannot be processed.';
+$string['errorquizattemptnotfound'] = 'The quiz attempt for this submission could not be found.';
 $string['help_link'] = 'https://help.turnitin.com/integrity/administrator/moodle.htm#step-four';

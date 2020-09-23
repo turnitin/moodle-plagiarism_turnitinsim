@@ -180,7 +180,16 @@ class plagiarism_turnitinsim_request {
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, sprintf('%s:%s', $CFG->proxyuser, $CFG->proxypassword));
         }
 
+        // Set the default for whether a response was found.
+        $responsefound = true;
+
         $result = curl_exec($ch);
+        if ($result === false) {
+            $responsefound = false;
+            if ($this->logger) {
+                $this->logger->error('Curl error: ' . curl_error($ch));
+            }
+        }
 
         // Add httpstatus to $result.
         $httpstatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -188,9 +197,15 @@ class plagiarism_turnitinsim_request {
         if (empty($result)) {
             $result = new stdClass();
         } else {
+            $originaljson = $result;
             $result = json_decode($result);
+
             // If Json is not valid set httpstatus 400.
             if (json_last_error() !== JSON_ERROR_NONE) {
+                if ($this->logger) {
+                    $this->logger->error('The JSON returned was not valid. Returned JSON: '. $originaljson);
+                }
+
                 $result = new stdClass();
                 $httpstatus = 400;
             }
@@ -208,7 +223,11 @@ class plagiarism_turnitinsim_request {
         curl_close($ch);
 
         if ($this->logger) {
-            $this->logger->info('Response: ', array($result));
+            if ($responsefound) {
+                $this->logger->info('Response: ', array($result));
+            } else {
+                $this->logger->info('Response: There was no response from this request.');
+            }
         }
 
         return $result;
