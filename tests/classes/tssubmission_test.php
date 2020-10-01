@@ -385,7 +385,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_create_group_metadata_forum() {
         $this->resetAfterTest();
 
-        // Create assign module.
+        // Create forum module.
         $record = new stdClass();
         $record->course = $this->course;
         $module = $this->getDataGenerator()->create_module('forum', $record);
@@ -410,7 +410,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
 
         $this->setAdminUser();
 
-        // Create assign module.
+        // Create workshop module.
         $record = new stdClass();
         $record->course = $this->course;
         $module = $this->getDataGenerator()->create_module('workshop', $record);
@@ -433,7 +433,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     public function test_create_group_metadata_quiz() {
         $this->resetAfterTest();
 
-        // Create assign module.
+        // Create quiz module.
         $record = new stdClass();
         $record->course = $this->course;
         $module = $this->getDataGenerator()->create_module('quiz', $record);
