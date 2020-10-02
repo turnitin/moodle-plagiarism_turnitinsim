@@ -100,16 +100,36 @@ class plagiarism_turnitinsim_settings {
 
             // Immediate.
             $label = get_string('reportgen0', 'plagiarism_turnitinsim');
-            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINSIM_REPORT_GEN_IMMEDIATE);
+            $reportgen[] = $mform->createElement(
+                'radio', 
+                'reportgeneration', 
+                null, 
+                $label, 
+                TURNITINSIM_REPORT_GEN_IMMEDIATE, 
+                array('class' => 'turnitinsim_settings_radio')
+            );
 
             // Immediate and Due Date.
             $label = get_string('reportgen1', 'plagiarism_turnitinsim');
-            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label,
-            TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE);
+            $reportgen[] = $mform->createElement(
+                'radio', 
+                'reportgeneration', 
+                null, 
+                $label,
+                TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE,
+                array('class' => 'turnitinsim_settings_radio')
+            );
 
             // Due Date.
             $label = get_string('reportgen2', 'plagiarism_turnitinsim');
-            $reportgen[] = $mform->createElement('radio', 'reportgeneration', null, $label, TURNITINSIM_REPORT_GEN_DUEDATE);
+            $reportgen[] = $mform->createElement(
+                'radio', 
+                'reportgeneration', 
+                null, 
+                $label, 
+                TURNITINSIM_REPORT_GEN_DUEDATE, 
+                array('class' => 'turnitinsim_settings_radio')
+            );
 
             // Group Report Gen options together.
             $mform->addGroup($reportgen, 'reportgenoptions', get_string('reportgenoptions', 'plagiarism_turnitinsim'), '<br />');
