@@ -506,7 +506,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $output = html_writer::tag(
             'div',
             $eulalink.$eulaacceptbtn.$euladeclinebtn,
-            array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
         );
 
         return $output;
