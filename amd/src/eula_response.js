@@ -44,7 +44,7 @@ define(['jquery', 'core/str'], function($, str) {
                     data: {action: "accept_eula", sesskey: M.cfg.sesskey},
                     success: function() {
                         str.get_string('eulaaccepted', 'plagiarism_turnitinsim').done(function(text) {
-                            $('.eulacontainer').hide().html(text).fadeIn();
+                            $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
                         });
                     }
                 });
@@ -52,7 +52,7 @@ define(['jquery', 'core/str'], function($, str) {
 
             $(document).on('click', '#pp-eula-decline', function() {
                 str.get_string('euladeclined', 'plagiarism_turnitinsim').done(function(text) {
-                    $('.eulacontainer').hide().html(text).fadeIn();
+                    $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
                 });
 
                 $('input[name=submitbutton]').prop('disabled', '');
