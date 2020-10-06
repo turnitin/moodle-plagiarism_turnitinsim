@@ -362,6 +362,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Verify assignment is in metadata.
         $this->assertEquals($metadata['group']['id'], $cm->id);
         $this->assertEquals($metadata['group']['name'], $cm->name);
+        $this->assertEquals($metadata['group']['type'], 'ASSIGNMENT');
 
         // Verify course data is in metadata.
         $coursedetails = $DB->get_record('course', array('id' => $cm->course), 'fullname');
@@ -376,6 +377,77 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($metadata['group_context']['owners'][0]['family_name'], $instructor->lastname);
         $this->assertEquals($metadata['group_context']['owners'][0]['given_name'], $instructor->firstname);
         $this->assertEquals($metadata['group_context']['owners'][0]['email'], $instructor->email);
+    }
+
+    /**
+     * Test that create metadata returns expected group type for forum.
+     */
+    public function test_create_group_metadata_forum() {
+        $this->resetAfterTest();
+
+        // Create forum module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('forum', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('forum', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'FORUM');
+    }
+
+    /**
+     * Test that create metadata returns expected group type for workshop.
+     */
+    public function test_create_group_metadata_workshop() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        // Create workshop module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('workshop', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('workshop', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'WORKSHOP');
+    }
+
+    /**
+     * Test that create metadata returns expected group type for quiz.
+     */
+    public function test_create_group_metadata_quiz() {
+        $this->resetAfterTest();
+
+        // Create quiz module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('quiz', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('quiz', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'QUIZ');
     }
 
     /**
