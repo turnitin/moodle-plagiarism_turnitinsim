@@ -127,3 +127,7 @@
     background: #db4221;
     color: #fff;
 }
+
+.form-group .form-inline .form-check-inline.form-check-label.fitem.turnitinsim_settings_radio {
+    margin-right: 0;
+}
