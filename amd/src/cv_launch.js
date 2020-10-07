@@ -49,7 +49,7 @@ define(['jquery'], function($) {
                 cvWindow.document.write('</body></html>');
 
                 var loading = '<div class="turnitinsim_Loading">' +
-                        '<div class=\'turnitinsim_loadingLogo\'>' +
+                        '<div class="turnitinsim_loadingLogo">' +
                             '<img src="' + icon + '">' +
                         '</div>' +
                         '<div class="turnitinsim_Loading_Circles">' +
