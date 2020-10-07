@@ -48,7 +48,7 @@ define(['jquery', 'core/str'], function($, str) {
 
                 str.get_string('loadingcv', 'plagiarism_turnitinsim').done(function(text) {
                     loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + text + '</p>';
-                    $('.eulacontainer').hide().html(text).fadeIn();
+                    $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
                 });
 
                 loading += '</div>';

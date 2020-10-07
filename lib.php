@@ -466,7 +466,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             return html_writer::tag(
                 'div',
                 get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
-                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+                array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
             );
         }
 
@@ -474,7 +474,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             return html_writer::tag(
                 'div',
                 get_string('eulanotrequired', 'plagiarism_turnitinsim'),
-                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+                array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
             );
         }
 
@@ -509,7 +509,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 'p',
                 $eulalink
             ).$eulaacceptbtn.$euladeclinebtn,
-            array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
         );
 
         return $output;
