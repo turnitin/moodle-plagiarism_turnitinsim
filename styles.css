@@ -42,7 +42,7 @@
 }
 
 .turnitinsim_eulacontainer #pp-eula-accept {
-    margin-left: 20px;
+    margin-right: 5px;
 }
 
 /* Icons in get_links */
@@ -126,4 +126,8 @@
 .turnitinsim_links .turnitinsim_status .or_score_colour_100 {
     background: #db4221;
     color: #fff;
+}
+
+.form-group .form-inline .form-check-inline.form-check-label.fitem.turnitinsim_settings_radio {
+    margin-right: 0;
 }

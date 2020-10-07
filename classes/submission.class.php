@@ -314,7 +314,7 @@ class plagiarism_turnitinsim_submission {
         $assignment = array(
             'id'   => $cm->id,
             'name' => $cm->name,
-            'type' => TURNITINSIM_GROUP_TYPE_ASSIGNMENT
+            'type' => $cm->modname == "assign" ? "ASSIGNMENT" : strtoupper($cm->modname)
         );
 
         // Add course metadata.
