@@ -26,7 +26,7 @@
  * @module plagiarism_turnitinsim/cv_launch
  */
 
-define(['jquery', 'core/str'], function($, str) {
+define(['jquery'], function($) {
     return {
         openCv: function() {
             $(document).on('click', '.or_score', function() {
@@ -41,17 +41,23 @@ define(['jquery', 'core/str'], function($, str) {
                 });
 
                 // Launch the Cloud Viewer in a new window.
+                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiLogo.svg';
                 var cvWindow = window.open();
-                var loading = '<div class="tii_dv_loading" style="text-align:center;">';
-                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiIcon.svg';
-                loading += '<img src="' + icon + '" style="width:100px; height: 100px">';
 
-                str.get_string('loadingcv', 'plagiarism_turnitinsim').done(function(text) {
-                    loading += '<p style="font-family: Arial, Helvetica, sans-serif;">' + text + '</p>';
-                    $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
-                });
+                cvWindow.document.write('<html><head><link rel="stylesheet" ' +
+                    'type="text/css" href="'+M.cfg.wwwroot + '/plagiarism/turnitinsim/styles.css'+'"></head><body>');
+                cvWindow.document.write('</body></html>');
 
-                loading += '</div>';
+                var loading = '<div class="turnitinsim_Loading">' +
+                        '<div class="turnitinsim_loadingLogo">' +
+                            '<img src="' + icon + '">' +
+                        '</div>' +
+                        '<div class="turnitinsim_Loading_Circles">' +
+                            '<span class="turnitinsim_Loading_Circle-1"/>' +
+                            '<span class="turnitinsim_Loading_Circle-2"/>' +
+                            '<span class="turnitinsim_Loading_Circle-3"/>' +
+                        '</div>' +
+                    '</div>';
                 $(cvWindow.document.body).html(loading);
 
                 $.ajax({
@@ -71,7 +77,7 @@ define(['jquery', 'core/str'], function($, str) {
                     checkDVClosed: function(cvWindow) {
                         var that = this;
                         if (cvWindow.closed) {
-                            window.location = window.location;
+                            window.location = window.location + '';
                         } else {
                             setTimeout(function() {
                                 that.checkDVClosed(cvWindow);
