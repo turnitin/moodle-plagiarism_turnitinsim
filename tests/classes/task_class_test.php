@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 /**
  * Tests for Turnitin Integrity user class.
  */
-class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
+class task_class_testcase extends advanced_testcase {
 
     /**
      * An example API URL used for unit testing.
