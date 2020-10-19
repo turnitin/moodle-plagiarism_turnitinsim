@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php
 /**
  * Tests for settings form.
  */
-class plagiarism_tssettings_class_testcase extends advanced_testcase {
+class settings_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.

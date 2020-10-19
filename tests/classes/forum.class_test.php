@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for forum module class for plagiarism_turnitinsim component.
  */
-class forum_test extends advanced_testcase {
+class forum_class_testcase extends advanced_testcase {
 
     /**
      * Sample text for testing a forum.

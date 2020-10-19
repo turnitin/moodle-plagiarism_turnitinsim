@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 /**
  * Tests for quiz module class for plagiarism_turnitinsim component
  */
-class quiz_test extends advanced_testcase {
+class quiz_class_testcase extends advanced_testcase {
 
     /**
      * Sample text used for unit testing a quiz.

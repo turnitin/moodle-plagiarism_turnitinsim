@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class plagiarism_turnitinsim_eula_class_testcase extends advanced_testcase {
+class eula_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
