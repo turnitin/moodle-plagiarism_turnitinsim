@@ -3,7 +3,7 @@ Turnitin Integrity Plugin for Moodle
 
 Description:
 -
-Utilize **Turnitin Integrity’s** Similarity Report and Authorship investigating tools within Moodle’s assignment workflow by integrating with the Turnitin Integrity plugin. **Turnitin Integrity** is a commercial plagiarism and authorship detection system whose features depend on which paid license has been selected. This plugin is developed and maintained by Turnitin.
+Utilize **Turnitin Integrity’s** Similarity Report and Authorship investigating tools within Moodle's assignment workflow by integrating with the Turnitin Integrity plugin. **Turnitin Integrity** is a commercial plagiarism and authorship detection system whose features depend on which paid license has been selected. This plugin is developed and maintained by Turnitin.
 
 Features:
 -
@@ -19,14 +19,17 @@ Useful Links
 
 Installation
 -
+Before installing this plugin firstly make sure you are logged in as an Administrator and that you are using Moodle 3.5 or higher.
 
-To install, all you need to do is copy all the files into the plagiarism/turnitinsim directory on your moodle installation. You should then go to `"Site Administration" > "Notifications"` and follow the on screen instructions.
+To install, all you need to do is copy all the files into the plagiarism/turnitinsim directory on your Moodle installation. You should then go to `"Site Administration" > "Notifications"` and follow the on screen instructions.
 
 Plagiarism plugins also need to be enabled before this plugin can be used. This should happen as part of the install process but if it doesn't then you can do this by going to `"Site Administration" > "Advanced Features"` and ticking the `"Enable plagiarism plugins"` checkbox before saving.
 
 Configuring
 -
 To configure the plugin go to `"Site administration" > "Plugins" > "Plagiarism" > "Turnitin Integrity plagiarism plugin"` and enter your API key and API URL.
+
+Other options can also be set, such as which Moodle modules to enable the plugin for or logging. Logging can be useful in scenarios where there is a problem with your installation. Default settings for the plugin can also be enabled so that you don't have to configure every individual assignment each time.
 
 Testing
 -
