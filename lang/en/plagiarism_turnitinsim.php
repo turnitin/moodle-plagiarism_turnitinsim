@@ -53,7 +53,6 @@ $string['indexoptions'] = 'Submission indexing';
 $string['indexoptions_help'] = 'Indexed submissions will be available for comparison in Similarity Reports.';
 $string['invalidtablename'] = 'Table {$a} could not be exported';
 $string['line'] = 'Line';
-$string['loadingcv'] = 'Loading Turnitin Viewer';
 $string['message'] = 'Message';
 $string['messageprovider:digital_receipt_student'] = 'Turnitin Student Digital Receipt';
 $string['messageprovider:digital_receipt_instructor'] = 'Turnitin Instructor Digital Receipt';
