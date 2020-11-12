@@ -53,5 +53,9 @@ $observers = array (
     array(
         'eventname' => '\core\event\course_module_updated',
         'callback'  => 'plagiarism_turnitinsim_observer::module_updated'
-    )
+    ),
+    array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback'  => 'plagiarism_turnitinsim_observer::course_module_deleted'
+    ),
 );
