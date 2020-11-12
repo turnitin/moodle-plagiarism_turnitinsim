@@ -281,11 +281,13 @@ class plagiarism_turnitinsim_request {
      *
      * @param object $e The exception.
      * @param string $displaystr The string to display for the error.
+     * @param string|object|array $a An object, string or number that can be used
+     *      within translation strings
      * @throws coding_exception
      */
-    public function handle_exception($e, $displaystr = '') {
+    public function handle_exception($e, $displaystr = '', $a = null) {
 
-        $errorstr = get_string($displaystr, 'plagiarism_turnitinsim').PHP_EOL;
+        $errorstr = get_string($displaystr, 'plagiarism_turnitinsim', $a).PHP_EOL;
 
         if (is_callable(array($e, 'getFaultCode'))) {
             $errorstr .= get_string('faultcode', 'plagiarism_turnitinsim').": ".$e->getFaultCode().PHP_EOL;

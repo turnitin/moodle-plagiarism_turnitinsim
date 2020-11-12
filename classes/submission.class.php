@@ -597,7 +597,6 @@ class plagiarism_turnitinsim_submission {
             // Handle response from the API.
             $this->handle_upload_response($responsedata, $filename);
         } catch (Exception $e) {
-
             $this->tsrequest->handle_exception($e, 'taskoutputfailedupload', $this->getturnitinid());
         }
     }
