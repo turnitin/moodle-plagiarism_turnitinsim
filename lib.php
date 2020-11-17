@@ -737,6 +737,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
                 $filedetails = $tssubmission->get_file_details();
 
+                $filearea = $filedetails->get_filearea();
+                $nonsubmittingareas = array("feedback_files", "introattachment");
+                if (in_array($filearea, $nonsubmittingareas)) {
+                    return true;
+                }
+                
                 // Check that the file exists and is not empty.
                 if (!$filedetails) {
                     $tssubmission->settogenerate(0);
