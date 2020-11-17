@@ -101,20 +101,20 @@ class plagiarism_turnitinsim_settings {
             // Immediate.
             $label = get_string('reportgen0', 'plagiarism_turnitinsim');
             $reportgen[] = $mform->createElement(
-                'radio', 
-                'reportgeneration', 
-                null, 
-                $label, 
-                TURNITINSIM_REPORT_GEN_IMMEDIATE, 
+                'radio',
+                'reportgeneration',
+                null,
+                $label,
+                TURNITINSIM_REPORT_GEN_IMMEDIATE,
                 array('class' => 'turnitinsim_settings_radio')
             );
 
             // Immediate and Due Date.
             $label = get_string('reportgen1', 'plagiarism_turnitinsim');
             $reportgen[] = $mform->createElement(
-                'radio', 
-                'reportgeneration', 
-                null, 
+                'radio',
+                'reportgeneration',
+                null,
                 $label,
                 TURNITINSIM_REPORT_GEN_IMMEDIATE_AND_DUEDATE,
                 array('class' => 'turnitinsim_settings_radio')
@@ -123,11 +123,11 @@ class plagiarism_turnitinsim_settings {
             // Due Date.
             $label = get_string('reportgen2', 'plagiarism_turnitinsim');
             $reportgen[] = $mform->createElement(
-                'radio', 
-                'reportgeneration', 
-                null, 
-                $label, 
-                TURNITINSIM_REPORT_GEN_DUEDATE, 
+                'radio',
+                'reportgeneration',
+                null,
+                $label,
+                TURNITINSIM_REPORT_GEN_DUEDATE,
                 array('class' => 'turnitinsim_settings_radio')
             );
 
