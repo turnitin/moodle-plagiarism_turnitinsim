@@ -174,6 +174,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
         $output = '';
 
+        // Don't show links for certain file types as they won't have been submitted to Turnitin.
+        if (!empty($linkarray["file"])) {
+            $file = $linkarray["file"];
+            $filearea = $file->get_filearea();
+            $nonsubmittingareas = array("feedback_files", "introattachment");
+            if (in_array($filearea, $nonsubmittingareas)) {
+                return $output;
+            }
+        }
+
         // If this is a quiz, retrieve the cmid.
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
         if ($component == "qtype_essay" && !empty($linkarray['area'])) {
@@ -726,6 +736,15 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
                 $filedetails = $tssubmission->get_file_details();
+
+                // Do not submit feedback or into files
+                if ($filedetails) {
+                    $filearea = $filedetails->get_filearea();
+                    $nonsubmittingareas = array("feedback_files", "introattachment");
+                    if (in_array($filearea, $nonsubmittingareas)) {
+                        return true;
+                    }
+                }
 
                 // Check that the file exists and is not empty.
                 if (!$filedetails) {
