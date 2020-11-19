@@ -738,7 +738,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $filedetails = $tssubmission->get_file_details();
 
                 // Do not submit feedback or into files
-                if($filedetails) {
+                if ($filedetails) {
                     $filearea = $filedetails->get_filearea();
                     $nonsubmittingareas = array("feedback_files", "introattachment");
                     if (in_array($filearea, $nonsubmittingareas)) {
