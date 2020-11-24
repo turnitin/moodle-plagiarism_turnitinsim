@@ -237,16 +237,17 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 return $output;
             }
 
+            $plagiarismsettings = $this->get_settings($cm->id);
+
             if ($plagiarismfile) {
                 $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
-            }
 
-            // If the user is a student and they are not allowed to view reports,
-            // and they have accepted the EULA then return empty output.
-            $plagiarismsettings = $this->get_settings($cm->id);
-            if (!$instructor && empty($plagiarismsettings->accessstudents) &&
-                $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
-                return $output;
+                // If the user is a student and they are not allowed to view reports,
+                // and they have accepted the EULA then return empty output.
+                if (!$instructor && empty($plagiarismsettings->accessstudents) &&
+                    $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                    return $output;
+                }
             }
 
             // Render the OR score or current submission status.
@@ -360,8 +361,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';
 
             // Output rendered status and resubmission link if applicable.
-            $output .= html_writer::tag('div', $turnitinicon.$status.$resubmitlink,
-                            array('class' => 'turnitinsim_status submission_'.$submissionid));
+            if ($instructor || (!$instructor && $plagiarismsettings->accessstudents)) {
+                $output .= html_writer::tag('div', $turnitinicon . $status . $resubmitlink,
+                    array('class' => 'turnitinsim_status submission_' . $submissionid));
+            }
         }
 
         return html_writer::tag('div', $output, array('class' => 'turnitinsim_links'));
