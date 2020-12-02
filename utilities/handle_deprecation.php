@@ -97,4 +97,20 @@ class handle_deprecation {
         return $CFG->branch < 39 ? get_config('plagiarism', 'turnitinsim_use')
             : get_config('plagiarism_turnitinsim', 'enabled');
     }
+
+    /**
+     * In Moodle 3.9, download_as_dataformat() was deprecated and \core\dataformat::download_data() was introduced.
+     * This method handles our support for multiple Moodle versions.
+     *
+     * @param string $filename The name of the dile to download.
+     * @param string $dataformat The format of the file.
+     * @param array $columns The names of the columns.
+     * @param string $data The data to download.
+     */
+    public static function download_data($exportfile, $dataformat, $columns, $data) {
+        global $CFG;
+        
+        $CFG->branch >= 39 ? \core\dataformat::download_data($exportfile, $dataformat, $columns, $data) 
+            : download_as_dataformat($exportfile, $dataformat, $columns, $data);
+    }
 }
