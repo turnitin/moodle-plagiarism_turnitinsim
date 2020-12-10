@@ -411,6 +411,9 @@ class plagiarism_turnitinsim_submission {
         // Add owners to the metadata.
         $request['metadata']['owners'] = $this->create_owners_metadata();
 
+        // Add original submission time metadata.
+        $request['metadata']['original_submitted_time'] = gmdate("Y-m-d\TH:i:s\Z", time());
+
         // Add EULA acceptance details to submission if the submitter has accepted it.
         $language = $this->tsrequest->get_language()->localecode;
         $locale = ($tssubmitter->get_lasteulaacceptedlang()) ? $tssubmitter->get_lasteulaacceptedlang() : $language;
