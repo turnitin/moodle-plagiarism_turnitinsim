@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 
 /**
  * Tests for Turnitin Integrity submission class.
@@ -57,7 +58,7 @@ class submission_class_testcase extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG, $DB;
 
         // Set plugin as enabled in config for this module type.
@@ -137,7 +138,7 @@ class submission_class_testcase extends advanced_testcase {
         $tssubmission->update();
 
         // Submission id should now be set.
-        $this->assertInternalType("int", $tssubmission->getid());
+        handle_deprecation::assertInternalTypeInt($this, $tssubmission->getid());
 
         // Check an id that doesn't exist doesn't return an object.
         $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => 0));
@@ -252,15 +253,15 @@ class submission_class_testcase extends advanced_testcase {
         $tsuser2 = new plagiarism_turnitinsim_user($this->student2->id);
 
         // Check user array returns correct details.
-        $this->assertContains($this->student1->lastname, $owners[0]['family_name']);
-        $this->assertContains($this->student1->firstname, $owners[0]['given_name']);
-        $this->assertContains($this->student1->email, $owners[0]['email']);
-        $this->assertContains($tsuser1->get_turnitinid(), $owners[0]['id']);
+        handle_deprecation::assertContains($this, $this->student1->lastname, $owners[0]['family_name']);
+        handle_deprecation::assertContains($this, $this->student1->firstname, $owners[0]['given_name']);
+        handle_deprecation::assertContains($this, $this->student1->email, $owners[0]['email']);
+        handle_deprecation::assertContains($this, $tsuser1->get_turnitinid(), $owners[0]['id']);
 
-        $this->assertContains($this->student2->lastname, $owners[1]['family_name']);
-        $this->assertContains($this->student2->firstname, $owners[1]['given_name']);
-        $this->assertContains($this->student2->email, $owners[1]['email']);
-        $this->assertContains($tsuser2->get_turnitinid(), $owners[1]['id']);
+        handle_deprecation::assertContains($this, $this->student2->lastname, $owners[1]['family_name']);
+        handle_deprecation::assertContains($this, $this->student2->firstname, $owners[1]['given_name']);
+        handle_deprecation::assertContains($this, $this->student2->email, $owners[1]['email']);
+        handle_deprecation::assertContains($this, $tsuser2->get_turnitinid(), $owners[1]['id']);
     }
 
     /**

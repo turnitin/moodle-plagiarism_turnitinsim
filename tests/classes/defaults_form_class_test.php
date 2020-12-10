@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/defaults_form.class.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 
 /**
  * Tests for default settings form.
@@ -36,7 +37,7 @@ class defaultsform_class_testcase extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         // Set API details in config.
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
@@ -87,6 +88,6 @@ class defaultsform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_defaults_form();
         $output = $form->display();
 
-        $this->assertContains('</form>', $output);
+        handle_deprecation::assertContains($this, '</form>', $output);
     }
 }

@@ -109,8 +109,54 @@ class handle_deprecation {
      */
     public static function download_data($exportfile, $dataformat, $columns, $data) {
         global $CFG;
-        
-        $CFG->branch >= 39 ? \core\dataformat::download_data($exportfile, $dataformat, $columns, $data) 
+
+        $CFG->branch >= 39 ? \core\dataformat::download_data($exportfile, $dataformat, $columns, $data)
             : download_as_dataformat($exportfile, $dataformat, $columns, $data);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertContains was deprecated in favour of the newer assertStringContainsString. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $needle The string we want to find.
+     * @param string $haystack The string we are searching within.
+     */
+    public static function assertContains($object, $needle, $haystack) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertStringContainsString($needle, $haystack)
+            : $object->assertContains($needle, $haystack);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertNotContains was deprecated in favour of the newer assertStringNotContainsString. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $needle The string we want to find.
+     * @param string $haystack The string we are searching within.
+     */
+    public static function assertNotContains($object, $needle, $haystack) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertStringNotContainsString($needle, $haystack)
+            : $object->assertNotContains($needle, $haystack);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertInternalType was deprecated in favour of newer methods such as assertIsInt. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $value The value we are looking for.
+     */
+    public static function assertInternalTypeInt($object, $value) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertIsInt($value) : $object->assertInternalType("int", $value);
     }
 }

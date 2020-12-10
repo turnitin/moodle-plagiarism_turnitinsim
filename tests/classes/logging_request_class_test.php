@@ -38,7 +38,7 @@ class logging_request_class_testcase extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         // Set plugin as enabled in config for this module type.
         set_config('turnitinenableremotelogging', 1, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', 0, 'plagiarism_turnitinsim');
