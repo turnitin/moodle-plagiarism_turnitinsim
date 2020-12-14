@@ -1,0 +1,28 @@
+[
+  {
+    "id": "a7275318-232a-43ef-a3d6-8f3b732effa7",
+    "url": "https://www.example.com/moodle/plagiarism/turnitinsim/callbacks.php",
+    "description": "testing webhook",
+    "created_time": "2017-11-28T14:20:34.934Z",
+    "event_types": [
+      "SIMILARITY_COMPLETE",
+      "SUBMISSION_COMPLETE",
+      "SIMILARITY_UPDATED"
+    ],
+    "allow_insecure": false,
+    "httpstatus": 201
+  },
+  {
+  "id": "2d294ff3-f032-4562-adab-9538727c3ed7",
+  "url": "https://www.example.com/moodle/extra/plagiarism/turnitinsim/callbacks.php",
+  "description": "testing webhook",
+  "created_time": "2020-11-28T14:20:34.934Z",
+  "event_types": [
+  "SIMILARITY_COMPLETE",
+  "SUBMISSION_COMPLETE",
+  "SIMILARITY_UPDATED"
+  ],
+  "allow_insecure": false,
+  "httpstatus": 201
+  }
+]
