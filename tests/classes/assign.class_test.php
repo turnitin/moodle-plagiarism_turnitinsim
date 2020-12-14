@@ -42,7 +42,7 @@ class assign_class_testcase extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $DB;
 
         // Set plugin as enabled in config for this module type.
