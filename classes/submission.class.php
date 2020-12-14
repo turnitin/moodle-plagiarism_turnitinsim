@@ -947,6 +947,9 @@ class plagiarism_turnitinsim_submission {
                     'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
+        echo 'test';
+        var_dump(array('userid' => $linkarray['userid'],
+            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
 
