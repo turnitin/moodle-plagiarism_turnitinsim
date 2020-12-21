@@ -290,25 +290,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
-                        // Allow a modal to be launched with a EULA link and ability to accept.
-                        $tsrequest = new plagiarism_turnitinsim_request();
-                        $lang = $tsrequest->get_language();
-                        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
-                        $helpicon = $OUTPUT->pix_icon(
-                            'help',
-                            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
-                            'core',
-                            ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
-                        );
-
-                        $eulalaunch = ' '.$helpicon;
-
-                        $status = html_writer::tag(
-                            'span',
-                            get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim') . $eulalaunch,
-                            array('class' => 'tii_status_text tii_status_text_eula')
-                        );
+                        $status = $this->get_eula_status();
                         $showresubmitlink = false;
                         break;
 
@@ -360,8 +343,14 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $eventdata = $moduleobject->create_submission_event_data($linkarray);
                 $this->submission_handler($eventdata);
 
-                $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
-                    'plagiarism_turnitinsim'));
+                // Check if student has accepted the EULA.
+                $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
+                if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                    $status = $this->get_eula_status();
+                } else {
+                    $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
+                            'plagiarism_turnitinsim'));
+                }
             }
 
             // Render a Turnitin logo.
@@ -378,6 +367,37 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         return html_writer::tag('div', $output, array('class' => 'turnitinsim_links'));
+    }
+
+    /**
+     * This returns the HTML elements required to display a EULA_NOT_ACCEPTED status.
+     *
+     * @return string The HTML element for a EULA NOT ACCEPTED status.
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    private function get_eula_status() {
+        global $OUTPUT;
+
+        // Allow a modal to be launched with a EULA link and ability to accept.
+        $tsrequest = new plagiarism_turnitinsim_request();
+        $lang = $tsrequest->get_language();
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
+
+        $helpicon = $OUTPUT->pix_icon(
+            'help',
+            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
+            'core',
+            ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
+        );
+
+        $eulalaunch = ' '.$helpicon;
+
+        return html_writer::tag(
+            'span',
+            get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim') . $eulalaunch,
+            array('class' => 'tii_status_text tii_status_text_eula')
+        );
     }
 
     /**
