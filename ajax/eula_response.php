@@ -51,7 +51,6 @@ switch ($action) {
         $data->lasteulaacceptedlang = $lang->localecode;
         $DB->update_record('plagiarism_turnitinsim_users', $data);
 
-        // Update all existing submissions where EULA was not accepted.
         // Get all submissions for this student with EULA_NOT_ACCEPTED status.
         $submissions = $DB->get_records(
             'plagiarism_turnitinsim_sub',
@@ -61,7 +60,7 @@ switch ($action) {
             )
         );
 
-        // Set each paper in this module submitted by this user to queued.
+        // Update all existing submissions where EULA was not accepted.
         foreach ($submissions as $submission) {
             $data = new stdClass();
             $data->id     = $submission->id;
