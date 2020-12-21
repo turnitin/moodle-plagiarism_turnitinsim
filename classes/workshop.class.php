@@ -138,7 +138,7 @@ class plagiarism_turnitinsim_workshop {
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
 
         $eventdata['eventtype'] = 'assessable_submitted';
-        $eventdata['userid'] = $USER->id;
+        $eventdata['userid'] = $linkarray['userid'];
 
         if (isset($linkarray['file'])) {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());

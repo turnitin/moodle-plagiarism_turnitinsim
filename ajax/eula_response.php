@@ -34,7 +34,6 @@ if (!confirm_sesskey()) {
 
 // Get any params passed in.
 $action = required_param('action', PARAM_ALPHAEXT);
-$contextid = optional_param('contextid', 0, PARAM_INT);
 
 $tsrequest = new plagiarism_turnitinsim_request();
 
@@ -52,31 +51,25 @@ switch ($action) {
         $data->lasteulaacceptedlang = $lang->localecode;
         $DB->update_record('plagiarism_turnitinsim_users', $data);
 
-        // If we have a context id then this is an instructor. So we update current submissions.
-        if (!empty($contextid)) {
+        // Update all existing submissions where EULA was not accepted.
+        // Get all submissions for this student with EULA_NOT_ACCEPTED status.
+        $submissions = $DB->get_records(
+            'plagiarism_turnitinsim_sub',
+            array(
+                'status'    => TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED,
+                'submitter' => $USER->id
+            )
+        );
 
-            // Get all submissions in this context.
-            $context = context::instance_by_id($contextid);
-            $submissions = $DB->get_records(
-                'plagiarism_turnitinsim_sub',
-                array(
-                    'cm'        => $context->instanceid,
-                    'status'    => TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED,
-                    'submitter' => $USER->id
-                )
-            );
+        // Set each paper in this module submitted by this user to queued.
+        foreach ($submissions as $submission) {
+            $data = new stdClass();
+            $data->id     = $submission->id;
+            $data->status = TURNITINSIM_SUBMISSION_STATUS_QUEUED;
+            $data->tiiattempts = 0;
+            $data->tiiretrytime = 0;
 
-            // Set each paper in this module submitted by this user to queued.
-            foreach ($submissions as $submission) {
-                $data = new stdClass();
-                $data->id     = $submission->id;
-                $data->status = TURNITINSIM_SUBMISSION_STATUS_QUEUED;
-                $data->cm     = $context->instanceid;
-                $data->tiiattempts = 0;
-                $data->tiiretrytime = 0;
-
-                $DB->update_record('plagiarism_turnitinsim_sub', $data);
-            }
+            $DB->update_record('plagiarism_turnitinsim_sub', $data);
         }
         echo json_encode(["success" => true]);
 
