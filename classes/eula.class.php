@@ -74,4 +74,46 @@ class plagiarism_turnitinsim_eula {
             return $responsedata;
         }
     }
+
+    /**
+     * Method for handling the acceptance of the EULA, called from eula_response.
+     * @throws dml_exception
+     */
+    public function accept_eula() {
+        global $DB, $USER;
+
+        // Get current user record.
+        $user = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $USER->id));
+
+        // Update EULA accepted version and timestamp for user.
+        $data = new stdClass();
+        $data->id = $user->id;
+        $data->lasteulaaccepted = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
+        $data->lasteulaacceptedtime = time();
+        $lang = $this->tsrequest->get_language();
+        $data->lasteulaacceptedlang = $lang->localecode;
+        $DB->update_record('plagiarism_turnitinsim_users', $data);
+
+        // Get all submissions for this student with EULA_NOT_ACCEPTED status.
+        $submissions = $DB->get_records(
+            'plagiarism_turnitinsim_sub',
+            array(
+                'status' => TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED,
+                'userid' => $USER->id
+            )
+        );
+
+        // Update all existing submissions where EULA was not accepted.
+        foreach ($submissions as $submission) {
+            $data = new stdClass();
+            $data->id     = $submission->id;
+            $data->status = TURNITINSIM_SUBMISSION_STATUS_QUEUED;
+            $data->tiiattempts = 0;
+            $data->tiiretrytime = 0;
+
+            $DB->update_record('plagiarism_turnitinsim_sub', $data);
+        }
+
+        return json_encode(["success" => true]);
+    }
 }
