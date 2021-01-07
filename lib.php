@@ -291,7 +291,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
 
-                        $status = $this->get_eula_status();
+                        $status = $this->get_eula_status($cm->id);
                         $showresubmitlink = false;
                         break;
 
@@ -346,7 +346,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 // Check if student has accepted the EULA.
                 $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
-                    $status = $this->get_eula_status();
+                    $status = $this->get_eula_status($cm->id);
                 } else {
                     $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
                             'plagiarism_turnitinsim'));
@@ -372,11 +372,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     /**
      * This returns the HTML elements required to display a EULA_NOT_ACCEPTED status.
      *
+     * @param string $cmid The course module ID.
      * @return string The HTML element for a EULA NOT ACCEPTED status.
      * @throws coding_exception
      * @throws dml_exception
      */
-    private function get_eula_status() {
+    private function get_eula_status($cmid) {
         global $OUTPUT;
 
         // Allow a modal to be launched with a EULA link and ability to accept.
@@ -384,14 +385,22 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $lang = $tsrequest->get_language();
         $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
+        if (!has_capability(
+            'plagiarism/turnitinsim:viewfullreport',
+            context_module::instance($cmid))) {
+            $trigger = 'eula-row-launch';
+        } else {
+            $trigger = 'eula-row';
+        }
+
         $helpicon = $OUTPUT->pix_icon(
             'help',
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
             'core',
-            ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
+            ['class' => $trigger, 'data-eula-link' => $eulaurl]
         );
 
-        $eulalaunch = ' '.$helpicon;
+        $eulalaunch = ' ' . $helpicon;
 
         return html_writer::tag(
             'span',
