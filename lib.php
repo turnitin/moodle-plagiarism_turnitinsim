@@ -385,9 +385,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $lang = $tsrequest->get_language();
         $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
 
-        if (!has_capability(
-            'plagiarism/turnitinsim:viewfullreport',
-            context_module::instance($cmid))) {
+        if (!has_capability('plagiarism/turnitinsim:viewfullreport', context_module::instance($cmid))) {
             $trigger = 'eula-row-launch';
         } else {
             $trigger = 'eula-row';
