@@ -345,6 +345,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 // Check if student has accepted the EULA.
                 $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
+
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $status = $this->get_eula_status();
                 } else {
@@ -697,7 +698,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             }
 
             // If the submitter has not accepted the EULA then flag accordingly.
-            if ($submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
+            $authoruser = new plagiarism_turnitinsim_user($author);
+            if ($authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
                 $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $tssubmission->update();
                 return true;
@@ -805,8 +807,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
 
                 // If the submitter has not accepted the EULA then flag accordingly.
-                if ((empty($submitter->get_lasteulaaccepted()) ||
-                        $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
+                $authoruser = new plagiarism_turnitinsim_user($author);
+                if ((empty($authoruser->get_lasteulaaccepted()) ||
+                        $authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
                     (bool)$features->tenant->require_eula
                 ) {
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);

@@ -130,7 +130,7 @@ class plagiarism_turnitinsim_workshop {
      * @throws dml_exception
      */
     public function create_submission_event_data($linkarray) {
-        global $DB, $USER;
+        global $DB;
 
         $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
