@@ -125,6 +125,7 @@ class handle_deprecation {
      */
     public static function assertContains($object, $needle, $haystack) {
         global $CFG;
+//echo $haystack;
 
         $CFG->branch >= 37 ? $object->assertStringContainsString($needle, $haystack)
             : $object->assertContains($needle, $haystack);

@@ -29,6 +29,7 @@ global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 
 /**
  * Tests for lib methods.
