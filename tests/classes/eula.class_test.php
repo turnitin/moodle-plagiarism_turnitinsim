@@ -52,130 +52,130 @@ class eula_class_testcase extends advanced_testcase {
     /**
      * Test get latest eula version failed request to Turnitin.
      */
-//    public function test_get_latest_version_failure() {
-//        $this->resetAfterTest();
-//
-//        // Get the response for a failed EULA version retrieval.
-//        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_failure.json');
-//
-//        // Mock API request class.
-//        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-//            ->setMethods(['send_request'])
-//            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
-//            ->getMock();
-//
-//        // Mock API send request method.
-//        $tsrequest->expects($this->once())
-//            ->method('send_request')
-//            ->willReturn($response);
-//
-//        // Get latest EULA version.
-//        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
-//        $result = $tseula->get_latest_version();
-//
-//        // Test that the EULA version has not been retrieved.
-//        $this->assertFalse(isset($result->version));
-//    }
-//
-//    /**
-//     * Test get latest eula version request to Turnitin fails with exception.
-//     */
-//    public function test_get_latest_version_exception() {
-//        $this->resetAfterTest();
-//
-//        // Mock API request class.
-//        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-//            ->setMethods(['send_request'])
-//            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
-//            ->getMock();
-//
-//        // Mock API send request method.
-//        $tsrequest->expects($this->once())
-//            ->method('send_request')
-//            ->will($this->throwException(new Exception()));
-//
-//        // Get the latest EULA version.
-//        $tseula = new plagiarism_turnitinsim_eula($tsrequest);
-//        $result = $tseula->get_latest_version();
-//
-//        // Test that the latest EULA version has not been retrieved.
-//        $this->assertFalse(isset($result->version));
-//    }
-//
-//    /**
-//     * Test get latest eula version success request to Turnitin.
-//     */
-//    public function test_get_latest_version_success() {
-//        $this->resetAfterTest();
-//
-//        // Get the response for a failed EULA version retrieval.
-//        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
-//
-//        // Mock API request class.
-//        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-//            ->setMethods(['send_request'])
-//            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
-//            ->getMock();
-//
-//        // Mock API send request method.
-//        $tsrequest->expects($this->once())
-//            ->method('send_request')
-//            ->willReturn($response);
-//
-//        // Get the latest EULA version.
-//        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
-//        $result = $tseula->get_latest_version();
-//
-//        // Test that the latest EULA version has been retrieved.
-//        $this->assertTrue(isset($result->version));
-//    }
-//
-//    /**
-//     * Test accept EULA updates the status of the EULA for all of a student's submissions.
-//     */
-//    public function test_accept_eula_saves_eula_and_updates_submissions() {
-//        global $DB;
-//
-//        $this->resetAfterTest();
-//
-//        set_config('turnitin_eula_version', 'v1beta', 'plagiarism_turnitinsim');
-//
-//        // Create 3 submissions.
-//        $this->turnitinsim_generator = new turnitinsim_generator();
-//        $submission = $this->turnitinsim_generator->create_submission(3, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
-//
-//        $this->setUser($submission['student']);
-//
-//        // Insert a user to the TII table.
-//        $user = new stdClass();
-//        $user->userid = $submission['student']->id;
-//        $user->turnitinid = (new handle_deprecation)->create_uuid();
-//        $DB->insert_record('plagiarism_turnitinsim_users', $user);
-//
-//        // Check the data.
-//        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
-//        $this->assertCount(3, $submissions);
-//
-//        $users = $DB->get_records('plagiarism_turnitinsim_users');
-//        $this->assertCount(1, $users);
-//
-//        // Accept the EULA.
-//        $tseula = new plagiarism_turnitinsim_eula();
-//        $result = json_decode($tseula->accept_eula());
-//        $this->assertEquals(true, $result->success);
-//
-//        // Check the results.
-//        $userresult = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $user->userid));
-//        $this->assertEquals('v1beta', $userresult->lasteulaaccepted);
-//        $this->assertGreaterThan('lasteulaacceptedtime', time() - 60);
-//        $this->assertEquals('en-US', $userresult->lasteulaacceptedlang);
-//
-//        $submissionresult = $DB->get_records(
-//            'plagiarism_turnitinsim_sub',
-//            array('status' => TURNITINSIM_SUBMISSION_STATUS_QUEUED)
-//        );
-//        $this->assertCount(3, $submissionresult);
-//    }
+    public function test_get_latest_version_failure() {
+        $this->resetAfterTest();
+
+        // Get the response for a failed EULA version retrieval.
+        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_failure.json');
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        // Get latest EULA version.
+        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
+        $result = $tseula->get_latest_version();
+
+        // Test that the EULA version has not been retrieved.
+        $this->assertFalse(isset($result->version));
+    }
+
+    /**
+     * Test get latest eula version request to Turnitin fails with exception.
+     */
+    public function test_get_latest_version_exception() {
+        $this->resetAfterTest();
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->will($this->throwException(new Exception()));
+
+        // Get the latest EULA version.
+        $tseula = new plagiarism_turnitinsim_eula($tsrequest);
+        $result = $tseula->get_latest_version();
+
+        // Test that the latest EULA version has not been retrieved.
+        $this->assertFalse(isset($result->version));
+    }
+
+    /**
+     * Test get latest eula version success request to Turnitin.
+     */
+    public function test_get_latest_version_success() {
+        $this->resetAfterTest();
+
+        // Get the response for a failed EULA version retrieval.
+        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        // Get the latest EULA version.
+        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
+        $result = $tseula->get_latest_version();
+
+        // Test that the latest EULA version has been retrieved.
+        $this->assertTrue(isset($result->version));
+    }
+
+    /**
+     * Test accept EULA updates the status of the EULA for all of a student's submissions.
+     */
+    public function test_accept_eula_saves_eula_and_updates_submissions() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        set_config('turnitin_eula_version', 'v1beta', 'plagiarism_turnitinsim');
+
+        // Create 3 submissions.
+        $this->turnitinsim_generator = new turnitinsim_generator();
+        $submission = $this->turnitinsim_generator->create_submission(3, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
+
+        $this->setUser($submission['student']);
+
+        // Insert a user to the TII table.
+        $user = new stdClass();
+        $user->userid = $submission['student']->id;
+        $user->turnitinid = (new handle_deprecation)->create_uuid();
+        $DB->insert_record('plagiarism_turnitinsim_users', $user);
+
+        // Check the data.
+        $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
+        $this->assertCount(3, $submissions);
+
+        $users = $DB->get_records('plagiarism_turnitinsim_users');
+        $this->assertCount(1, $users);
+
+        // Accept the EULA.
+        $tseula = new plagiarism_turnitinsim_eula();
+        $result = json_decode($tseula->accept_eula());
+        $this->assertEquals(true, $result->success);
+
+        // Check the results.
+        $userresult = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $user->userid));
+        $this->assertEquals('v1beta', $userresult->lasteulaaccepted);
+        $this->assertGreaterThan('lasteulaacceptedtime', time() - 60);
+        $this->assertEquals('en-US', $userresult->lasteulaacceptedlang);
+
+        $submissionresult = $DB->get_records(
+            'plagiarism_turnitinsim_sub',
+            array('status' => TURNITINSIM_SUBMISSION_STATUS_QUEUED)
+        );
+        $this->assertCount(3, $submissionresult);
+    }
 
     /**
      * Test get_eula_status returns expected output for student.
