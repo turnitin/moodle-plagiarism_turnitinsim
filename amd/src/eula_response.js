@@ -45,6 +45,10 @@ define(['jquery', 'core/str'], function($, str) {
                     success: function() {
                         str.get_string('eulaaccepted', 'plagiarism_turnitinsim').done(function(text) {
                             $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
+
+                            str.get_string('submissiondisplaystatus:queued', 'plagiarism_turnitinsim').done(function(text) {
+                                $('.tii_status_text').html(text);
+                            });
                         });
                     }
                 });

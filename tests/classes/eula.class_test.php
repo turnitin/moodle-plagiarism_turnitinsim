@@ -176,4 +176,119 @@ class eula_class_testcase extends advanced_testcase {
         );
         $this->assertCount(3, $submissionresult);
     }
+
+    /**
+     * Test get_eula_status returns expected output for student.
+     */
+    public function test_get_eula_status_for_student() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set the features enabled.
+        $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
+        set_config('turnitin_eula_version', 'v1-beta', 'plagiarism_turnitinsim');
+
+        // Create a course.
+        $this->course = $this->getDataGenerator()->create_course();
+
+        // Create student and enrol on course.
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $this->student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($this->student->id,
+            $this->course->id,
+            $studentrole->id
+        );
+
+        // Log new user in.
+        $this->setUser($this->student);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+        $assign = new assign($context, $cm, $record->course);
+
+        // Set plugin config.
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+
+        $tseula = new plagiarism_turnitinsim_eula();
+        $result = $tseula->get_eula_status($cm->id, 'file');
+
+        handle_deprecation::assertContains($this, get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
+        handle_deprecation::assertContains($this, get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
+    }
+
+    /**
+     * Test get_eula_status returns expected output for instructor.
+     */
+    public function test_get_eula_status_for_instructor() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Set the features enabled.
+        $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
+        set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
+        set_config('turnitin_eula_version', 'v1-beta', 'plagiarism_turnitinsim');
+
+        // Create a course.
+        $this->course = $this->getDataGenerator()->create_course();
+
+        // Create instructor and enrol on course.
+        $this->instructor = $this->getDataGenerator()->create_user();
+        $instructorrole = $DB->get_record('role', array('shortname' => 'teacher'));
+        $this->getDataGenerator()->enrol_user($this->instructor->id,
+            $this->course->id,
+            $instructorrole->id
+        );
+
+        // Assign capability to instructor to view full reports at course level.
+        $context = context_course::instance($this->course->id);
+        assign_capability('plagiarism/turnitinsim:viewfullreport', CAP_ALLOW, $instructorrole->id, $context->id);
+        role_assign($instructorrole->id, $this->instructor->id, $context->id);
+        accesslib_clear_all_caches_for_unit_testing();
+
+        // Log new user in.
+        $this->setUser($this->instructor);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $context = context_module::instance($cm->id);
+
+        // Set plugin config.
+        plagiarism_plugin_turnitinsim::enable_plugin(1);
+        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
+
+        // Enable plugin for module.
+        $modsettings = array('cm' => $cm->id, 'turnitinenabled' => 1);
+        $DB->insert_record('plagiarism_turnitinsim_mod', $modsettings);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+
+        $tseula = new plagiarism_turnitinsim_eula();
+        $result = $tseula->get_eula_status($cm->id, 'file');
+
+        $this->assertEmpty($result['eula-confirm']);
+        handle_deprecation::assertContains($this, get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
+    }
 }
