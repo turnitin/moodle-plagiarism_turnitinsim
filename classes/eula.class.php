@@ -122,17 +122,18 @@ class plagiarism_turnitinsim_eula {
      * This returns the HTML elements required to display a EULA_NOT_ACCEPTED status.
      *
      * @param int $cmid - course module id
+     * @param string $submissiontype - The type of submission - file or content.
      * @return array The HTML elements for a EULA NOT ACCEPTED status.
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_eula_status($cmid) {
+    public function get_eula_status($cmid, $submissiontype) {
         global $OUTPUT;
 
         $eulaconfirm = '';
         if (!has_capability('plagiarism/turnitinsim:viewfullreport', context_module::instance($cmid))) {
             $plagiarismpluginturnitinsim = new plagiarism_plugin_turnitinsim();
-            $eulaconfirm = $plagiarismpluginturnitinsim->print_disclosure($cmid);
+            $eulaconfirm = $plagiarismpluginturnitinsim->print_disclosure($cmid, $submissiontype);
         }
 
         $helpicon = $OUTPUT->pix_icon(

@@ -292,7 +292,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
                         $eula = new plagiarism_turnitinsim_eula();
-                        $statusset = $eula->get_eula_status($cm->id);
+                        $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
                         $status = $statusset['eula-status'];
                         $eulaconfirm = $statusset['eula-confirm'];
                         $showresubmitlink = false;
@@ -352,7 +352,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
-                    $statusset = $eula->get_eula_status($cm->id);
+                    $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
                     $status = $statusset['eula-status'];
                     $eulaconfirm = $statusset['eula-confirm'];
                 } else {
@@ -441,18 +441,22 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Hook to allow a disclosure to be printed notifying users what will happen with their submission.
      *
      * @param int $cmid - course module id
+     * @param string $submissiontype - The type of submission - file or content.
      * @return string
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function print_disclosure($cmid) {
+    public function print_disclosure($cmid, $submissiontype = 'file') {
         global $CFG, $PAGE, $USER;
 
         // Avoid printing the EULA acceptance box more than once.
+        // This needs to be shown twice for a text submission as it exists in the dom twice.
         // Allowed for unit testing otherwise only the first test that calls this would work.
-        static $disclosurefirstrun = true;
-        if ($disclosurefirstrun || PHPUNIT_TEST) {
-            $disclosurefirstrun = false;
+        static $disclosurecount = 1;
+        if (($submissiontype == 'file' && $disclosurecount === 1) ||
+            ($submissiontype == 'content' && $disclosurecount <= 2) ||
+            PHPUNIT_TEST) {
+            $disclosurecount++;
 
             // Return empty output if the plugin is not being used.
             if ($cmid > -1) {
