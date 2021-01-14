@@ -170,7 +170,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'openCv');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/resend_submission', 'resendSubmission');
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inboxEulaLaunch');
         }
         $output = '';
 
