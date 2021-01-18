@@ -88,6 +88,6 @@ class defaultsform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_defaults_form();
         $output = $form->display();
 
-        handle_deprecation::assertContains($this, '</form>', $output);
+        handle_deprecation::assertcontains($this, '</form>', $output);
     }
 }
