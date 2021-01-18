@@ -144,15 +144,13 @@ class plagiarism_turnitinsim_forum {
      * @throws dml_exception
      */
     public function create_submission_event_data($linkarray) {
-        global $USER;
-
         $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
 
         $eventdata['eventtype'] = 'assessable_submitted';
-        $eventdata['userid'] = $USER->id;
+        $eventdata['userid'] = $linkarray['userid'];
 
         if (isset($linkarray['file'])) {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());

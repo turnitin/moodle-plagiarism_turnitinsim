@@ -118,4 +118,16 @@ class plagiarism_turnitinsim_observer {
         $plugin = new plagiarism_plugin_turnitinsim();
         $plugin->module_updated(self::build_event_data($event, 'module_updated'));
     }
+
+    /**
+     * Handle the course_module_deleted event.
+     * @param \core\event\course_module_deleted $event
+     */
+    public static function course_module_deleted(\core\event\course_module_deleted $event) {
+        global $DB;
+        $eventdata = $event->get_data();
+
+        $DB->delete_records('plagiarism_turnitinsim_sub', array('cm' => $eventdata['contextinstanceid']));
+        $DB->delete_records('plagiarism_turnitinsim_mod', array('cm' => $eventdata['contextinstanceid']));
+    }
 }

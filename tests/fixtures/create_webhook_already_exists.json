@@ -1,0 +1,5 @@
+{
+  "status": 409,
+  "message": "A webhook with the same URL already exist. Either update or delete the existing webhook.",
+  "httpstatus": 409
+}

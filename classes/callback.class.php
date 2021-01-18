@@ -151,6 +151,19 @@ class plagiarism_turnitinsim_callback {
                 set_config('turnitin_webhook_secret', $secret, 'plagiarism_turnitinsim');
 
                 mtrace(get_string('taskoutputwebhookcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
+            } else if ($responsedata->httpstatus === TURNITINSIM_HTTP_CANNOT_EXTRACT_TEXT) {
+                // Webhook for this URL already exists in Turnitin, but not Moodle. Get webhooks.
+                $response = $this->tsrequest->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
+                $webhooks = json_decode($response);
+
+                // We want the webhook ID for this callback URL. Save it.
+                foreach ($webhooks as $webhook) {
+                    if (is_object($webhook) && $webhook->url === TURNITINSIM_CALLBACK_URL) {
+                        set_config('turnitin_webhook_id', $webhook->id, 'plagiarism_turnitinsim');
+                        set_config('turnitin_webhook_secret', $secret, 'plagiarism_turnitinsim');
+                        break;
+                    }
+                }
             } else {
                 mtrace(get_string('taskoutputwebhooknotcreated', 'plagiarism_turnitinsim', TURNITINSIM_CALLBACK_URL));
                 $loggingrequestinfo = new plagiarism_turnitinsim_logging_request_info(TURNITINSIM_ENDPOINT_WEBHOOKS, "POST",

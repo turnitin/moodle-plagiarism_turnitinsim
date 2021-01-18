@@ -88,11 +88,12 @@ class turnitinsim_generator extends advanced_testcase {
      * Create a Turnitin submission.
      *
      * @param int $numsubmissions The number of submissions to create.
+     * @param string $status The Turnitin status for this submission.
      * @return array
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function create_submission($numsubmissions = 1) {
+    public function create_submission($numsubmissions = 1, $status = TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
@@ -119,6 +120,7 @@ class turnitinsim_generator extends advanced_testcase {
         $plagiarismfile->submissiontype = 2;
         $plagiarismfile->itemid = 12;
         $plagiarismfile->submitter = $student->id;
+        $plagiarismfile->status = $status;
 
         for ($i = 0; $i < $numsubmissions; $i++) {
             $DB->insert_record('plagiarism_turnitinsim_sub', $plagiarismfile);

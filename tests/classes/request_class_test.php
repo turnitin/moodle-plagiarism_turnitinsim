@@ -33,12 +33,12 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class plagiarism_tsrequest_testcase extends advanced_testcase {
+class request_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         // Set plugin as enabled in config for this module type.
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');

@@ -97,4 +97,66 @@ class handle_deprecation {
         return $CFG->branch < 39 ? get_config('plagiarism', 'turnitinsim_use')
             : get_config('plagiarism_turnitinsim', 'enabled');
     }
+
+    /**
+     * In Moodle 3.9, download_as_dataformat() was deprecated and \core\dataformat::download_data() was introduced.
+     * This method handles our support for multiple Moodle versions.
+     *
+     * @param string $exportfile The name of the file to download.
+     * @param string $dataformat The format of the file.
+     * @param array $columns The names of the columns.
+     * @param string $data The data to download.
+     */
+    public static function download_data($exportfile, $dataformat, $columns, $data) {
+        global $CFG;
+
+        $CFG->branch >= 39 ? \core\dataformat::download_data($exportfile, $dataformat, $columns, $data)
+            : download_as_dataformat($exportfile, $dataformat, $columns, $data);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertContains was deprecated in favour of the newer assertStringContainsString. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $needle The string we want to find.
+     * @param string $haystack The string we are searching within.
+     */
+    public static function assertcontains($object, $needle, $haystack) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertStringContainsString($needle, $haystack)
+            : $object->assertContains($needle, $haystack);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertNotContains was deprecated in favour of the newer assertStringNotContainsString. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $needle The string we want to find.
+     * @param string $haystack The string we are searching within.
+     */
+    public static function assertnotcontains($object, $needle, $haystack) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertStringNotContainsString($needle, $haystack)
+            : $object->assertNotContains($needle, $haystack);
+    }
+
+    /**
+     * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
+     * assertInternalType was deprecated in favour of newer methods such as assertIsInt. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
+     *
+     * @param object $object The test class object.
+     * @param string $value The value we are looking for.
+     */
+    public static function assertinternaltypeint($object, $value) {
+        global $CFG;
+
+        $CFG->branch >= 37 ? $object->assertIsInt($value) : $object->assertInternalType("int", $value);
+    }
 }

@@ -1,3 +1,4 @@
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,26 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @module plagiarism_turnitinsim/inbox_eula_launch
+ * Strings for plagiarism_turnitinsim component, language: Traditional Chinese.
+ *
+ * This file should only contain *_link strings as other strings are handling through AMOS.
+ *
+ * @package   plagiarism_turnitinsim
+ * @copyright 2020 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery',
-        'core/templates',
-        'core/modal_factory',
-        'plagiarism_turnitinsim/modal_eula'
-    ],
-    function($, Templates, ModalFactory, ModalTcEula) {
-        return {
-            inboxEulaLaunch: function() {
-                var trigger = $('.eula-row-launch');
-
-                ModalFactory.create(
-                    {
-                        type: ModalTcEula.TYPE
-                    },
-                    trigger
-                );
-            }
-        };
-    }
-);
+$string['help_link'] = 'https://help.turnitin.com/zh-tw/integrity/管理員/moodle.htm#step-four';

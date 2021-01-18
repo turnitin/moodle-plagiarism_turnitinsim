@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 /**
  * Tests for Turnitin Integrity user class.
  */
-class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
+class task_class_testcase extends advanced_testcase {
 
     /**
      * An example API URL used for unit testing.
@@ -46,7 +46,7 @@ class plagiarism_turnitinsim_task_class_testcase extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG;
 
         // Set plugin as enabled in config for this module type.

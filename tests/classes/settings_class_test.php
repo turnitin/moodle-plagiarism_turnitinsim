@@ -32,12 +32,12 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php
 /**
  * Tests for settings form.
  */
-class plagiarism_tssettings_class_testcase extends advanced_testcase {
+class settings_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG;
 
         // Set API details in config.
@@ -96,6 +96,27 @@ class plagiarism_tssettings_class_testcase extends advanced_testcase {
 
         $this->assertEquals(1, $settings->excludequotes);
         $this->assertEquals(0, $settings->excludebiblio);
+    }
+
+    /**
+     * Test that save module settings does not create an entry if Turnitin is disabled.
+     */
+    public function test_save_module_settings_does_not_create_entry_if_turnitin_disabled() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create data object for new assignment.
+        $data = new stdClass();
+        $data->coursemodule = 1;
+        $data->turnitinenabled = 0;
+
+        // Save Module Settings to test inserting.
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
+
+        // Check that there is no entry for this module.
+        $this->assertFalse($DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $data->coursemodule)));
     }
 
     /**

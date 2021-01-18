@@ -15,18 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for the plagiarism_turnitinsim plugin.
+ * Strings for plagiarism_turnitinsim component, language: Japanese.
+ *
+ * This file should only contain *_link strings as other strings are handling through AMOS.
  *
  * @package   plagiarism_turnitinsim
- * @copyright 2017 Turnitin
- * @author    John McGettrick <jmcgettrick@turnitin.com>
+ * @copyright 2020 Turnitin
+ * @author    David Winn <dwinn@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version = 2021011801;
-$plugin->release = "v1.2";
-$plugin->requires = 2017051500;
-$plugin->component = 'plagiarism_turnitinsim';
-$plugin->maturity  = MATURITY_STABLE;
+$string['help_link'] = 'https://help.turnitin.com/jp/integrity/管理者/moodle.htm#step-four';

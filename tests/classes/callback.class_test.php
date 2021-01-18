@@ -34,12 +34,12 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class plagiarism_tscallback_class_testcase extends advanced_testcase {
+class callback_class_testcase extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG;
 
         // Set plugin as enabled in config for this module type.
@@ -193,6 +193,41 @@ class plagiarism_tscallback_class_testcase extends advanced_testcase {
 
         // Test that the webhook has not been created.
         $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
+    }
+
+    /**
+     * Test create webhook where a webhook already exists and needs to be retrieved.
+     */
+    public function test_create_webhook_if_already_exists() {
+        $this->resetAfterTest();
+
+        // Get the response for a failed webhook creation.
+        $existsresponse = file_get_contents(__DIR__ . '/../fixtures/create_webhook_already_exists.json');
+
+        // Get the response for a successfully created webhook.
+        $successresponse = file_get_contents(__DIR__ . '/../fixtures/create_webhook_list_webhooks.json');
+        $jsonresponse = (array)json_decode($successresponse);
+
+        // Test that the webhook does not exist in Moodle.
+        $this->assertFalse(get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->exactly(2))
+            ->method('send_request')
+            ->willReturnOnConsecutiveCalls($existsresponse, $successresponse);
+
+        // Attempt to create webhook. This should retrieve an existing webhook.
+        $tscallback = new plagiarism_turnitinsim_callback( $tsrequest );
+        $tscallback->create_webhook();
+
+        // Test that the webhook is created.
+        $this->assertEquals($jsonresponse[0]->id, get_config('plagiarism_turnitinsim', 'turnitin_webhook_id'));
     }
 
     /**

@@ -28,11 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
+require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
 
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase {
+class submission_class_testcase extends advanced_testcase {
 
     /**
      * A valid submission ID.
@@ -57,7 +58,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $CFG, $DB;
 
         // Set plugin as enabled in config for this module type.
@@ -137,7 +138,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tssubmission->update();
 
         // Submission id should now be set.
-        $this->assertInternalType("int", $tssubmission->getid());
+        handle_deprecation::assertinternaltypeint($this, $tssubmission->getid());
 
         // Check an id that doesn't exist doesn't return an object.
         $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => 0));
@@ -252,15 +253,15 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $tsuser2 = new plagiarism_turnitinsim_user($this->student2->id);
 
         // Check user array returns correct details.
-        $this->assertContains($this->student1->lastname, $owners[0]['family_name']);
-        $this->assertContains($this->student1->firstname, $owners[0]['given_name']);
-        $this->assertContains($this->student1->email, $owners[0]['email']);
-        $this->assertContains($tsuser1->get_turnitinid(), $owners[0]['id']);
+        handle_deprecation::assertcontains($this, $this->student1->lastname, $owners[0]['family_name']);
+        handle_deprecation::assertcontains($this, $this->student1->firstname, $owners[0]['given_name']);
+        handle_deprecation::assertcontains($this, $this->student1->email, $owners[0]['email']);
+        handle_deprecation::assertcontains($this, $tsuser1->get_turnitinid(), $owners[0]['id']);
 
-        $this->assertContains($this->student2->lastname, $owners[1]['family_name']);
-        $this->assertContains($this->student2->firstname, $owners[1]['given_name']);
-        $this->assertContains($this->student2->email, $owners[1]['email']);
-        $this->assertContains($tsuser2->get_turnitinid(), $owners[1]['id']);
+        handle_deprecation::assertcontains($this, $this->student2->lastname, $owners[1]['family_name']);
+        handle_deprecation::assertcontains($this, $this->student2->firstname, $owners[1]['given_name']);
+        handle_deprecation::assertcontains($this, $this->student2->email, $owners[1]['email']);
+        handle_deprecation::assertcontains($this, $tsuser2->get_turnitinid(), $owners[1]['id']);
     }
 
     /**
@@ -362,6 +363,7 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         // Verify assignment is in metadata.
         $this->assertEquals($metadata['group']['id'], $cm->id);
         $this->assertEquals($metadata['group']['name'], $cm->name);
+        $this->assertEquals($metadata['group']['type'], 'ASSIGNMENT');
 
         // Verify course data is in metadata.
         $coursedetails = $DB->get_record('course', array('id' => $cm->course), 'fullname');
@@ -376,6 +378,77 @@ class plagiarism_turnitinsim_submission_class_testcase extends advanced_testcase
         $this->assertEquals($metadata['group_context']['owners'][0]['family_name'], $instructor->lastname);
         $this->assertEquals($metadata['group_context']['owners'][0]['given_name'], $instructor->firstname);
         $this->assertEquals($metadata['group_context']['owners'][0]['email'], $instructor->email);
+    }
+
+    /**
+     * Test that create metadata returns expected group type for forum.
+     */
+    public function test_create_group_metadata_forum() {
+        $this->resetAfterTest();
+
+        // Create forum module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('forum', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('forum', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'FORUM');
+    }
+
+    /**
+     * Test that create metadata returns expected group type for workshop.
+     */
+    public function test_create_group_metadata_workshop() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        // Create workshop module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('workshop', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('workshop', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'WORKSHOP');
+    }
+
+    /**
+     * Test that create metadata returns expected group type for quiz.
+     */
+    public function test_create_group_metadata_quiz() {
+        $this->resetAfterTest();
+
+        // Create quiz module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('quiz', $record);
+
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('quiz', $module->id);
+
+        $tssubmission = new plagiarism_turnitinsim_submission();
+        $tssubmission->setcm($cm->id);
+
+        $metadata = $tssubmission->create_group_metadata();
+
+        // Verify forum is in metadata.
+        $this->assertEquals($metadata['group']['type'], 'QUIZ');
     }
 
     /**

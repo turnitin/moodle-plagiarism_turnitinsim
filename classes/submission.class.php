@@ -314,7 +314,7 @@ class plagiarism_turnitinsim_submission {
         $assignment = array(
             'id'   => $cm->id,
             'name' => $cm->name,
-            'type' => TURNITINSIM_GROUP_TYPE_ASSIGNMENT
+            'type' => $cm->modname == "assign" ? "ASSIGNMENT" : strtoupper($cm->modname)
         );
 
         // Add course metadata.
@@ -410,6 +410,9 @@ class plagiarism_turnitinsim_submission {
 
         // Add owners to the metadata.
         $request['metadata']['owners'] = $this->create_owners_metadata();
+
+        // Add original submission time metadata.
+        $request['metadata']['original_submitted_time'] = gmdate("Y-m-d\TH:i:s\Z", time());
 
         // Add EULA acceptance details to submission if the submitter has accepted it.
         $language = $this->tsrequest->get_language()->localecode;
@@ -597,7 +600,6 @@ class plagiarism_turnitinsim_submission {
             // Handle response from the API.
             $this->handle_upload_response($responsedata, $filename);
         } catch (Exception $e) {
-
             $this->tsrequest->handle_exception($e, 'taskoutputfailedupload', $this->getturnitinid());
         }
     }
@@ -945,6 +947,7 @@ class plagiarism_turnitinsim_submission {
                     'type' => 'content', 'cm' => $linkarray['cmid'], 'quizanswer' => $quizanswer));
             }
         }
+
         return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
             'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
 

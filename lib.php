@@ -167,13 +167,21 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         static $jsloaded;
         if (empty($jsloaded)) {
             $jsloaded = true;
-            $PAGE->requires->string_for_js('loadingcv', 'plagiarism_turnitinsim');
             $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'openCv');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/resend_submission', 'resendSubmission');
-            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/inbox_eula_launch', 'inboxEulaLaunch');
         }
         $output = '';
+
+        // Don't show links for certain file types as they won't have been submitted to Turnitin.
+        if (!empty($linkarray["file"])) {
+            $file = $linkarray["file"];
+            $filearea = $file->get_filearea();
+            $nonsubmittingareas = array("feedback_files", "introattachment");
+            if (in_array($filearea, $nonsubmittingareas)) {
+                return $output;
+            }
+        }
 
         // If this is a quiz, retrieve the cmid.
         $component = (!empty($linkarray['component'])) ? $linkarray['component'] : "";
@@ -226,6 +234,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         // Display cv link and OR score or status.
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
             $submissionid = '';
+            $eulaconfirm = '';
             $showresubmitlink = false;
             $submission = null;
 
@@ -238,16 +247,17 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 return $output;
             }
 
+            $plagiarismsettings = $this->get_settings($cm->id);
+
             if ($plagiarismfile) {
                 $submission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request(), $plagiarismfile->id);
-            }
 
-            // If the user is a student and they are not allowed to view reports,
-            // and they have accepted the EULA then return empty output.
-            $plagiarismsettings = $this->get_settings($cm->id);
-            if (!$instructor && empty($plagiarismsettings->accessstudents) &&
-                $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
-                return $output;
+                // If the user is a student and they are not allowed to view reports,
+                // and they have accepted the EULA then return empty output.
+                if (!$instructor && empty($plagiarismsettings->accessstudents) &&
+                    $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                    return $output;
+                }
             }
 
             // Render the OR score or current submission status.
@@ -280,26 +290,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
-                        // Allow a modal to be launched with a EULA link and ability to accept.
-                        $tsrequest = new plagiarism_turnitinsim_request();
-                        $lang = $tsrequest->get_language();
-                        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
-
-                        $helpicon = $OUTPUT->pix_icon(
-                            'help',
-                            get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
-                            'core',
-                            ['class' => 'eula-row-launch', 'data-eula-link' => $eulaurl]
-                        );
-
-                        $eulalaunch = ' '.$helpicon;
-
-                        $status = html_writer::tag(
-                            'span',
-                            get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim') . $eulalaunch,
-                            array('class' => 'tii_status_text tii_status_text_eula')
-                        );
+                        $eula = new plagiarism_turnitinsim_eula();
+                        $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
+                        $status = $statusset['eula-status'];
+                        $eulaconfirm = $statusset['eula-confirm'];
                         $showresubmitlink = false;
+
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_ERROR:
@@ -350,8 +346,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $eventdata = $moduleobject->create_submission_event_data($linkarray);
                 $this->submission_handler($eventdata);
 
-                $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
-                    'plagiarism_turnitinsim'));
+                // Check if student has accepted the EULA.
+                $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
+
+                if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                    $eula = new plagiarism_turnitinsim_eula();
+                    $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
+                    $status = $statusset['eula-status'];
+                    $eulaconfirm = $statusset['eula-confirm'];
+                } else {
+                    $status = html_writer::tag('span', get_string('submissiondisplaystatus:queued',
+                            'plagiarism_turnitinsim'));
+                }
             }
 
             // Render a Turnitin logo.
@@ -361,8 +367,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';
 
             // Output rendered status and resubmission link if applicable.
-            $output .= html_writer::tag('div', $turnitinicon.$status.$resubmitlink,
-                            array('class' => 'turnitinsim_status submission_'.$submissionid));
+            if ($instructor || (!$instructor && $plagiarismsettings->accessstudents)) {
+                $output .= html_writer::tag('div', $eulaconfirm . $turnitinicon . $status . $resubmitlink,
+                    array('class' => 'turnitinsim_status submission_' . $submissionid));
+            }
         }
 
         return html_writer::tag('div', $output, array('class' => 'turnitinsim_links'));
@@ -432,84 +440,99 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * Hook to allow a disclosure to be printed notifying users what will happen with their submission.
      *
      * @param int $cmid - course module id
+     * @param string $submissiontype - The type of submission - file or content.
      * @return string
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function print_disclosure($cmid) {
+    public function print_disclosure($cmid, $submissiontype = 'file') {
         global $CFG, $PAGE, $USER;
 
-        // Return empty output if the plugin is not being used.
-        if ($cmid > -1) {
-            $cm = get_coursemodule_from_id('', $cmid);
-            if (!$this->is_plugin_active($cm)) {
-                return '';
+        // Avoid printing the EULA acceptance box more than once.
+        // This needs to be shown twice for a text submission as it exists in the dom twice.
+        // Allowed for unit testing otherwise only the first test that calls this would work.
+        static $disclosurecount = 1;
+        if (($submissiontype == 'file' && $disclosurecount === 1) ||
+            ($submissiontype == 'content' && $disclosurecount <= 2) ||
+            PHPUNIT_TEST) {
+            $disclosurecount++;
+
+            // Return empty output if the plugin is not being used.
+            if ($cmid > -1) {
+                $cm = get_coursemodule_from_id('', $cmid);
+                if (!$this->is_plugin_active($cm)) {
+                    return '';
+                }
             }
-        }
 
-        // Check we have the latest version of the EULA stored.
-        // This should only happen the very first time someone submits.
-        $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
-        // Overwrite mtrace so when EULA is checked it doesn't output to screen.
-        $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
-        if (empty($eulaversion)) {
-            $tstask = new plagiarism_turnitinsim_task();
-            $tstask->check_latest_eula_version();
+            // Check we have the latest version of the EULA stored.
+            // This should only happen the very first time someone submits.
             $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
-        }
+            // Overwrite mtrace so when EULA is checked it doesn't output to screen.
+            $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
+            if (empty($eulaversion)) {
+                $tstask = new plagiarism_turnitinsim_task();
+                $tstask->check_latest_eula_version();
+                $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
+            }
 
-        // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
-        $user = new plagiarism_turnitinsim_user($USER->id);
-        $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
+            // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
+            $user = new plagiarism_turnitinsim_user($USER->id);
+            $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
 
-        if ($user->get_lasteulaaccepted() == $eulaversion) {
-            return html_writer::tag(
-                'div',
-                get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
-                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            if ($user->get_lasteulaaccepted() == $eulaversion) {
+                return html_writer::tag(
+                    'div',
+                    get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
+                    array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
+                );
+            }
+
+            if (!(bool)$features->tenant->require_eula) {
+                return html_writer::tag(
+                    'div',
+                    get_string('eulanotrequired', 'plagiarism_turnitinsim'),
+                    array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
+                );
+            }
+
+            // Require the JS module to handle the user's eula response.
+            $PAGE->requires->string_for_js('eulaaccepted', 'plagiarism_turnitinsim');
+            $PAGE->requires->string_for_js('euladeclined', 'plagiarism_turnitinsim');
+            $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
+
+            // Link to open the Turnitin EULA in a new tab.
+            $tsrequest = new plagiarism_turnitinsim_request();
+            $lang = $tsrequest->get_language();
+            $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
+            $eulastring = ($cmid > -1) ? 'eulalink' : 'eulalinkgeneric';
+            $eulalink = get_string($eulastring, 'plagiarism_turnitinsim', $eulaurl);
+
+            // Button to allow the user to accept the Turnitin EULA.
+            $eulaacceptbtn = html_writer::tag('span',
+                get_string('eulaaccept', 'plagiarism_turnitinsim'),
+                array('class' => 'btn btn-primary', 'id' => 'pp-eula-accept')
             );
-        }
 
-        if (!(bool)$features->tenant->require_eula) {
-            return html_writer::tag(
-                'div',
-                get_string('eulanotrequired', 'plagiarism_turnitinsim'),
-                array('class' => 'eulacontainer', 'id' => 'eulacontainer')
+            // Button to allow the user to decline the Turnitin EULA.
+            $euladeclinebtn = html_writer::tag('span',
+                get_string('euladecline', 'plagiarism_turnitinsim'),
+                array('class' => 'btn btn-secondary', 'id' => 'pp-eula-decline')
             );
+
+            // Output EULA container.
+            $output = html_writer::tag(
+                'div',
+                html_writer::tag(
+                    'p',
+                    $eulalink
+                ).$eulaacceptbtn.$euladeclinebtn,
+                array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
+            );
+
+            return $output;
         }
-
-        // Require the JS module to handle the user's eula response.
-        $PAGE->requires->string_for_js('eulaaccepted', 'plagiarism_turnitinsim');
-        $PAGE->requires->string_for_js('euladeclined', 'plagiarism_turnitinsim');
-        $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
-
-        // Link to open the Turnitin EULA in a new tab.
-        $tsrequest = new plagiarism_turnitinsim_request();
-        $lang = $tsrequest->get_language();
-        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
-        $eulastring = ($cmid > -1) ? 'eulalink' : 'eulalinkgeneric';
-        $eulalink = get_string($eulastring, 'plagiarism_turnitinsim', $eulaurl);
-
-        // Button to allow the user to accept the Turnitin EULA.
-        $eulaacceptbtn = html_writer::tag('button',
-            get_string('eulaaccept', 'plagiarism_turnitinsim'),
-            array('class' => 'btn btn-primary', 'id' => 'pp-eula-accept')
-        );
-
-        // Button to allow the user to decline the Turnitin EULA.
-        $euladeclinebtn = html_writer::tag('button',
-            get_string('euladecline', 'plagiarism_turnitinsim'),
-            array('class' => 'btn btn-secondary', 'id' => 'pp-eula-decline')
-        );
-
-        // Output EULA container.
-        $output = html_writer::tag(
-            'div',
-            $eulalink.$eulaacceptbtn.$euladeclinebtn,
-            array('class' => 'eulacontainer', 'id' => 'eulacontainer')
-        );
-
-        return $output;
     }
 
     /**
@@ -662,7 +685,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             }
 
             // If the submitter has not accepted the EULA then flag accordingly.
-            if ($submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
+            $authoruser = new plagiarism_turnitinsim_user($author);
+            if ($authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
                 $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $tssubmission->update();
                 return true;
@@ -725,6 +749,15 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
                 $filedetails = $tssubmission->get_file_details();
 
+                // Do not submit feedback or into files.
+                if ($filedetails) {
+                    $filearea = $filedetails->get_filearea();
+                    $nonsubmittingareas = array("feedback_files", "introattachment");
+                    if (in_array($filearea, $nonsubmittingareas)) {
+                        return true;
+                    }
+                }
+
                 // Check that the file exists and is not empty.
                 if (!$filedetails) {
                     $tssubmission->settogenerate(0);
@@ -761,8 +794,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
 
                 // If the submitter has not accepted the EULA then flag accordingly.
-                if ((empty($submitter->get_lasteulaaccepted()) ||
-                        $submitter->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
+                $authoruser = new plagiarism_turnitinsim_user($author);
+                if ((empty($authoruser->get_lasteulaaccepted()) ||
+                        $authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) &&
                     (bool)$features->tenant->require_eula
                 ) {
                     $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);

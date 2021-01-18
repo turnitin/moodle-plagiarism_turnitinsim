@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for forum module class for plagiarism_turnitinsim component.
  */
-class forum_test extends advanced_testcase {
+class forum_class_testcase extends advanced_testcase {
 
     /**
      * Sample text for testing a forum.
@@ -42,7 +42,7 @@ class forum_test extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $DB;
 
         // Set plugin as enabled in config for this module type.

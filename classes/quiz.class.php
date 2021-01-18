@@ -133,15 +133,13 @@ class plagiarism_turnitinsim_quiz {
      * @throws dml_exception
      */
     public function create_submission_event_data($linkarray) {
-        global $USER;
-
         $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
 
         $eventdata['eventtype'] = 'quiz_submitted';
-        $eventdata['userid'] = $USER->id;
+        $eventdata['userid'] = $linkarray['userid'];
         $eventdata['objectid'] = $linkarray['area'];
 
         if (isset($linkarray['file'])) {

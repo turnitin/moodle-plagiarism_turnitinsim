@@ -42,7 +42,7 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
     /**
      * Setup method that runs before each test.
      */
-    public function setup() {
+    public function setUp(): void {
         $this->turnitinsim_generator = new turnitinsim_generator();
         $this->submission = $this->turnitinsim_generator->create_submission();
     }

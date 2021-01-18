@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for assign module class for plagiarism_turnitinsim component.
  */
-class assign_test extends advanced_testcase {
+class assign_class_testcase extends advanced_testcase {
 
     /**
      * This is text content for unit testing a text submission.
@@ -42,7 +42,7 @@ class assign_test extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         global $DB;
 
         // Set plugin as enabled in config for this module type.

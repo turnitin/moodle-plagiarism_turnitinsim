@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
 /**
  * Tests for quiz module class for plagiarism_turnitinsim component
  */
-class quiz_test extends advanced_testcase {
+class quiz_class_testcase extends advanced_testcase {
 
     /**
      * Sample text used for unit testing a quiz.
@@ -49,7 +49,7 @@ class quiz_test extends advanced_testcase {
     /**
      * Set config for use in the tests.
      */
-    public function setup() {
+    public function setUp(): void {
         // Set plugin as enabled in config for this module type.
         set_config('turnitinapiurl', 'http://www.example.com', 'plagiarism_turnitinsim');
         set_config('turnitinapikey', 1234, 'plagiarism_turnitinsim');
