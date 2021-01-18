@@ -1,3 +1,58 @@
+### Date:       2021-January-18
+### Release:    v2021011801
+
+#### :zap: What's new
+
+---
+
+#### Support for Moodle 3.10
+
+You can now confidently use Turnitin with Moodle 3.10.
+
+#### Improved loading screen for the Turnitin Integrity Viewer
+
+We’ve improved the loading screen you see when you launch the Turnitin Integrity viewer. The new loading screen includes an animation to indicate that the viewer is still opening and will be ready soon.
+
+You can use this new animation to tell if something may have gone wrong and needs to be investigated.
+
+#### Styling and workflow improvements to the Turnitin EULA
+
+We haven’t made any changes to the EULA itself, but we have adjusted the styling of the box that is shown to ask you to review and accept it when a user first uses Turnitin. We’ve also taken the opportunity to fix a few bugs that could interrupt the intended EULA workflow
+
+#### Get Help in all of Turnitin’s supported languages
+
+Did you know we offer full step-by-step guidance for all Turnitin features? You’ll find direct links to the pages relevant for the language you view the Turnitin Integrity plugin in.
+
+#### Use Turnitin with older submissions
+
+If you enable Turnitin for an assignment after submissions have already been made, we will now queue these for report generation the next time you view the inbox in Moodle. These files will have the QUEUED status. If a student has not accepted the Turnitin EULA yet, we will instead show Awaiting EULA and will only process the file after the student has accepted it.
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Assignment settings have the correct spacing
+
+The Turnitin settings configured when creating a Moodle assignment could have odd spacing. We’ve cleaned this up so the settings flow as they should.
+
+#### Feedback and Intro files will no longer be checked for similarity
+
+We no longer check any feedback or intro files you attach to an assignment for your students for similarity.
+
+#### Deleting a course module will now also delete any attached Turnitin submissions
+
+If a course module is deleted, along with its Moodle Assignments, we will now also delete any relevant Turnitin settings or entries in our database.
+
+#### dateformat now uses the correct format
+
+Thanks to our friends at OpenLMS who let us know that the download_as_dataformat() method was deprecated in Moodle 3.9. We’ve now updated this to the latest code to ensure everything works correctly for all users.
+
+#### Accept the Turnitin EULA once for all assignment types
+
+The EULA could show multiple times for each type of Moodle assignment. Now users only have to accept it once and we will remember this choice when generating Similarity Reports for Moodle Assignments, Workshops, Forums, and quizzes.
+
+---
+
 ### Date:       2020-September-23
 ### Release:    v2020092301
 

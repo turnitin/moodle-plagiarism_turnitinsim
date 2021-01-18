@@ -278,16 +278,16 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // The HTML returned should contain the queued status and a Tii icon.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
 
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             '<span>'.get_string( 'submissiondisplaystatus:queued', 'plagiarism_turnitinsim').'</span>',
             $plagiarismturnitinsim->get_links($linkarray)
         );
-        handle_deprecation::assertContains($this, 'tii_icon', $plagiarismturnitinsim->get_links($linkarray));
+        handle_deprecation::assertcontains($this, 'tii_icon', $plagiarismturnitinsim->get_links($linkarray));
 
         // Change submission status to Uploaded and verify that pending is displayed.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_UPLOADED);
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             '<span>'.get_string( 'submissiondisplaystatus:pending', 'plagiarism_turnitinsim').'</span>',
             $plagiarismturnitinsim->get_links($linkarray)
         );
@@ -295,7 +295,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Change submission status to Uploaded and verify that not sent is displayed.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_NOT_SENT);
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             '<span>'.get_string( 'submissiondisplaystatus:notsent', 'plagiarism_turnitinsim').'</span>',
             $plagiarismturnitinsim->get_links($linkarray)
         );
@@ -303,7 +303,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Change submission status to Requested and verify that pending is displayed.
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_REQUESTED);
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             '<span>'.get_string( 'submissiondisplaystatus:pending', 'plagiarism_turnitinsim').'</span>',
             $plagiarismturnitinsim->get_links($linkarray)
         );
@@ -313,17 +313,17 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->update();
         $output = $plagiarismturnitinsim->get_links($linkarray);
 
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string('submissiondisplaystatus:awaitingeula', 'plagiarism_turnitinsim'),
             $output
         );
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'),
             $output
         );
         // Log instructor in and check they do not see a resubmit link.
         $this->setUser($this->instructor);
-        handle_deprecation::assertNotContains($this,
+        handle_deprecation::assertnotcontains($this,
             get_string('resubmittoturnitin', 'plagiarism_turnitinsim'),
             $output
         );
@@ -331,7 +331,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Change submission status to a non constant and verify that the default is displayed.
         $tssubmission->setstatus('nonconstantstring');
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string( 'submissiondisplaystatus:unknown', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->get_links($linkarray));
 
@@ -339,7 +339,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_ERROR);
         $tssubmission->seterrormessage(TURNITINSIM_SUBMISSION_STATUS_TOO_MUCH_TEXT);
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string( 'submissiondisplayerror:toomuchtext', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->get_links($linkarray)
         );
@@ -347,14 +347,14 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Change error message to generic and verify that it is displayed.
         $tssubmission->seterrormessage('random_string_that_is_not_a_constant');
         $tssubmission->update();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string( 'submissiondisplayerror:generic', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->get_links($linkarray)
         );
 
         // Log instructor in and check they see a resubmit link.
         $this->setUser($this->instructor);
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string( 'resubmittoturnitin', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->get_links($linkarray)
         );
@@ -364,8 +364,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_COMPLETE);
         $tssubmission->setoverallscore($score);
         $tssubmission->update();
-        handle_deprecation::assertContains($this, $score.'%', $plagiarismturnitinsim->get_links($linkarray));
-        handle_deprecation::assertContains($this, 'or_score_colour_' . round($score, -1), $plagiarismturnitinsim->get_links($linkarray));
+        handle_deprecation::assertcontains($this, $score.'%', $plagiarismturnitinsim->get_links($linkarray));
+        handle_deprecation::assertcontains($this,
+            'or_score_colour_' . round($score, -1), $plagiarismturnitinsim->get_links($linkarray));
     }
 
     /**
@@ -376,7 +377,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
         $submissionid = 1;
-        handle_deprecation::assertContains($this, 'pp_resubmit_id_'.$submissionid, $plagiarismturnitinsim->render_resubmit_link($submissionid));
+        handle_deprecation::assertcontains($this,
+            'pp_resubmit_id_'.$submissionid, $plagiarismturnitinsim->render_resubmit_link($submissionid));
     }
 
     /**
@@ -491,7 +493,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string('eulalink', 'plagiarism_turnitinsim', $eulaurl),
             $plagiarismturnitinsim->print_disclosure($this->cm->id)
         );
@@ -527,7 +529,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string('eulaalreadyaccepted', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }
@@ -559,7 +561,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
         // Verify EULA is not output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
-        handle_deprecation::assertContains($this,
+        handle_deprecation::assertcontains($this,
             get_string('eulanotrequired', 'plagiarism_turnitinsim'),
             $plagiarismturnitinsim->print_disclosure($this->cm->id));
     }

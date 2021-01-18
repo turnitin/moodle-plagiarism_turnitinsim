@@ -102,7 +102,7 @@ class handle_deprecation {
      * In Moodle 3.9, download_as_dataformat() was deprecated and \core\dataformat::download_data() was introduced.
      * This method handles our support for multiple Moodle versions.
      *
-     * @param string $filename The name of the dile to download.
+     * @param string $exportfile The name of the file to download.
      * @param string $dataformat The format of the file.
      * @param array $columns The names of the columns.
      * @param string $data The data to download.
@@ -123,7 +123,7 @@ class handle_deprecation {
      * @param string $needle The string we want to find.
      * @param string $haystack The string we are searching within.
      */
-    public static function assertContains($object, $needle, $haystack) {
+    public static function assertcontains($object, $needle, $haystack) {
         global $CFG;
 
         $CFG->branch >= 37 ? $object->assertStringContainsString($needle, $haystack)
@@ -139,7 +139,7 @@ class handle_deprecation {
      * @param string $needle The string we want to find.
      * @param string $haystack The string we are searching within.
      */
-    public static function assertNotContains($object, $needle, $haystack) {
+    public static function assertnotcontains($object, $needle, $haystack) {
         global $CFG;
 
         $CFG->branch >= 37 ? $object->assertStringNotContainsString($needle, $haystack)
@@ -154,7 +154,7 @@ class handle_deprecation {
      * @param object $object The test class object.
      * @param string $value The value we are looking for.
      */
-    public static function assertInternalTypeInt($object, $value) {
+    public static function assertinternaltypeint($object, $value) {
         global $CFG;
 
         $CFG->branch >= 37 ? $object->assertIsInt($value) : $object->assertInternalType("int", $value);

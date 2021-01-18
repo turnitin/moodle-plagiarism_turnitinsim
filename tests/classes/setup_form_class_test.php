@@ -133,10 +133,10 @@ class setupform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display();
 
-        handle_deprecation::assertContains($this, '</form>', $output);
+        handle_deprecation::assertcontains($this, '</form>', $output);
 
         // Verify that FERPA statement is present.
-        handle_deprecation::assertContains($this, get_string('viewerpermissionferpa', 'plagiarism_turnitinsim'), $output);
+        handle_deprecation::assertcontains($this, get_string('viewerpermissionferpa', 'plagiarism_turnitinsim'), $output);
     }
 
     /**
@@ -171,6 +171,6 @@ class setupform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display_features();
 
-        handle_deprecation::assertContains($this, get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'), $output);
+        handle_deprecation::assertcontains($this, get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'), $output);
     }
 }

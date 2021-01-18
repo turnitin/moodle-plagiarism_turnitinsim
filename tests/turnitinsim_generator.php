@@ -88,6 +88,7 @@ class turnitinsim_generator extends advanced_testcase {
      * Create a Turnitin submission.
      *
      * @param int $numsubmissions The number of submissions to create.
+     * @param string $status The Turnitin status for this submission.
      * @return array
      * @throws coding_exception
      * @throws dml_exception
