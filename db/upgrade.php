@@ -312,7 +312,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
 
         set_config('turnitinapiurl', str_replace("/api", '', $turnitinapiurl), 'plagiarism_turnitinsim');
 
-        upgrade_plugin_savepoint(true, 2021011804, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2021011801, 'plagiarism', 'turnitinsim');
     }
 
     return true;
