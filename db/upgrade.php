@@ -304,5 +304,16 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020092301, 'plagiarism', 'turnitinsim');
     }
 
+    /**
+     * Remove "/api" from the turnitin URL as its been added to the endpoint constants.
+     */
+    if ($oldversion > 2021011801) {
+        $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
+
+        set_config('turnitinapiurl', str_replace("/api", '', $turnitinapiurl), 'plagiarism_turnitinsim');
+
+        upgrade_plugin_savepoint(true, 2021011804, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }

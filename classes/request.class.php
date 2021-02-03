@@ -123,10 +123,6 @@ class plagiarism_turnitinsim_request {
 
         $tiiurl = $this->get_apiurl();
 
-        if ($requesttype === 'logging') {
-            $tiiurl = str_replace('/api', '', $this->get_apiurl());
-        }
-
         if ($this->logger) {
             $this->logger->info('[' . $method . '] Request to: ' . $tiiurl . $endpoint);
             $this->logger->info('Headers: ', $this->headers);
@@ -244,7 +240,7 @@ class plagiarism_turnitinsim_request {
      */
     public function test_connection($apiurl, $apikey) {
 
-        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)$/m';
 
         if (empty($apikey) || empty($apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
