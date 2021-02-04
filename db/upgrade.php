@@ -304,5 +304,16 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020092301, 'plagiarism', 'turnitinsim');
     }
 
+    if ($oldversion < 2021020402) {
+        (new handle_deprecation)->unset_turnitinsim_use();
+
+        $table = new xmldb_table('plagiarism_turnitinsim_sub');
+        $field = new xmldb_field('quizanswer', XMLDB_TYPE_CHAR, '32', null, false, null, 0, 'tiiretrytime');
+
+        $dbman->change_field_default($table, $field);
+
+        upgrade_plugin_savepoint(true, 2021020402, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }
