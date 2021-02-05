@@ -240,6 +240,9 @@ class plagiarism_turnitinsim_request {
      */
     public function test_connection($apiurl, $apikey) {
 
+        //Strip any trailing / chars from api url.
+        $apiurl = rtrim($apiurl, '/');
+
         $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)$/m';
         $validurlregexwithapi = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
 

@@ -171,15 +171,17 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
             }
         }
 
-        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+        $validurlregexwithapi = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
 
         if ((!empty($data->turnitinapiurl))) {
-            if (preg_match($validurlregex, $data->turnitinapiurl)) {
+            //Strip any trailing / chars from api url.
+            $apiurl = rtrim($data->turnitinapiurl, '/');
+            if (preg_match($validurlregexwithapi, $apiurl)) {
                 $logger = new plagiarism_turnitinsim_logger();
-                $logger->info('Stripping /api from Turnitin URL on save: ', array($data->turnitinapiurl));
-                $turnitinapiurl = str_replace("/api", '', $data->turnitinapiurl);
+                $logger->info('Stripping /api from Turnitin URL on save: ', array($apiurl));
+                $turnitinapiurl = str_replace("/api", '', $apiurl);
             } else {
-                $turnitinapiurl = $data->turnitinapiurl;
+                $turnitinapiurl = $apiurl;
             }
         } else {
             $turnitinapiurl = '';
