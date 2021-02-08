@@ -243,15 +243,14 @@ class plagiarism_turnitinsim_request {
         //Strip any trailing / chars from api url.
         $apiurl = rtrim($apiurl, '/');
 
-        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)$/m';
-        $validurlregexwithapi = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+        $validurlregex = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)(\/api)?$/m';
 
         if (empty($apikey) || empty($apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
             return json_encode($data);
         }
 
-        if (!preg_match($validurlregex, $apiurl) && !preg_match($validurlregexwithapi, $apiurl)) {
+        if (!preg_match($validurlregex, $apiurl)) {
             $data["connection_status"] = TURNITINSIM_HTTP_BAD_REQUEST;
 
             if ($this->logger) {
@@ -260,12 +259,7 @@ class plagiarism_turnitinsim_request {
             return json_encode($data);
         }
 
-        if (preg_match($validurlregexwithapi, $apiurl)) {
-            if ($this->logger) {
-                $this->logger->info('Stripping /api from Turnitin URL for connection test: ', array($apiurl));
-            }
-            $apiurl = str_replace("/api", '', $apiurl);
-        }
+        $apiurl = str_replace("/api", '', $apiurl);
 
         $this->set_apiurl($apiurl);
         $this->set_apikey($apikey);
