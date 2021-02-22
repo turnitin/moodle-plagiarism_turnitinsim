@@ -57,15 +57,15 @@ define('TURNITINSIM_HTTP_UNPROCESSABLE_ENTITY', 422);
 define('TURNITINSIM_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS', 451);
 
 // API Endpoints.
-define('TURNITINSIM_ENDPOINT_CREATE_SUBMISSION', '/v1/submissions');
-define('TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO', '/v1/submissions/{{submission_id}}');
-define('TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION', '/v1/submissions/{{submission_id}}/original');
-define('TURNITINSIM_ENDPOINT_SIMILARITY_REPORT', '/v1/submissions/{{submission_id}}/similarity');
-define('TURNITINSIM_ENDPOINT_CV_LAUNCH', '/v1/submissions/{{submission_id}}/viewer-url');
-define('TURNITINSIM_ENDPOINT_WEBHOOKS', '/v1/webhooks');
-define('TURNITINSIM_ENDPOINT_GET_WEBHOOK', '/v1/webhooks/{{webhook_id}}');
-define('TURNITINSIM_ENDPOINT_GET_LATEST_EULA', '/v1/eula/latest');
-define('TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED', '/v1/features-enabled');
+define('TURNITINSIM_ENDPOINT_CREATE_SUBMISSION', '/api/v1/submissions');
+define('TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO', '/api/v1/submissions/{{submission_id}}');
+define('TURNITINSIM_ENDPOINT_UPLOAD_SUBMISSION', '/api/v1/submissions/{{submission_id}}/original');
+define('TURNITINSIM_ENDPOINT_SIMILARITY_REPORT', '/api/v1/submissions/{{submission_id}}/similarity');
+define('TURNITINSIM_ENDPOINT_CV_LAUNCH', '/api/v1/submissions/{{submission_id}}/viewer-url');
+define('TURNITINSIM_ENDPOINT_WEBHOOKS', '/api/v1/webhooks');
+define('TURNITINSIM_ENDPOINT_GET_WEBHOOK', '/api/v1/webhooks/{{webhook_id}}');
+define('TURNITINSIM_ENDPOINT_GET_LATEST_EULA', '/api/v1/eula/latest');
+define('TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED', '/api/v1/features-enabled');
 define('TURNITINSIM_ENDPOINT_LOGGING', '/remote-logging/api/log');
 
 // URLs.
