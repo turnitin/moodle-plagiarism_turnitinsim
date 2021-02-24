@@ -174,7 +174,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         $validurlregexwithapi = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
 
         if ((!empty($data->turnitinapiurl))) {
-            //Strip any trailing / chars from api url.
+            // Strip any trailing / chars from api url.
             $apiurl = rtrim($data->turnitinapiurl, '/');
             if (preg_match($validurlregexwithapi, $apiurl)) {
                 $logger = new plagiarism_turnitinsim_logger();

@@ -304,10 +304,8 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020092301, 'plagiarism', 'turnitinsim');
     }
 
-    /**
-     * Remove "/api" from the Turnitin URL as its been added to the endpoint constants.
-     * Update field defaults for quizanswer to match install.xml.
-     */
+    // Remove "/api" from the Turnitin URL as its been added to the endpoint constants.
+    // Update field defaults for quizanswer to match install.xml.
     if ($oldversion < 2021022201) {
         (new handle_deprecation)->unset_turnitinsim_use();
 

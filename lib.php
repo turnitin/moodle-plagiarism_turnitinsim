@@ -342,7 +342,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
                 }
 
-            } elseif($linkarray['userid'] != null) {
+            } else if ($linkarray['userid'] != null) {
                 if ($instructor && $linkarray['userid'] === "0") {
                     return $output;
                 } else {
