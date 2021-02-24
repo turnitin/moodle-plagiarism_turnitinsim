@@ -70,6 +70,10 @@ class plagiarism_turnitinsim_user {
     public function __construct($userid) {
         global $DB;
 
+        if (empty($userid)) {
+            return;
+        }
+
         $this->set_userid($userid);
 
         // If there is no user record then create one.
