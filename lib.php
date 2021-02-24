@@ -179,7 +179,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $filearea = $file->get_filearea();
 
             $nonsubmittingareas = array("feedback_files", "introattachment");
-            $allowedcomponents = array("assignsubmission_file", "mod_forum", "mod_workshop", "question");
+            $allowedcomponents = array("assignsubmission_file", "mod_assign", "mod_forum", "mod_workshop", "question");
 
             if ((in_array($filearea, $nonsubmittingareas)) || !in_array($file->get_component(), $allowedcomponents)) {
                 return $output;
