@@ -304,28 +304,21 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020092301, 'plagiarism', 'turnitinsim');
     }
 
-    /**
-     * Remove "/api" from the turnitin URL as its been added to the endpoint constants.
-     */
-    if ($oldversion < 2021020401) {
+    // Remove "/api" from the Turnitin URL as its been added to the endpoint constants.
+    // Update field defaults for quizanswer to match install.xml.
+    if ($oldversion < 2021022201) {
         (new handle_deprecation)->unset_turnitinsim_use();
 
         $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
 
         set_config('turnitinapiurl', str_replace("/api", '', $turnitinapiurl), 'plagiarism_turnitinsim');
 
-        upgrade_plugin_savepoint(true, 2021020401, 'plagiarism', 'turnitinsim');
-    }
-
-    if ($oldversion < 2021020402) {
-        (new handle_deprecation)->unset_turnitinsim_use();
-
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('quizanswer', XMLDB_TYPE_CHAR, '32', null, false, null, 0, 'tiiretrytime');
 
         $dbman->change_field_default($table, $field);
 
-        upgrade_plugin_savepoint(true, 2021020402, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2021022201, 'plagiarism', 'turnitinsim');
     }
 
     return true;
