@@ -306,7 +306,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
 
     // Remove "/api" from the Turnitin URL as its been added to the endpoint constants.
     // Update field defaults for quizanswer to match install.xml.
-    if ($oldversion < 2021022201) {
+    if ($oldversion < 2021030201) {
         (new handle_deprecation)->unset_turnitinsim_use();
 
         $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
@@ -318,7 +318,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
 
         $dbman->change_field_default($table, $field);
 
-        upgrade_plugin_savepoint(true, 2021022201, 'plagiarism', 'turnitinsim');
+        upgrade_plugin_savepoint(true, 2021030201, 'plagiarism', 'turnitinsim');
     }
 
     return true;
