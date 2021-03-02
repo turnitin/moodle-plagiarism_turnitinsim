@@ -161,15 +161,19 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws moodle_exception
      */
     public function get_links($linkarray) {
-        global $DB, $OUTPUT, $PAGE;
+        global $DB, $OUTPUT, $PAGE, $USER;
 
         // Require the relevant JS modules.  Only include once.
         static $jsloaded;
         if (empty($jsloaded)) {
             $jsloaded = true;
             $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
+            $PAGE->requires->string_for_js('eulaaccepted', 'plagiarism_turnitinsim');
+            $PAGE->requires->string_for_js('euladeclined', 'plagiarism_turnitinsim');
+            $PAGE->requires->string_for_js('submissiondisplaystatus:queued', 'plagiarism_turnitinsim');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/cv_launch', 'openCv');
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/resend_submission', 'resendSubmission');
+            $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
         }
         $output = '';
 
@@ -177,8 +181,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if (!empty($linkarray["file"])) {
             $file = $linkarray["file"];
             $filearea = $file->get_filearea();
+
             $nonsubmittingareas = array("feedback_files", "introattachment");
-            if (in_array($filearea, $nonsubmittingareas)) {
+            $allowedcomponents = array("assignsubmission_file", "mod_assign", "mod_forum", "mod_workshop", "question");
+
+            if ((in_array($filearea, $nonsubmittingareas)) || !in_array($file->get_component(), $allowedcomponents)) {
                 return $output;
             }
         }
@@ -235,6 +242,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
             $submissionid = '';
             $eulaconfirm = '';
+            $status = '';
             $showresubmitlink = false;
             $submission = null;
 
@@ -338,7 +346,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         break;
                 }
 
-            } else {
+            } else if ($linkarray['userid'] != null) {
+                if ($instructor && $linkarray['userid'] === "0") {
+                    return $output;
+                } else {
+                    $linkarray['userid'] = $USER->id;
+                }
+
                 // If the plugin was enabled after a submission was made then it will not have been sent to Turnitin. Queue it.
                 $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
                 $moduleobject = new $moduleclass;
@@ -351,7 +365,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
-                    $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
+                    $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type);
                     $status = $statusset['eula-status'];
                     $eulaconfirm = $statusset['eula-confirm'];
                 } else {

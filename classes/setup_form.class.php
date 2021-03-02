@@ -171,7 +171,22 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
             }
         }
 
-        $turnitinapiurl = (!empty($data->turnitinapiurl)) ? $data->turnitinapiurl : '';
+        $validurlregexwithapi = '/.+\.(turnitin\.com|turnitinuk\.com|turnitin\.dev|turnitin\.org|tii-sandbox\.com)\/api$/m';
+
+        if ((!empty($data->turnitinapiurl))) {
+            // Strip any trailing / chars from api url.
+            $apiurl = rtrim($data->turnitinapiurl, '/');
+            if (preg_match($validurlregexwithapi, $apiurl)) {
+                $logger = new plagiarism_turnitinsim_logger();
+                $logger->info('Stripping /api from Turnitin URL on save: ', array($apiurl));
+                $turnitinapiurl = str_replace("/api", '', $apiurl);
+            } else {
+                $turnitinapiurl = $apiurl;
+            }
+        } else {
+            $turnitinapiurl = '';
+        }
+
         $turnitinapikey = (!empty($data->turnitinapikey)) ? $data->turnitinapikey : '';
         $turnitinenablelogging = (!empty($data->turnitinenablelogging)) ? $data->turnitinenablelogging : 0;
         $turnitinenableremotelogging = (!empty($data->turnitinenableremotelogging)) ? $data->turnitinenableremotelogging : 0;

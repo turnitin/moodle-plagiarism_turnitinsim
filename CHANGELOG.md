@@ -1,3 +1,34 @@
+### Date:       2021-March-02
+### Release:    v2021030201
+
+#### :zap: What's new
+
+---
+
+#### API URLs will self-correct when inputted incorrectly
+
+When configuring the plug-in, the API URL used should end in /API. However, some users have copied just the first part of the URL into the field, which will cause the configuration to fail. We now proactively check for instances where the URL has not been configured correctly and self-correct them so that the configuration will succeed.
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Default value change for quizanswer filed in submissions table
+
+We have updated the default value for a database field in the submissions table (quizanswer) from null to 0. This could potentially cause automatic integration problems. Thank you to OpenLMS for letting us know about the problem. It’s now been fixed.
+
+#### Missing User ID - various fixes
+
+We’ve performed a thorough investigation into an issue where Moodle does not pass a user ID to Turnitin, which can present in various ways. These include:
+
+* The annotate PDF module attempts to save a submission for when a PDF is annotated.
+* If a student who has not accepted our EULA tries to view the inbox after submissions have begun but before the instructor has viewed it.
+* Text-submissions for group assignments would not save correctly if Turnitin was enabled after the submission was made.
+
+All of these issues are fixed in this release.
+
+---
+
 ### Date:       2021-January-18
 ### Release:    v2021011801
 
