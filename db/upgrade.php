@@ -321,5 +321,11 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021030201, 'plagiarism', 'turnitinsim');
     }
 
+
+    if ($oldversion < 2021030301) {
+        (new handle_deprecation)->unset_turnitinsim_use();
+        upgrade_plugin_savepoint(true, 2021030301, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }

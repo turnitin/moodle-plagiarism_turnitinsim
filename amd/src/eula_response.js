@@ -30,7 +30,9 @@ define(['jquery', 'core/str'], function($, str) {
     return {
         eulaResponse: function() {
             $(document).ready(function() {
-                $('input[name=submitbutton]').prop('disabled', 'disabled');
+                if ($("#turnitinsim_eulacontainer").length) {
+                    $('input[name=submitbutton]').prop('disabled', 'disabled');
+                }
             });
 
             $(document).on('click', '#pp-eula-accept', function() {
