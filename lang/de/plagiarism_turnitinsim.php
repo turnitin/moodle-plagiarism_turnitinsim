@@ -25,4 +25,4 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['help_link'] = 'https://help.turnitin.com/de/integrity/administratoren/verwenden-von-turnitin-mit-moodle.htm#step-four';
+$string['help_link'] = 'https://help.turnitin.com/de/integrity/lehrkrafte/moodle.htm';
