@@ -34,14 +34,19 @@
 }
 
 /* EULA */
-.turnitinsim_eulacontainer {
+.turnitinsim_eulacontainer,
+#turnitinsim_eulaaccepted,
+#turnitinsim_eulanotrequired {
     border: 1px solid #db4221;
     padding: 10px;
     text-align: center;
     margin-bottom: 10px;
 }
 
-.turnitinsim_eulacontainer #pp-eula-accept {
+.turnitinsim_eulacontainer,
+#turnitinsim_eulaaccepted,
+#turnitinsim_eulanotrequired,
+#pp-eula-accept {
     margin-right: 5px;
 }
 

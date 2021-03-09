@@ -1,3 +1,16 @@
+### Date:       2021-March-09
+### Release:    v2021030901
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Intro files no longer prevent submissions
+
+As of our last release, a bug caused when attaching an intro file to a submission prevented students from submitting. We have fixed this bug as a matter of urgency, and the intended functionality has been restored.
+
+---
+
 ### Date:       2021-March-02
 ### Release:    v2021030201
 
