@@ -294,7 +294,7 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         (new handle_deprecation)->unset_turnitinsim_use();
 
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
-        $field = new xmldb_field('quizanswer', XMLDB_TYPE_CHAR, '32', null, false, null, null, 'tiiretrytime');
+        $field = new xmldb_field('quizanswer', XMLDB_TYPE_CHAR, '32', null, false, null, 0, 'tiiretrytime');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
