@@ -698,9 +698,10 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $tssubmission->setid($submission->id);
             }
 
-            // If the submitter has not accepted the EULA then flag accordingly.
+            // If the submitter has not accepted the EULA AND the eula is required then flag accordingly.
             $authoruser = new plagiarism_turnitinsim_user($author);
-            if ($authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version')) {
+            print_r($authoruser->get_lasteulaaccepted());
+            if ($authoruser->get_lasteulaaccepted() < get_config('plagiarism_turnitinsim', 'turnitin_eula_version') && (bool)$features->tenant->require_eula) {
                 $tssubmission->setstatus(TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
                 $tssubmission->update();
                 return true;
