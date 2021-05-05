@@ -656,6 +656,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 $tssubmission->calculate_generation_time($generated);
                 $tssubmission->setstatus($status);
+                $tssubmission->settogenerate(1);
                 $tssubmission->update();
             }
 
