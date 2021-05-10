@@ -380,6 +380,6 @@ class callback_class_testcase extends advanced_testcase {
         $tscallback = new plagiarism_turnitinsim_callback( new plagiarism_turnitinsim_request() );
         $hash = $tscallback->expected_callback_signature('{"any": "string","but": "usually", "raw": "json"}');
 
-        $this->assertRegExp( "/[0-9a-f]{64}/i", $hash);
+        handle_deprecation::assertregex($this, "/[0-9a-f]{64}/i", $hash);
     }
 }

@@ -159,4 +159,20 @@ class handle_deprecation {
 
         $CFG->branch >= 37 ? $object->assertIsInt($value) : $object->assertInternalType("int", $value);
     }
+
+    /**
+     * In Moodle 3.11, Moodle switched to use PHPUnit 9.5 which contains deprecations for some assertions.
+     * assertRegExp was deprecated in favour of newer methods such as assertMatchesRegularExpression. (PHPUnit 7.5)
+     * This method handles our support for Moodle versions that use PHPUnit versions below 9.1. (Moodle 3.10 and below)
+     *
+     * @param object $object The test class object.
+     * @param string $pattern The regex pattern we are looking for.
+     * @param string $string The string we are searching within.
+     */
+    public static function assertregex($object, $pattern, $string) {
+        global $CFG;
+
+        $CFG->branch >= 311 ? $object->assertMatchesRegularExpression($pattern, $string) :
+            $object->assertRegExp("int", $pattern, $string);
+    }
 }
