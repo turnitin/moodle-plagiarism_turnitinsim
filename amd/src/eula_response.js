@@ -35,7 +35,7 @@ define(['jquery', 'core/str'], function($, str) {
                 }
             });
 
-            $(document).on('click', '#pp-eula-accept', function() {
+            $(document).on('click', '#turnitinsim_eula_accept', function() {
                 $('input[name=submitbutton]').prop('disabled', '');
 
                 // Hide the EULA link.

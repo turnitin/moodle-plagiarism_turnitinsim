@@ -526,7 +526,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             // Button to allow the user to accept the Turnitin EULA.
             $eulaacceptbtn = html_writer::tag('span',
                 get_string('eulaaccept', 'plagiarism_turnitinsim'),
-                array('class' => 'btn btn-primary', 'id' => 'pp-eula-accept')
+                array('class' => 'btn btn-primary', 'id' => 'turnitinsim_eula_accept')
             );
 
             // Button to allow the user to decline the Turnitin EULA.
