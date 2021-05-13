@@ -299,7 +299,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
                         $eula = new plagiarism_turnitinsim_eula();
-                        $statusset = $eula->get_eula_status($cm->id, $submission->gettype());
+                        $statusset = $eula->get_eula_status($cm->id, $submission->gettype(), $submission->getuserid());
                         $status = $statusset['eula-status'];
                         $eulaconfirm = $statusset['eula-confirm'];
                         $showresubmitlink = false;
@@ -365,7 +365,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
-                    $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type);
+                    $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type, $plagiarismfile->userid);
                     $status = $statusset['eula-status'];
                     $eulaconfirm = $statusset['eula-confirm'];
                 } else {
