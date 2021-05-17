@@ -44,7 +44,6 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
 
     /**
      * Restore the Turnitin settings for this module.
-     * This will only be done if the module is from the same site from where it was backed up.
      *
      * @param object $data object The data we are restoring.
      * @throws dml_exception
@@ -52,19 +51,15 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
     public function process_turnitinsim_mods($data) {
         global $DB;
 
-        if ($this->task->is_samesite()) {
+        $data = (object)$data;
+        $data->cm = $this->task->get_moduleid();
 
-            $data = (object)$data;
-            $data->cm = $this->task->get_moduleid();
-
-            $DB->insert_record('plagiarism_turnitinsim_mod', $data);
-        }
+        $DB->insert_record('plagiarism_turnitinsim_mod', $data);
     }
 
     /**
      * Restore the links to Turnitin submissions.
-     * This will only be done if the module is from the same site from where it was backed up
-     * and if the Turnitin submission does not currently exist in the database.
+     * This will only be done if the Turnitin submission does not currently exist in the database.
      *
      * @param object $data The data we are restoring.
      * @throws dml_exception
@@ -72,26 +67,23 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
     public function process_turnitinsim_subs($data) {
         global $DB, $SESSION;
 
-        if ($this->task->is_samesite()) {
-            $data = (object)$data;
+        $data = (object)$data;
 
-            $params = array('turnitinid' => $data->turnitinid, 'cm' => $this->task->get_moduleid());
-            $recordexists = (!empty($data->turnitinid)) ? $DB->record_exists('plagiarism_turnitinsim_sub', $params) : false;
+        $params = array('turnitinid' => $data->turnitinid, 'cm' => $this->task->get_moduleid());
+        $recordexists = (!empty($data->turnitinid)) ? $DB->record_exists('plagiarism_turnitinsim_sub', $params) : false;
 
-            // At this point Moodle has not restored the necessary submission files so we can not relink them.
-            // This means we will have to relink the submissions in the after_restore_module method below.
-            if (!$recordexists) {
-                $data->cm = $this->task->get_moduleid();
+        // At this point Moodle has not restored the necessary submission files so we can not relink them.
+        // This means we will have to relink the submissions in the after_restore_module method below.
+        if (!$recordexists) {
+            $data->cm = $this->task->get_moduleid();
 
-                $SESSION->tsrestore[] = $data;
-            }
+            $SESSION->tsrestore[] = $data;
         }
     }
 
     /**
      * Restore the Turnitin users.
-     * This will only be done if the module is from the same site from where it was backed up
-     * and if the Turnitin user id does not currently exist in the database.
+     * This will only be done if the Turnitin user id does not currently exist in the database.
      *
      * @param object $data The data we are restoring.
      * @throws dml_exception
@@ -99,14 +91,12 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
     public function process_turnitinsim_usrs($data) {
         global $DB;
 
-        if ($this->task->is_samesite()) {
-            $data = (object)$data;
-            $recordexists = (!empty($data->turnitinid)) ?
-                $DB->record_exists('plagiarism_turnitinsim_users', array('turnitinid' => $data->turnitinid)) : false;
+        $data = (object)$data;
+        $recordexists = (!empty($data->turnitinid)) ?
+            $DB->record_exists('plagiarism_turnitinsim_users', array('turnitinid' => $data->turnitinid)) : false;
 
-            if (!$recordexists) {
-                $DB->insert_record('plagiarism_turnitinsim_users', $data);
-            }
+        if (!$recordexists) {
+            $DB->insert_record('plagiarism_turnitinsim_users', $data);
         }
     }
 
