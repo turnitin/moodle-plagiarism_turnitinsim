@@ -77,8 +77,7 @@
 }
 
 .turnitinsim_links .pp_resubmit_link,
-.turnitinsim_links .turnitinsim_status_text_eula,
-.turnitinsim_links .eula-row-launch {
+.turnitinsim_links .turnitinsim_status_text_eula {
     cursor: pointer;
 }
 
