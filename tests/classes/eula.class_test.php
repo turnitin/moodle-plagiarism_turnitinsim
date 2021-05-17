@@ -226,7 +226,7 @@ class eula_class_testcase extends advanced_testcase {
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         $tseula = new plagiarism_turnitinsim_eula();
-        $result = $tseula->get_eula_status($cm->id, 'file');
+        $result = $tseula->get_eula_status($cm->id, 'file', $this->student->id);
 
         handle_deprecation::assertcontains($this,
             get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
@@ -288,9 +288,10 @@ class eula_class_testcase extends advanced_testcase {
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
         $tseula = new plagiarism_turnitinsim_eula();
-        $result = $tseula->get_eula_status($cm->id, 'file');
+        $result = $tseula->get_eula_status($cm->id, 'file', $this->instructor->id);
 
-        $this->assertEmpty($result['eula-confirm']);
+        handle_deprecation::assertcontains($this,
+            get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
         handle_deprecation::assertcontains($this,
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
     }
