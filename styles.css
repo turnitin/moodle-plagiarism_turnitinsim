@@ -46,7 +46,7 @@
 .turnitinsim_eulacontainer,
 #turnitinsim_eulaaccepted,
 #turnitinsim_eulanotrequired,
-#pp-eula-accept {
+#turnitinsim_eula_accept {
     margin-right: 5px;
 }
 
@@ -77,8 +77,7 @@
 }
 
 .turnitinsim_links .pp_resubmit_link,
-.turnitinsim_links .turnitinsim_status_text_eula,
-.turnitinsim_links .eula-row-launch {
+.turnitinsim_links .turnitinsim_status_text_eula {
     cursor: pointer;
 }
 
