@@ -123,7 +123,7 @@ class plagiarism_turnitinsim_eula {
      *
      * @param int $cmid - course module id
      * @param string $submissiontype - The type of submission - file or content.
-     * @param string $submissionuserid - The userid the submission is against.type of submission - file or content.
+     * @param string $submissionuserid - The userid the submission is against.
      * @return array The HTML elements for a EULA NOT ACCEPTED status.
      * @throws coding_exception
      * @throws dml_exception
