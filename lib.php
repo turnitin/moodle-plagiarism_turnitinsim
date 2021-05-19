@@ -375,7 +375,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             }
 
             // Render a Turnitin logo.
-            $turnitinicon = $OUTPUT->pix_icon('tiiIcon', '', 'plagiarism_turnitinsim', array('class' => 'tii_icon'));
+            $turnitinicon = $OUTPUT->pix_icon('turnitin-icon', '', 'plagiarism_turnitinsim', array('class' => 'tii_icon'));
 
             // Render a resubmit link for instructors if necessary.
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';

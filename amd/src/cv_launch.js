@@ -41,7 +41,7 @@ define(['jquery'], function($) {
                 });
 
                 // Launch the Cloud Viewer in a new window.
-                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiLogo.svg';
+                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/turnitin-logo.png';
                 var cvWindow = window.open();
 
                 cvWindow.document.write('<html><head><link rel="stylesheet" ' +
@@ -50,7 +50,7 @@ define(['jquery'], function($) {
 
                 var loading = '<div class="turnitinsim_Loading">' +
                         '<div class="turnitinsim_loadingLogo">' +
-                            '<img src="' + icon + '">' +
+                            '<img src="' + icon + '" width="350">' +
                         '</div>' +
                         '<div class="turnitinsim_Loading_Circles">' +
                             '<span class="turnitinsim_Loading_Circle-1"/>' +
