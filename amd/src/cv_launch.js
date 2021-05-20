@@ -49,13 +49,13 @@ define(['jquery'], function($) {
                 cvWindow.document.write('</body></html>');
 
                 var loading = '<div class="turnitinsim_Loading">' +
-                        '<div class="turnitinsim_loadingLogo">' +
-                            '<img src="' + icon + '" width="350">' +
+                        '<div>' +
+                            '<img class="turnitinsim_loadingLogo" src="' + icon + '">' +
                         '</div>' +
                         '<div class="turnitinsim_Loading_Circles">' +
-                            '<span class="turnitinsim_Loading_Circle-1"/>' +
-                            '<span class="turnitinsim_Loading_Circle-2"/>' +
-                            '<span class="turnitinsim_Loading_Circle-3"/>' +
+                            '<span class="turnitinsim_Loading_Circle-1"></span>' +
+                            '<span class="turnitinsim_Loading_Circle-2"></span>' +
+                            '<span class="turnitinsim_Loading_Circle-3"></span>' +
                         '</div>' +
                     '</div>';
                 $(cvWindow.document.body).html(loading);
