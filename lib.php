@@ -84,8 +84,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             // Course ID is only passed in on new module - if updating then get it from module id.
             $courseid = optional_param('course', 0, PARAM_INT);
+            $id = optional_param('id', 0, PARAM_INT);
+
             if (empty($courseid)) {
-                $courseid = get_coursemodule_from_id('', $cmid)->course;
+                $checkcourse = (!empty($cmid)) ? $cmid : $id;
+                $course = get_coursemodule_from_id('', $checkcourse);
+
+                // If it is still empty, return to avoid an error.
+                if (empty($course)) {
+                    return;
+                }
+
+                $courseid = $course->course;
             }
 
             // Exit if this user does not have permissions to configure the plugin.
