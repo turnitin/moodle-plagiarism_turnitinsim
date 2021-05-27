@@ -303,8 +303,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     case TURNITINSIM_SUBMISSION_STATUS_COMPLETE:
                         $score = $submission->getoverallscore() . '%';
                         $submissionid = $submission->getid();
-                        $orcolour = ' or_score_colour_' . round($submission->getoverallscore(), -1);
-                        $status = html_writer::tag('div', $score, array('class' => 'or_score' . $orcolour));
+                        $orcolour = ' turnitinsim_or_score_colour_' . round($submission->getoverallscore(), -1);
+                        $status = html_writer::tag('div', $score, array('class' => 'turnitinsim_or_score' . $orcolour));
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
@@ -453,7 +453,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $resubmiticon . $resubmittext,
             array(
                 'title' => $resubmittext,
-                'class' => 'turnitinsim_error_icon clear pp_resubmit_link pp_resubmit_id_' . $submissionid
+                'class' => 'turnitinsim_error_icon clear turnitinsim_resubmit_link pp_resubmit_id_' . $submissionid
             )
         );
 

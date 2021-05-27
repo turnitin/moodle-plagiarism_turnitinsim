@@ -29,7 +29,7 @@
 define(['jquery'], function($) {
     return {
         openCv: function() {
-            $(document).on('click', '.or_score', function() {
+            $(document).on('click', '.turnitinsim_or_score', function() {
 
                 // Moodle forums strip ids from elements so we have to use classes.
                 var classList = $(this).parent().attr('class').split(/\s+/);
