@@ -44,7 +44,6 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
 
     /**
      * Restore the Turnitin settings for this module.
-     * This will only be done if the module is from the same site from where it was backed up.
      *
      * @param object $data object The data we are restoring.
      * @throws dml_exception
@@ -52,13 +51,10 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
     public function process_turnitinsim_mods($data) {
         global $DB;
 
-        if ($this->task->is_samesite()) {
+        $data = (object)$data;
+        $data->cm = $this->task->get_moduleid();
 
-            $data = (object)$data;
-            $data->cm = $this->task->get_moduleid();
-
-            $DB->insert_record('plagiarism_turnitinsim_mod', $data);
-        }
+        $DB->insert_record('plagiarism_turnitinsim_mod', $data);
     }
 
     /**

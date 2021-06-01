@@ -48,7 +48,7 @@ class user_class_testcase extends advanced_testcase {
         // Turnitinid should match reg ex.
         $format = "/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
         $turnitinid = $tsuser->get_turnitinid();
-        $this->assertRegExp($format, $turnitinid);
+        handle_deprecation::assertregex($this, $format, $turnitinid);
     }
 
 }

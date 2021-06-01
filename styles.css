@@ -46,7 +46,7 @@
 .turnitinsim_eulacontainer,
 #turnitinsim_eulaaccepted,
 #turnitinsim_eulanotrequired,
-#pp-eula-accept {
+#turnitinsim_eula_accept {
     margin-right: 5px;
 }
 
@@ -63,7 +63,7 @@
     top: 3px;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score {
     min-width: 32px;
     font-size: 12px;
     display: inline-block;
@@ -76,59 +76,58 @@
     clear: both;
 }
 
-.turnitinsim_links .pp_resubmit_link,
-.turnitinsim_links .turnitinsim_status_text_eula,
-.turnitinsim_links .eula-row-launch {
+.turnitinsim_links .turnitinsim_resubmit_link,
+.turnitinsim_links .turnitinsim_status_text_eula {
     cursor: pointer;
 }
 
 /* Define OR score colours */
-.turnitinsim_links .turnitinsim_status .or_score_colour_0 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_0 {
     background: #3552b7;
     color: #fff;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_10 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_10 {
     background: #617b8d;
     color: #fff;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_20 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_20 {
     background: #a1b556;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_30 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_30 {
     background: #dae235;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_40 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_40 {
     background: #edac28;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_50 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_50 {
     background: #edd42f;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_60 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_60 {
     background: #ecad28;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_70 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_70 {
     background: #e15a21;
     color: #fff;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_80 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_80 {
     background: #e05a21;
     color: #fff;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_90 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_90 {
     background: #dc4321;
     color: #fff;
 }
 
-.turnitinsim_links .turnitinsim_status .or_score_colour_100 {
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_100 {
     background: #db4221;
     color: #fff;
 }
@@ -139,7 +138,6 @@
 
 .turnitinsim_loadingLogo {
     width: 250px;
-    height: 72px;
     display: inline-block;
 }
 
@@ -167,7 +165,7 @@
 .turnitinsim_Loading_Circle-2,
 .turnitinsim_Loading_Circle-3 {
     background-color: #BAD8EE;
-    animation-name: three-bubbles;
+    animation-name: turnitinsim_three-bubbles;
     animation-duration: 2s;
     animation-iteration-count: infinite;
     border-radius: 100%;
@@ -192,7 +190,7 @@
     margin-bottom: 3px;
 }
 
-@keyframes three-bubbles {
+@keyframes turnitinsim_three-bubbles {
     0%, 80%, 100% {
         transform: scale(0);
     }

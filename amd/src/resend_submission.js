@@ -29,7 +29,7 @@
 define(['jquery', 'core/str'], function($, str) {
     return {
         resendSubmission: function() {
-            $(document).on('click', '.pp_resubmit_link', function() {
+            $(document).on('click', '.turnitinsim_resubmit_link', function() {
                 $(this).hide();
                 $(this).siblings('.pp_resubmitting').removeClass('hidden');
                 var that = $(this);

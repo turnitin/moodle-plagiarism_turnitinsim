@@ -29,7 +29,7 @@
 define(['jquery'], function($) {
     return {
         openCv: function() {
-            $(document).on('click', '.or_score', function() {
+            $(document).on('click', '.turnitinsim_or_score', function() {
 
                 // Moodle forums strip ids from elements so we have to use classes.
                 var classList = $(this).parent().attr('class').split(/\s+/);
@@ -41,7 +41,7 @@ define(['jquery'], function($) {
                 });
 
                 // Launch the Cloud Viewer in a new window.
-                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/tiiLogo.svg';
+                var icon = M.cfg.wwwroot + '/plagiarism/turnitinsim/pix/turnitin-logo.png';
                 var cvWindow = window.open();
 
                 cvWindow.document.write('<html><head><link rel="stylesheet" ' +
@@ -49,13 +49,13 @@ define(['jquery'], function($) {
                 cvWindow.document.write('</body></html>');
 
                 var loading = '<div class="turnitinsim_Loading">' +
-                        '<div class="turnitinsim_loadingLogo">' +
-                            '<img src="' + icon + '">' +
+                        '<div>' +
+                            '<img class="turnitinsim_loadingLogo" src="' + icon + '">' +
                         '</div>' +
                         '<div class="turnitinsim_Loading_Circles">' +
-                            '<span class="turnitinsim_Loading_Circle-1"/>' +
-                            '<span class="turnitinsim_Loading_Circle-2"/>' +
-                            '<span class="turnitinsim_Loading_Circle-3"/>' +
+                            '<span class="turnitinsim_Loading_Circle-1"></span>' +
+                            '<span class="turnitinsim_Loading_Circle-2"></span>' +
+                            '<span class="turnitinsim_Loading_Circle-3"></span>' +
                         '</div>' +
                     '</div>';
                 $(cvWindow.document.body).html(loading);

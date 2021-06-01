@@ -35,7 +35,7 @@ define(['jquery', 'core/str'], function($, str) {
                 }
             });
 
-            $(document).on('click', '#pp-eula-accept', function() {
+            $(document).on('click', '#turnitinsim_eula_accept', function() {
                 $('input[name=submitbutton]').prop('disabled', '');
 
                 // Hide the EULA link.
@@ -56,7 +56,7 @@ define(['jquery', 'core/str'], function($, str) {
                 });
             });
 
-            $(document).on('click', '#pp-eula-decline', function() {
+            $(document).on('click', '#turnitinsim_eula_decline', function() {
                 str.get_string('euladeclined', 'plagiarism_turnitinsim').done(function(text) {
                     $('.turnitinsim_eulacontainer').hide().html(text).fadeIn();
                 });

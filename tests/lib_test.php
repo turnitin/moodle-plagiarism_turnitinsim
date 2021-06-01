@@ -366,7 +366,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $tssubmission->update();
         handle_deprecation::assertcontains($this, $score.'%', $plagiarismturnitinsim->get_links($linkarray));
         handle_deprecation::assertcontains($this,
-            'or_score_colour_' . round($score, -1), $plagiarismturnitinsim->get_links($linkarray));
+            'turnitinsim_or_score_colour_' . round($score, -1), $plagiarismturnitinsim->get_links($linkarray));
     }
 
     /**
