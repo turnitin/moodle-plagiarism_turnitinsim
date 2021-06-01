@@ -1,3 +1,40 @@
+### Date:       2021-June-01
+### Release:    v2021060101
+
+#### :zap: What's new
+
+---
+
+#### Support for Moodle 3.11
+
+You can now confidently use Turnitin with Moodle 3.11.
+
+#### Retain assignment settings and submissions after a course restore in a new environment
+
+Turnitin already supports Moodle’s backup and store functionality, this change gives the same functionality when restoring to a different environment from the original backup.
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### New CSS class name prefix
+
+To help conform to Moodle guidelines, all classes within the plugin are now prefixed with ‘turnitinsim_’. This change will help avoid any potential styling conflicts.
+
+#### Draft submissions will not stick in pending status
+
+A bug had caused some draft submissions to stick in ‘pending’ status and not generate a Similarity Report. This bug has now been fixed and draft submissions will generate Similarity Reports if enabled.
+
+#### Accept the Turnitin EULA after forum posts have been made
+
+If an Instructor had not previously accepted the Turnitin EULA, but students had already started to post to a Moodle Forum, the instructor wouldn’t be given another chance to accept it. We will now show the EULA acceptance option to any users who haven’t previously accepted it. 
+
+#### Change the default activity tracking moodle setting
+
+A bug had prevented users from being able to alter the default activity tracking setting within Moodle when Turnitin was also enabled. This bug has now been fixed, and you can use this feature alongside Turnitin without error.
+
+---
+
 ### Date:       2021-March-09
 ### Release:    v2021030901
 
