@@ -870,6 +870,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
             $qa = $attempt->get_question_attempt($slot);
+
+            if ($qa->get_question()->get_type_name() != 'essay') {
+                continue;
+            }
+            
             $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();
 
             $files = $qa->get_last_qt_files('attachments', $context->id);
