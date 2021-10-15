@@ -49,6 +49,11 @@ class plagiarism_turnitinsim_request {
     public $apikey;
 
     /**
+     * @var string The routing URL for the account.
+     */
+    public $routingurl;
+
+    /**
      * @var string The endpoint being requested.
      */
     public $endpoint;
@@ -71,6 +76,7 @@ class plagiarism_turnitinsim_request {
 
             $this->set_apiurl(rtrim($pluginconfig->turnitinapiurl, '/'));
             $this->set_apikey($pluginconfig->turnitinapikey);
+            $this->set_routingurl($pluginconfig->turnitinroutingurl ?? null);
             $this->logger = ($pluginconfig->turnitinenablelogging) ? new plagiarism_turnitinsim_logger() : false;
 
             $this->set_headers();
@@ -121,7 +127,7 @@ class plagiarism_turnitinsim_request {
             }
         }
 
-        $tiiurl = $this->get_apiurl();
+        $tiiurl = $this->get_routingurl() ?: $this->get_apiurl();
 
         if ($this->logger) {
             $this->logger->info('[' . $method . '] Request to: ' . $tiiurl . $endpoint);
@@ -278,6 +284,30 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
+     * Calls the where-am-i endpoint to get the service center and uses this to create an external routing URL.
+     * This only needs to be done once, as the service center URL should not change.
+     *
+     * @return string Mapping to the external URL.
+     */
+    public function get_routing_url() {
+        $turnitinroutingurl = get_config('plagiarism_turnitinsim', 'turnitinroutingurl');
+
+        if (empty($turnitinroutingurl)) {
+            $response = $this->send_request(TURNITINSIM_ENDPOINT_WHERE_AM_I, json_encode(array()), 'GET');
+            $responsedata = json_decode($response);
+
+            if (!isset($responsedata->{'service-center'})) {
+                return null;
+            }
+
+            // Map to external URL.
+            return "https://" . constant(strtoupper("TURNITINSIM_EXTERNAL_" . $responsedata->{'service-center'}));
+        }
+
+        return $turnitinroutingurl;
+    }
+
+    /**
      * Handle API exceptions
      *
      * @param object $e The exception.
@@ -383,5 +413,23 @@ class plagiarism_turnitinsim_request {
      */
     public function set_apikey($apikey) {
         $this->apikey = $apikey;
+    }
+
+    /**
+     * Get the routing URL.
+     *
+     * @return mixed
+     */
+    public function get_routingurl() {
+        return $this->routingurl;
+    }
+
+    /**
+     * Set the routing URL.
+     *
+     * @param mixed $apiurl
+     */
+    public function set_routingurl($routingurl) {
+        $this->routingurl = $routingurl;
     }
 }

@@ -321,5 +321,17 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021030201, 'plagiarism', 'turnitinsim');
     }
 
+    // Use the existing API URL to map to an external routing URL.
+    if ($oldversion < 2021101402) {
+        (new handle_deprecation)->unset_turnitinsim_use();
+
+        // If API URL is set, set routing URL.
+        if (get_config('plagiarism_turnitinsim', 'turnitinapiurl')) {
+            $tsrequest = new plagiarism_turnitinsim_request();
+            set_config('turnitinroutingurl', $tsrequest->get_routing_url(), 'plagiarism_turnitinsim');
+        }
+        upgrade_plugin_savepoint(true, 2021101402, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }
