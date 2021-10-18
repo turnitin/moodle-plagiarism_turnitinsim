@@ -127,7 +127,7 @@ class plagiarism_turnitinsim_request {
             }
         }
 
-        $tiiurl = $this->get_routingurl() ?: $this->get_apiurl();
+        $tiiurl = $this->get_tii_url();
 
         if ($this->logger) {
             $this->logger->info('[' . $method . '] Request to: ' . $tiiurl . $endpoint);
@@ -236,6 +236,15 @@ class plagiarism_turnitinsim_request {
     }
 
     /**
+     * Get the Turnitin URL for use in a request.
+     *
+     * @return string The URL to call Turnitin with.
+     */
+    public function get_tii_url() {
+        return $this->get_routingurl() ?: $this->get_apiurl();
+    }
+
+    /**
      * Test a connection to Turnitin and give an Ajax response.
      *
      * @param string $apiurl The service API URL.
@@ -301,7 +310,8 @@ class plagiarism_turnitinsim_request {
             }
 
             // Map to external URL.
-            return "https://" . constant(strtoupper("TURNITINSIM_EXTERNAL_" . $responsedata->{'service-center'}));
+            $externalurlconstant = strtoupper("TURNITINSIM_EXTERNAL_" . $responsedata->{'service-center'});
+            return (defined($externalurlconstant)) ? "https://" . constant($externalurlconstant) : null;
         }
 
         return $turnitinroutingurl;

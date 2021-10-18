@@ -138,6 +138,7 @@ class request_class_testcase extends advanced_testcase {
 
         $responsesuccess = file_get_contents(__DIR__ . '/../fixtures/where_am_i_success.json');
         $responsebad = file_get_contents(__DIR__ . '/../fixtures/where_am_i_missing_data.json');
+        $responseunknown = file_get_contents(__DIR__ . '/../fixtures/where_am_i_unknown.json');
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
@@ -145,14 +146,17 @@ class request_class_testcase extends advanced_testcase {
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_WHERE_AM_I])
             ->getMock();
 
-        $tsrequest->expects($this->exactly(2))
+        $tsrequest->expects($this->exactly(3))
             ->method('send_request')
-            ->willReturnOnConsecutiveCalls($responsesuccess, $responsebad);
+            ->willReturnOnConsecutiveCalls($responsesuccess, $responsebad, $responseunknown);
 
         // Test that the routing URL is returned.
         $this->assertEquals("https://".TURNITINSIM_EXTERNAL_USCALD, $tsrequest->get_routing_url());
 
         // Test that null is returned if the expected json parameter is missing.
+        $this->assertEquals(null, $tsrequest->get_routing_url());
+
+        // Test that null is returned if an unknown service-center is returned.
         $this->assertEquals(null, $tsrequest->get_routing_url());
 
         // Test that the existing routing URL is returned if already exists.
@@ -182,5 +186,22 @@ class request_class_testcase extends advanced_testcase {
         $lang = $tsrequest->get_language();
         $this->assertEquals('en', $lang->langcode);
         $this->assertEquals('en-US', $lang->localecode);
+    }
+
+    /**
+     * Test that get_tii_url returns the correct URL depending on what's set in the database.
+     */
+    function test_get_tii_url() {
+        $this->resetAfterTest();
+
+        $tsrequest = new plagiarism_turnitinsim_request();
+
+        $this->assertEquals("http://www.example.com", $tsrequest->get_tii_url());
+
+        set_config('turnitinroutingurl', "https://".TURNITINSIM_EXTERNAL_USCALD, 'plagiarism_turnitinsim');
+
+        // This should change to the routing URL if one is set.
+        $tsrequest = new plagiarism_turnitinsim_request();
+        $this->assertEquals("https://".TURNITINSIM_EXTERNAL_USCALD, $tsrequest->get_tii_url());
     }
 }
