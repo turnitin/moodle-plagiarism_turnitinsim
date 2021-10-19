@@ -220,6 +220,8 @@ class plagiarism_turnitinsim_task {
         // Check the latest EULA version.
         $this->check_latest_eula_version();
 
+        $this->check_routing_url();
+
         return true;
     }
 
@@ -308,6 +310,20 @@ class plagiarism_turnitinsim_task {
         }
 
         return true;
+    }
+
+    /**
+     * Check if we need to get an external routing URL, and get one if so.
+     * Saves the URL to the database config turnitinroutingurl.
+     * @throws dml_exception
+     */
+    public function check_routing_url() {
+        // If API URL is set and routing URL is not set, set routing URL.
+        if (get_config('plagiarism_turnitinsim', 'turnitinapiurl')
+            && !get_config('plagiarism_turnitinsim', 'turnitinexternalurl')) {
+            $tsrequest = new plagiarism_turnitinsim_request();
+            set_config('turnitinroutingurl', $tsrequest->get_routing_url(), 'plagiarism_turnitinsim');
+        }
     }
 
     /**

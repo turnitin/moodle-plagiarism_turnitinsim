@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir."/formslib.php");
+require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/task.class.php');
 
@@ -204,6 +204,9 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
                 set_config('turnitinmodenabled'.$mod, ${ "turnitinmodenabled" . "$mod" }, 'plagiarism_turnitinsim');
             }
         }
+
+        $tsrequest = new plagiarism_turnitinsim_request();
+
         set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism_turnitinsim');
         set_config('turnitinapikey', $turnitinapikey, 'plagiarism_turnitinsim');
         set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism_turnitinsim');
@@ -212,6 +215,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         set_config('turnitinviewerviewfullsource', $turnitinviewerviewfullsource, 'plagiarism_turnitinsim');
         set_config('turnitinviewermatchsubinfo', $turnitinviewermatchsubinfo, 'plagiarism_turnitinsim');
         set_config('turnitinviewersavechanges', $turnitinviewersavechanges, 'plagiarism_turnitinsim');
+        set_config('turnitinroutingurl', $tsrequest->get_routing_url(), 'plagiarism_turnitinsim');
     }
 
     /**

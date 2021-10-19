@@ -321,5 +321,15 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021030201, 'plagiarism', 'turnitinsim');
     }
 
+    // Use the existing API URL to map to an external routing URL.
+    if ($oldversion < 2021101802) {
+        (new handle_deprecation)->unset_turnitinsim_use();
+
+        // Get the routing URL if necessary.
+        (new plagiarism_turnitinsim_task())->check_routing_url();
+
+        upgrade_plugin_savepoint(true, 2021101802, 'plagiarism', 'turnitinsim');
+    }
+
     return true;
 }

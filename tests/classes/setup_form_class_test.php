@@ -55,6 +55,16 @@ class setupform_class_testcase extends advanced_testcase {
     const TEST_API_KEY = 123456;
 
     /**
+     * Set config for use in the tests.
+     */
+    public function setUp(): void {
+        $this->resetAfterTest();
+
+        // Set routing URL.
+        set_config('turnitinroutingurl', "https://www.example.com", 'plagiarism_turnitinsim');
+    }
+
+    /**
      * Test that save module settings saves the settings.
      */
     public function test_save_plugin_setup() {
