@@ -207,8 +207,6 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
 
         set_config('turnitinapiurl', $turnitinapiurl, 'plagiarism_turnitinsim');
         set_config('turnitinapikey', $turnitinapikey, 'plagiarism_turnitinsim');
-        $turnitinapikey = get_config('plagiarism_turnitinsim', 'turnitinapikey');
-        echo 'Fapiurl'.$turnitinapiurl.'|';
         set_config('turnitinenablelogging', $turnitinenablelogging, 'plagiarism_turnitinsim');
         set_config('turnitinenableremotelogging', $turnitinenableremotelogging, 'plagiarism_turnitinsim');
         set_config('turnitinhideidentity', $turnitinhideidentity, 'plagiarism_turnitinsim');
