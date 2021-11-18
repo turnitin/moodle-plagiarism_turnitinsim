@@ -434,7 +434,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $turnitinapikey = get_config('plagiarism_turnitinsim', 'turnitinapikey');
         $turnitinroutingurl = get_config('plagiarism_turnitinsim', 'turnitinroutingurl');
 
-        return (!empty($turnitinapiurl) && (!empty($turnitinapikey) || !empty($turnitinroutingurl))) ? true : false;
+        return (!empty($turnitinapikey) && (!empty($turnitinapiurl) || !empty($turnitinroutingurl))) ? true : false;
     }
 
     /**
