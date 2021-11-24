@@ -68,7 +68,6 @@ class plagiarism_turnitinsim_request {
      * @throws dml_exception
      */
     public function __construct() {
-
         // Only set attributes if plugin is configured.
         $plugin = new plagiarism_plugin_turnitinsim();
         if ($plugin->is_plugin_configured()) {
