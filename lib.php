@@ -648,8 +648,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $submissions = $DB->get_records_select(
                 'plagiarism_turnitinsim_sub',
-                'cm = ? AND userid = ? AND itemid = ? AND status != ?',
-                array($cm->id, $author, $itemid, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED)
+                'cm = ? AND userid = ? AND itemid = ? AND status NOT IN (?, ?)',
+                array($cm->id, $author, $itemid, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED, TURNITINSIM_SUBMISSION_STATUS_COMPLETE)
             );
 
             foreach ($submissions as $submission) {
