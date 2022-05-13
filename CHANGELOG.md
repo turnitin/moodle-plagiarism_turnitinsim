@@ -1,3 +1,26 @@
+### Date:       2021-May-13
+### Release:    v2022051301
+
+#### :zap: What's new
+
+---
+
+#### Support for Moodle 4.0
+
+You can now confidently use Turnitin with Moodle 4.0.
+
+#### :wrench: Fixes and enhancements
+
+---
+
+#### Submissions will no longer stick on ‘Pending’
+
+When ‘Process draft submissions' was selected for an assignment, submissions would appear as stuck on the 'Pending’ status after a student  made their final submission to the assignment.
+
+This bug has been fixed, and the correct submission state will be shown.
+
+---
+
 ### Date:       2021-June-01
 ### Release:    v2021060101
 
