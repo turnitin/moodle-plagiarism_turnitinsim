@@ -215,7 +215,7 @@ class plagiarism_turnitinsim_setup_form extends moodleform {
         set_config('turnitinviewersavechanges', $turnitinviewersavechanges, 'plagiarism_turnitinsim');
 
         $tsrequest = new plagiarism_turnitinsim_request();
-        set_config('turnitinroutingurl', $tsrequest->get_routing_url(), 'plagiarism_turnitinsim');
+        set_config('turnitinroutingurl', $tsrequest->get_routing_url(true), 'plagiarism_turnitinsim');
     }
 
     /**
