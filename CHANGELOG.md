@@ -1,3 +1,14 @@
+### Date:       2022-September-21
+### Release:    v2022092101
+
+#### :wrench: Fixes and enhancements
+
+#### Fixed a bug that would show instructors a resubmit button when an unsupported file type was submitted
+
+Previously, if a student submitted an unsupported file type to a Moodle assignment, a Resubmit to Turnitin button would still appear for the instructor. This has now been fixed and the option to re-submit an unsupported file type has been removed.
+
+---
+
 ### Date:       2021-May-13
 ### Release:    v2022051301
 
