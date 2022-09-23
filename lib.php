@@ -432,8 +432,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     public function is_plugin_configured() {
         $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
         $turnitinapikey = get_config('plagiarism_turnitinsim', 'turnitinapikey');
+        $turnitinroutingurl = get_config('plagiarism_turnitinsim', 'turnitinroutingurl');
 
-        return (empty($turnitinapiurl) || empty($turnitinapikey)) ? false : true;
+        return (!empty($turnitinapikey) && (!empty($turnitinapiurl) || !empty($turnitinroutingurl))) ? true : false;
     }
 
     /**
@@ -874,7 +875,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             if ($qa->get_question()->get_type_name() != 'essay') {
                 continue;
             }
-            
+
             $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();
 
             $files = $qa->get_last_qt_files('attachments', $context->id);
