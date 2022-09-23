@@ -277,6 +277,7 @@ class plagiarism_turnitinsim_request {
 
         $this->set_apiurl($apiurl);
         $this->set_apikey($apikey);
+        $this->set_routingurl(null);
         $this->set_headers();
 
         $response = $this->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
@@ -295,12 +296,16 @@ class plagiarism_turnitinsim_request {
      * Calls the where-am-i endpoint to get the service center and uses this to create an external routing URL.
      * This only needs to be done once, as the service center URL should not change.
      *
+     * @param string $force Forces a check for a routing URL. Necessary when updating the API URL.
      * @return string Mapping to the external URL.
      */
-    public function get_routing_url() {
+    public function get_routing_url($force = false) {
         $turnitinroutingurl = get_config('plagiarism_turnitinsim', 'turnitinroutingurl');
 
-        if (empty($turnitinroutingurl)) {
+        if (empty($turnitinroutingurl) || $force) {
+            // Ensure there is no cached URL - useful if we're updating the URL in the admin settings.
+            $this->set_routingurl(null);
+
             $response = $this->send_request(TURNITINSIM_ENDPOINT_WHERE_AM_I, json_encode(array()), 'GET');
             $responsedata = json_decode($response);
 
@@ -310,6 +315,7 @@ class plagiarism_turnitinsim_request {
 
             // Map to external URL.
             $externalurlconstant = strtoupper("TURNITINSIM_EXTERNAL_" . $responsedata->{'service-center'});
+
             return (defined($externalurlconstant)) ? "https://" . constant($externalurlconstant) : null;
         }
 
