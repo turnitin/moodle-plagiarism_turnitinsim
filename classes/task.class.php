@@ -273,7 +273,7 @@ class plagiarism_turnitinsim_task {
             $neweulaurl = (empty($response->url)) ? '' : $response->url;
 
             // Update EULA version and url if necessary.
-            if (($currenteulaversion != $neweulaversion)) {
+            if ($currenteulaversion != $neweulaversion) {
                 set_config('turnitin_eula_version', $response->version, 'plagiarism_turnitinsim');
                 set_config('turnitin_eula_url', $response->url, 'plagiarism_turnitinsim');
 
