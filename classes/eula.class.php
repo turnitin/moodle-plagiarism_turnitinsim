@@ -56,7 +56,9 @@ class plagiarism_turnitinsim_eula {
 
         // Make request to get the latest EULA version.
         try {
-            $endpoint = TURNITINSIM_ENDPOINT_GET_LATEST_EULA;
+            $lang = $this->tsrequest->get_language();
+            $langcode = $lang->localecode;
+            $endpoint = TURNITINSIM_ENDPOINT_GET_LATEST_EULA."?lang=".$langcode;
             $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
             $responsedata = json_decode($response);
 
