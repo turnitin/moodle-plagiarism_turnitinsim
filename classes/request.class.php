@@ -330,16 +330,48 @@ class plagiarism_turnitinsim_request {
 
         // Replace with language code for CV launch.
         $langarray = array(
-            'de' => 'de',
+            'da'    => 'da',
+            'de'    => 'de',
             'de_du' => 'de',
-            'nl' => 'nl'
+            'es'    => 'es',
+            'es_mx' => 'es',
+            'fr'    => 'fr',
+            'fr_ca' => 'fr',
+            'ja'    => 'ja',
+            'ko'    => 'ko',
+            'nb'    => 'nb',
+            'nl'    => 'nl',
+            'no'    => 'nb',
+            'pt'    => 'pt',
+            'pt_br' => 'pt',
+            'ru'    => 'ru',
+            'sv'    => 'sv',
+            'sv_fi' => 'sv',
+            'zh_cn' => 'zh-CN',
+            'zh_tw' => 'zh-TW'
         );
 
         // Replace with locale for EULA link.
         $localearray = array(
-            'de' => 'de-DE',
+            'da'    => 'da-DK',
+            'de'    => 'de-DE',
             'de_du' => 'de-DE',
-            'nl' => 'nl-NL'
+            'es'    => 'es-MX',
+            'es_mx' => 'es-MX',
+            'fr'    => 'fr-FR',
+            'fr_ca' => 'fr-FR',
+            'ja'    => 'ja-JP',
+            'ko'    => 'ko-KR',
+            'nb'    => 'nb-NO',
+            'nl'    => 'nl-NL',
+            'no'    => 'nb-NO',
+            'pt'    => 'pt-BR',
+            'pt_br' => 'pt-BR',
+            'ru'    => 'ru-RU',
+            'sv'    => 'sv-SE',
+            'sv_fi' => 'sv-SE',
+            'zh_cn' => 'zh-CN',
+            'zh_tw' => 'zh-TW'
         );
 
         $lang = new stdClass();
