@@ -488,20 +488,20 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 }
             }
 
+            // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
+            $user = new plagiarism_turnitinsim_user($USER->id);
+            $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
+
             // Check we have the latest version of the EULA stored.
             // This should only happen the very first time someone submits.
             $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
             // Overwrite mtrace so when EULA is checked it doesn't output to screen.
             $CFG->mtrace_wrapper = 'plagiarism_turnitinsim_mtrace';
-            if (empty($eulaversion)) {
+            if (empty($eulaversion) || empty($user->get_lasteulaaccepted())) {
                 $tstask = new plagiarism_turnitinsim_task();
                 $tstask->check_latest_eula_version();
                 $eulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
             }
-
-            // We don't need to continue if the user has accepted the latest EULA and/or EULA acceptance is not required.
-            $user = new plagiarism_turnitinsim_user($USER->id);
-            $features = json_decode(get_config('plagiarism_turnitinsim', 'turnitin_features_enabled'));
 
             if ($user->get_lasteulaaccepted() == $eulaversion) {
                 return html_writer::tag(
@@ -526,9 +526,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $PAGE->requires->js_call_amd('plagiarism_turnitinsim/eula_response', 'eulaResponse');
 
             // Link to open the Turnitin EULA in a new tab.
-            $tsrequest = new plagiarism_turnitinsim_request();
-            $lang = $tsrequest->get_language();
-            $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url')."?lang=".$lang->localecode;
+            $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url');
             $eulastring = ($cmid > -1) ? 'eulalink' : 'eulalinkgeneric';
             $eulalink = get_string($eulastring, 'plagiarism_turnitinsim', $eulaurl);
 
@@ -869,6 +867,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
             $qa = $attempt->get_question_attempt($slot);
+
+            if ($qa->get_question()->get_type_name() != 'essay') {
+                continue;
+            }
+            
             $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();
 
             $files = $qa->get_last_qt_files('attachments', $context->id);

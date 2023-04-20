@@ -173,6 +173,6 @@ class handle_deprecation {
         global $CFG;
 
         $CFG->branch >= 311 ? $object->assertMatchesRegularExpression($pattern, $string) :
-            $object->assertRegExp("int", $pattern, $string);
+            $object->assertRegExp($pattern, $string);
     }
 }

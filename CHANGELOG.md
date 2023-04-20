@@ -1,3 +1,12 @@
+### Date:       2023-April-20
+### Release:    v2023042001
+
+#### Turnitin language settings are now syncing with Moodle environment
+
+This release addresses an issue where the report viewer and the EULA pages were defaulting to English only for most languages, even when the Turnitin account is set to a different language. This has now been fixed and the correct language should be displayed to match what is set.
+
+---
+
 ### Date:       2022-September-21
 ### Release:    v2022092101
 

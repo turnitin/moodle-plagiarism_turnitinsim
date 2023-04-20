@@ -268,7 +268,9 @@ class plagiarism_turnitinsim_task {
         if (!empty($response)) {
             // Compare latest EULA to the current EULA we have stored.
             $currenteulaversion = get_config('plagiarism_turnitinsim', 'turnitin_eula_version');
+            $currenteulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url');
             $neweulaversion = (empty($response->version)) ? '' : $response->version;
+            $neweulaurl = (empty($response->url)) ? '' : $response->url;
 
             // Update EULA version and url if necessary.
             if ($currenteulaversion != $neweulaversion) {
@@ -278,6 +280,11 @@ class plagiarism_turnitinsim_task {
                 // Notify all users linked to Turnitin that there is a new EULA to accept.
                 $message = new new_eula();
                 $message->send_message();
+            } else if ($currenteulaurl != $neweulaurl){
+                // This runs if there is no new EULA version, but a user still needs an updated EULA URL for their supported language.
+                // We do not want to notify all users that there is a new EULA url for the translation.
+                set_config('turnitin_eula_version', $response->version, 'plagiarism_turnitinsim');
+                set_config('turnitin_eula_url', $response->url, 'plagiarism_turnitinsim');
             }
         }
 
