@@ -26,26 +26,23 @@
  */
 $string['help_link'] = 'https://help.turnitin.com/es/integrity/instructor/moodle.htm';
 
-$string['accessstudents'] = 'Allow students to view Similarity Reports';
-$string['accessoptions'] = 'Student access';
-$string['accessoptions_help'] = 'Students will have access to the Similarity Report for their submission after it generates.';
-$string['addtoindex'] = 'Index all submissions';
-$string['excludebiblio'] = 'Bibliography';
+$string['accessstudents'] = 'Permitir que los estudiantes vean los informes de similitud';
+$string['accessoptions'] = 'Acceso para estudiantes';
+$string['accessoptions_help'] = 'Los estudiantes podrán acceder al informe de similitud de su entrega luego de que se genere.';
+$string['addtoindex'] = 'Indexar todas las entregas';
+$string['excludebiblio'] = 'Bibliografía';
 $string['excludeoptions'] = 'Excluir de los informes de similitud';
-$string['excludeoptions_help'] = 'Selected options will not show as a match in Similarity Reports.';
-$string['excludequotes'] = 'Quotes';
-$string['indexoptions'] = 'Submission indexing';
-$string['turnitinmodenabled'] = 'Enable Turnitin Integrity for {$a}';
-$string['turnitinpluginenabled'] = 'Enable Turnitin';
-$string['turnitinpluginsettings'] = 'Turnitin Integrity plugin settings';
-$string['turnitinsim:enable'] = 'Enable Turnitin Integrity';
-$string['queuedrafts_help'] = 'Please note that draft submissions will not be indexed in Turnitin for checking against';
-$string['queuedrafts'] = 'Process draft submissions';
-$string['reportgen0'] = 'Immediately';
-$string['reportgen1'] = 'Immediately and regenerate on due date';
-$string['reportgen2'] = 'Due Date';
-$string['reportgenoptions'] = 'Generate Similarity Reports';
-$string['reportgenoptions_help'] = '<strong>Immediately:</strong> Similarity Reports will generate immediately after the file has been submitted.<br/><br/><strong>On due date:</strong> Similarity Reports will only generate on the due date of the assignment.<br/><br/><strong>Immediately and on due date:</strong> A Similarity Report will generate immediately after the file has been submitted. The Similarity Report will generate again on the due date of the assignment. This option can be used to check for collusion within a class.';
-$string['settingslearnmore'] = 'Learn more about Turnitin settings';
-$string['indexoptions_help'] = 'Indexed submissions will be available for comparison in Similarity Reports.';
-
+$string['excludeoptions_help'] = 'Las opciones seleccionadas no se mostrarán como coincidencia en los informes de similitud';
+$string['excludequotes'] = 'Citas textuales';
+$string['indexoptions'] = 'Indexación de entregas';
+$string['indexoptions_help'] = 'Las entregas indexadas estarán disponibles para su comparación en los informes de similitud.';
+$string['turnitinpluginenabled'] = 'Habilitar Turnitin';
+$string['turnitinpluginsettings'] = 'Configuración del complemento Turnitin Integrity';
+$string['queuedrafts_help'] = 'Tenga en cuenta que las entregas en borrador no se indexarán en Turnitin para poder ser incluidas en una comparación.';
+$string['queuedrafts'] = 'Procesar las entregas en borrador';
+$string['reportgen0'] = 'Inmediatamente';
+$string['reportgen1'] = 'Inmediatamente y volver a generar en la fecha límite de entrega';
+$string['reportgen2'] = 'Fecha límite de entrega';
+$string['reportgenoptions'] = 'Generar informes de similitud';
+$string['reportgenoptions_help'] = '<strong>Inmediatamente:</strong> Los informes de similitud se generarán inmediatamente después de enviar el archivo.<br/><br/><strong>En la fecha límite de entrega:</strong> Los informes de similitud solo se generarán en la fecha límite de entrega del ejercicio.<br/><br/><strong>Inmediatamente y en la fecha límite de entrega:</strong> Se generarán un informe de similitud inmediatamente después de enviar el archivo. El informe de similitud se volverá a generar en la fecha límite de entrega del ejercicio. Esta opción puede usarse para comprobar si hay plagio dentro de una clase.';
+$string['settingslearnmore'] = 'Más información sobre la configuración de Turnitin';
