@@ -1,3 +1,14 @@
+### Date:      2023-June-29
+### Release:   v2023062901
+(Moodle Integration Only graphic)
+
+[Callout: Update your Moodle plugin for these changes]
+
+#### Spanish-language improvements to the Moodle plugin
+This release addresses an issue where the Moodle plugin did not correctly display International Spanish translations. This has now been fixed.
+
+---
+
 ### Date:       2023-April-20
 ### Release:    v2023042001
 
