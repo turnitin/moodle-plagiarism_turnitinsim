@@ -125,6 +125,26 @@ class plagiarism_turnitinsim_quiz {
     }
 
     /**
+     * Gets the actual quiz attempt id instead of using the uniqueid.
+     *
+     * @param int $uniqueid The ID for the quiz attempt.
+     * @return int $attemptid The attempt id.
+     */
+    public function get_actual_submission_id($uniqueid) {
+        global $DB;
+
+        // Set the table and conditions.
+        $table = 'quiz_attempts';
+        $conditions = array('uniqueid' => $uniqueid); 
+
+        // Grab the attempt based on the table and conditions above.
+        $attempt = $DB->get_record($table, $conditions);
+
+        // Return the attempt id.
+        return $attempt->id;
+    }
+
+    /**
      * Create the submission event data needed to queue a submission if Turnitin is enabled after a submission.
      *
      * @param array $linkarray Data passed by Moodle that belongs to a submission.
@@ -135,12 +155,16 @@ class plagiarism_turnitinsim_quiz {
     public function create_submission_event_data($linkarray) {
         $cm = get_coursemodule_from_id('', $linkarray['cmid']);
 
+        // Get the actual attempt id from the unique id.
+        $attemptid = self::get_actual_submission_id($linkarray['area']);
+
         $eventdata = array();
         $eventdata['contextinstanceid'] = $linkarray['cmid'];
 
         $eventdata['eventtype'] = 'quiz_submitted';
         $eventdata['userid'] = $linkarray['userid'];
-        $eventdata['objectid'] = $linkarray['area'];
+        // Set the objectid to the attempt id.
+        $eventdata['objectid'] = $attemptid;
 
         if (isset($linkarray['file'])) {
             $eventdata['other']['pathnamehashes'] = array($linkarray['file']->get_pathnamehash());
