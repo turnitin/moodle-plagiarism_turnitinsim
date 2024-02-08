@@ -147,7 +147,7 @@ class request_class_testcase extends advanced_testcase {
         $this->assertEquals('de-DE', $lang->localecode);
 
         // Test that English is returned for an unsupported language.
-        $SESSION->lang = 'fr';
+        $SESSION->lang = 'zh';
 
         $lang = $tsrequest->get_language();
         $this->assertEquals('en', $lang->langcode);

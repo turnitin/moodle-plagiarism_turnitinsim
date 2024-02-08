@@ -117,7 +117,7 @@ class quiz_class_testcase extends advanced_testcase {
         $params->onlinetext = self::QUIZ_ANSWER_TEXT;
 
         $result = $tsquiz->get_itemid($params);
-        $this->assertEquals($result, $quizattempt->id);
+        $this->assertEquals($result, $quizattempt->uniqueid);
     }
 
     /**
