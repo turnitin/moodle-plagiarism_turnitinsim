@@ -167,7 +167,7 @@ class eula_class_testcase extends advanced_testcase {
         // Check the results.
         $userresult = $DB->get_record('plagiarism_turnitinsim_users', array('userid' => $user->userid));
         $this->assertEquals('v1beta', $userresult->lasteulaaccepted);
-        $this->assertGreaterThan('lasteulaacceptedtime', time() - 60);
+        $this->assertGreaterThan(time() - 60, $userresult->lasteulaacceptedtime);
         $this->assertEquals('en-US', $userresult->lasteulaacceptedlang);
 
         $submissionresult = $DB->get_records(
@@ -189,6 +189,8 @@ class eula_class_testcase extends advanced_testcase {
         $featuresenabled = file_get_contents(__DIR__ . '/../fixtures/get_features_enabled_success.json');
         set_config('turnitin_features_enabled', $featuresenabled, 'plagiarism_turnitinsim');
         set_config('turnitin_eula_version', 'v1-beta', 'plagiarism_turnitinsim');
+        set_config('turnitin_eula_url', 'https://dev-integrations.turnitin.org/api/v1/eula/v1beta/view', 'plagiarism_turnitinsim');
+        set_config('turnitinapiurl', 'https://dev-integrations.turnitin.org', 'plagiarism_turnitinsim');
 
         // Create a course.
         $this->course = $this->getDataGenerator()->create_course();
@@ -225,7 +227,21 @@ class eula_class_testcase extends advanced_testcase {
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
-        $tseula = new plagiarism_turnitinsim_eula();
+        // Get the response for a failed EULA version retrieval.
+        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
         $result = $tseula->get_eula_status($cm->id, 'file', $this->student->id);
 
         handle_deprecation::assertcontains($this,
@@ -287,7 +303,21 @@ class eula_class_testcase extends advanced_testcase {
         // Get course module data.
         $cm = get_coursemodule_from_instance('assign', $module->id);
 
-        $tseula = new plagiarism_turnitinsim_eula();
+        // Get the response for a failed EULA version retrieval.
+        $response = file_get_contents(__DIR__ . '/../fixtures/get_latest_eula_version_success.json');
+
+        // Mock API request class.
+        $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
+            ->setMethods(['send_request'])
+            ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
+            ->getMock();
+
+        // Mock API send request method.
+        $tsrequest->expects($this->once())
+            ->method('send_request')
+            ->willReturn($response);
+
+        $tseula = new plagiarism_turnitinsim_eula($tsrequest);
         $result = $tseula->get_eula_status($cm->id, 'file', $this->instructor->id);
 
         handle_deprecation::assertcontains($this,
