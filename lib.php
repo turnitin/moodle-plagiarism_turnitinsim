@@ -862,7 +862,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Queue every question submitted in a quiz attempt.
-        $attempt = 'mod_quiz\quiz_attempt'::create($eventdata['objectid']);
+        $attempt = quiz_attempt::create($eventdata['objectid']);
         $context = context_module::instance($attempt->get_cmid());
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
