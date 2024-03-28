@@ -256,6 +256,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $showresubmitlink = false;
             $submission = null;
 
+            // Make sure this is set because it might not be.
+            if (isset($cm->id) && !isset($linkarray['cmid'])) {
+                $linkarray['cmid'] = $cm->id;
+            }
+
             // Get turnitin submission details.
             $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
@@ -372,7 +377,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 // Check if student has accepted the EULA.
                 $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
-                if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
+                // Make sure status is set prior to checking what it is.
+                if (isset($plagiarismfile->status) && $plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
                     $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type, $plagiarismfile->userid);
                     $status = $statusset['eula-status'];
