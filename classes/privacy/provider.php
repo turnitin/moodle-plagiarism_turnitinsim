@@ -256,10 +256,12 @@ class provider implements
 
       $sql1 = "SELECT pts.id
                  FROM {plagiarism_turnitinsim_sub} pts
-                 JOIN {course_modules} cm ON cm.instance = ts.turnitintooltwoid
-                 JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                 JOIN {course_modules} c 
+                   ON pts.cm = c.id
+                 JOIN {modules} m 
+                   ON m.id = c.module AND m.name = :modname
                 WHERE pts.userid $insql
-                  AND cm.id = :cmid";
+                  AND c.id = :cmid";
 
       $params = [
           'modname' => 'plagiarism_turnitinsim',
