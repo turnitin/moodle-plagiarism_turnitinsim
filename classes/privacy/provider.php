@@ -272,6 +272,6 @@ class provider implements
 
       $attempt = $DB->get_fieldset_sql($sql1, $params);
 
-      $DB->delete_records_list('turnitintooltwo_submissions', 'id', array_values($attempt));
+      $DB->delete_records_list('plagiarism_turnitinsim_sub', 'id', array_values($attempt));
     }
 }
