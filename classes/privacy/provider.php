@@ -28,8 +28,10 @@ namespace plagiarism_turnitinsim\privacy;
 defined('MOODLE_INTERNAL') || die();
 
 use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 /**
@@ -38,6 +40,7 @@ use core_privacy\local\request\writer;
 class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_plagiarism\privacy\plagiarism_provider {
 
     // This trait must be included to provide the relevant polyfill for the metadata provider.
@@ -203,5 +206,70 @@ class provider implements
 
         $DB->delete_records('plagiarism_turnitinsim_sub', ['userid' => $userid]);
         $DB->delete_records('plagiarism_turnitinsim_users', ['userid' => $userid]);
+    }
+
+    /**
+     * Get a list of users who have data within a context.
+     *
+     * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+      $context = $userlist->get_context();
+
+      if ($context->contextlevel != CONTEXT_MODULE) {
+          return;
+      }
+
+      $sql = "SELECT pts.userid
+                FROM {plagiarism_turnitinsim_sub} pts
+                JOIN {course_modules} c 
+                  ON pts.cm = c.id
+                JOIN {modules} m
+                  ON m.id = c.module AND m.name = :modname
+               WHERE c.id = :cmid";
+
+      $params = [
+          'modname' => 'plagiarism_turnitinsim',
+          'cmid' => $context->instanceid
+      ];
+
+      $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
+     * Delete data for multiple users within a single context.
+     *
+     * @param   approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+      global $DB;
+
+      $context = $userlist->get_context();
+
+      if ($context->contextlevel != CONTEXT_MODULE) {
+          return;
+      }
+
+      $userids = $userlist->get_userids();
+
+      list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+      $sql1 = "SELECT pts.id
+                 FROM {plagiarism_turnitinsim_sub} pts
+                 JOIN {course_modules} cm ON cm.instance = ts.turnitintooltwoid
+                 JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                WHERE pts.userid $insql
+                  AND cm.id = :cmid";
+
+      $params = [
+          'modname' => 'plagiarism_turnitinsim',
+          'cmid' => $context->instanceid
+      ];
+
+      $params = array_merge($params, $inparams);
+
+      $attempt = $DB->get_fieldset_sql($sql1, $params);
+
+      $DB->delete_records_list('turnitintooltwo_submissions', 'id', array_values($attempt));
     }
 }
