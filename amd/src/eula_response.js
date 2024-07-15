@@ -32,6 +32,7 @@ define(['jquery', 'core/str'], function($, str) {
             $(document).ready(function() {
                 if ($("#turnitinsim_eulacontainer").length) {
                     $('input[name=submitbutton]').prop('disabled', 'disabled');
+                    $('.editsubmissionform').hide();
                 }
             });
 
@@ -54,6 +55,8 @@ define(['jquery', 'core/str'], function($, str) {
                         });
                     }
                 });
+
+                $('.editsubmissionform').show();
             });
 
             $(document).on('click', '#turnitinsim_eula_decline', function() {

@@ -536,12 +536,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 array('class' => 'btn btn-primary', 'id' => 'turnitinsim_eula_accept')
             );
 
-            // Button to allow the user to decline the Turnitin EULA.
-            $euladeclinebtn = html_writer::tag('span',
-                get_string('euladecline', 'plagiarism_turnitinsim'),
-                array('class' => 'btn btn-secondary', 'id' => 'turnitinsim_eula_decline')
-            );
-
             // Output EULA container.
             $output = html_writer::tag(
                 'div',
