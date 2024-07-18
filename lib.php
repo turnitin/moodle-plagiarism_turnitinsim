@@ -510,7 +510,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulaaccepted')
                 );
             }
-
+            
             if (!(bool)$features->tenant->require_eula) {
                 return html_writer::tag(
                     'div',
@@ -542,7 +542,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 html_writer::tag(
                     'p',
                     $eulalink
-                ).$eulaacceptbtn.$euladeclinebtn,
+                ).$eulaacceptbtn,
                 array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
             );
 

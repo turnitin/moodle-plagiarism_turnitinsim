@@ -33,6 +33,7 @@ define(['jquery', 'core/str'], function($, str) {
                 if ($("#turnitinsim_eulacontainer").length) {
                     $('input[name=submitbutton]').prop('disabled', 'disabled');
                     $('.editsubmissionform').hide();
+                    $('.mform').hide();
                 }
             });
 
@@ -51,12 +52,12 @@ define(['jquery', 'core/str'], function($, str) {
 
                             str.get_string('submissiondisplaystatus:queued', 'plagiarism_turnitinsim').done(function(text) {
                                 $('.tii_status_text').html(text);
+                                $('.editsubmissionform').show();
+                                $('.mform').show();
                             });
                         });
                     }
                 });
-
-                $('.editsubmissionform').show();
             });
 
             $(document).on('click', '#turnitinsim_eula_decline', function() {
