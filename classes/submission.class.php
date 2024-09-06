@@ -141,6 +141,11 @@ class plagiarism_turnitinsim_submission {
     public $tsrequest;
 
     /**
+     * @var object The plugin object.
+     */
+    public $plugin;
+
+    /**
      * plagiarism_turnitinsim_submission constructor.
      *
      * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
@@ -152,7 +157,7 @@ class plagiarism_turnitinsim_submission {
 
         $this->setid($id);
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
-        $this->plagiarism_plugin_turnitinsim = new plagiarism_plugin_turnitinsim();
+        $this->plugin = new plagiarism_plugin_turnitinsim();
 
         if (!empty($id)) {
             $submission = $DB->get_record('plagiarism_turnitinsim_sub', array('id' => $id));
@@ -209,7 +214,7 @@ class plagiarism_turnitinsim_submission {
             return;
         }
 
-        $plagiarismsettings = $this->plagiarism_plugin_turnitinsim->get_settings($cm->id);
+        $plagiarismsettings = $this->plugin->get_settings($cm->id);
 
         // Create module object.
         $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
@@ -737,8 +742,7 @@ class plagiarism_turnitinsim_submission {
      */
     public function request_turnitin_report_generation($regenerateonduedate = false) {
         // Get module settings.
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $modulesettings = $plugin->get_settings($this->getcm());
+        $modulesettings = $this->plugin->get_settings($this->getcm());
         $cm = get_coursemodule_from_id('', $this->getcm());
 
         // Create module helper object.
