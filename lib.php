@@ -45,123 +45,6 @@ require_once( __DIR__ . '/classes/task.class.php' );
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
-     * Get the fields to be used in the form to configure each module's Turnitin settings.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @param object $mform - Moodle form
-     * @param object $context - current context
-     * @param string $modulename - Name of the module
-     * @return void of settings fields.
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed twice.
-        // TODO: Remove once this method is removed.
-
-        $canconfigureplugin = false;
-
-        static $hassettings;
-        if ($hassettings) {
-            return;
-        }
-
-        $cmid = optional_param('update', 0, PARAM_INT);
-
-        $location = ($context == context_system::instance()) ? 'defaults' : 'module';
-
-        // Get whether plugin is enabled for this module.
-        $moduletiienabled = empty($modulename) ? "0" : get_config('plagiarism_turnitinsim',
-            'turnitinmodenabled'.substr($modulename, 4));
-
-        if ($location === 'module') {
-            // Exit if Turnitin is not being used for this activity type and location is not default.
-            if (empty($moduletiienabled)) {
-                return;
-            }
-
-            // Course ID is only passed in on new module - if updating then get it from module id.
-            $courseid = optional_param('course', 0, PARAM_INT);
-            $id = optional_param('id', 0, PARAM_INT);
-
-            if (empty($courseid)) {
-                $checkcourse = (!empty($cmid)) ? $cmid : $id;
-                $course = get_coursemodule_from_id('', $checkcourse);
-
-                // If it is still empty, return to avoid an error.
-                if (empty($course)) {
-                    return;
-                }
-
-                $courseid = $course->course;
-            }
-
-            // Exit if this user does not have permissions to configure the plugin.
-            if (has_capability('plagiarism/turnitinsim:enable', context_course::instance($courseid))) {
-                $canconfigureplugin = true;
-            }
-        } else {
-            $canconfigureplugin = true;
-        }
-
-        $form = new plagiarism_turnitinsim_settings();
-        $form->add_settings_to_module($mform, $canconfigureplugin, $location, $modulename);
-
-        if ($modsettings = $this->get_settings( $cmid )) {
-
-            // Set the default value for each option as the value we have stored.
-            foreach ($modsettings as $element => $value) {
-
-                // If the element name starts with exclude it needs to be placed in the exclude options group.
-                if ( substr($element, 0, 7) == 'exclude' ) {
-                    $mform->setDefault('excludeoptions['.$element.']', $value);
-                }
-
-                // If the element name starts with reportgen it needs to be placed in the report gen options group.
-                if ( substr($element, 0, 9) == 'reportgen' ) {
-                    $mform->setDefault('reportgenoptions['.$element.']', $value);
-                }
-
-                // If the element is addtoindex it needs to be placed in the index options group.
-                if ($element == 'addtoindex') {
-                    $mform->setDefault('indexoptions['.$element.']', $value);
-                }
-
-                // If the element is accessstudents it needs to be placed in the access options group.
-                if ($element == 'accessstudents') {
-                    $mform->setDefault('accessoptions['.$element.']', $value);
-                }
-
-                $mform->setDefault($element, $value);
-            }
-        }
-        // TODO: Remove once this method is removed.
-        $hassettings = true;
-    }
-
-    /**
-     * Save the data associated with the plugin from the module's mod_form.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @param object $data the form data to save
-     * @throws dml_exception
-     */
-    public function save_form_elements($data) {
-
-        $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
-        if (empty($moduletiienabled)) {
-            return;
-        }
-
-        $form = new plagiarism_turnitinsim_settings();
-        $form->save_module_settings($data);
-    }
-
-    /**
      * Hook to allow report score and link to be displayed beside a submission.
      *
      * @param array $linkarray contains all relevant information to display a report score and link to cloud viewer.
@@ -984,12 +867,78 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
  */
 function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
     $context = context_course::instance($formwrapper->get_course()->id);
+    $modulename = isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : '';
+    $canconfigureplugin = false;
 
-    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
-        $mform,
-        $context,
-        isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : ''
-    );
+    $cmid = optional_param('update', 0, PARAM_INT);
+
+    $location = ($context == context_system::instance()) ? 'defaults' : 'module';
+
+    // Get whether plugin is enabled for this module.
+    $moduletiienabled = empty($modulename) ? "0" : get_config('plagiarism_turnitinsim',
+        'turnitinmodenabled'.substr($modulename, 4));
+
+    if ($location === 'module') {
+        // Exit if Turnitin is not being used for this activity type and location is not default.
+        if (empty($moduletiienabled)) {
+            return;
+        }
+
+        // Course ID is only passed in on new module - if updating then get it from module id.
+        $courseid = optional_param('course', 0, PARAM_INT);
+        $id = optional_param('id', 0, PARAM_INT);
+
+        if (empty($courseid)) {
+            $checkcourse = (!empty($cmid)) ? $cmid : $id;
+            $course = get_coursemodule_from_id('', $checkcourse);
+
+            // If it is still empty, return to avoid an error.
+            if (empty($course)) {
+                return;
+            }
+
+            $courseid = $course->course;
+        }
+
+        // Exit if this user does not have permissions to configure the plugin.
+        if (has_capability('plagiarism/turnitinsim:enable', context_course::instance($courseid))) {
+            $canconfigureplugin = true;
+        }
+    } else {
+        $canconfigureplugin = true;
+    }
+
+    $form = new plagiarism_turnitinsim_settings();
+    $form->add_settings_to_module($mform, $canconfigureplugin, $location, $modulename);
+
+    if ($modsettings = (new plagiarism_plugin_turnitinsim())->get_settings( $cmid )) {
+
+        // Set the default value for each option as the value we have stored.
+        foreach ($modsettings as $element => $value) {
+
+            // If the element name starts with exclude it needs to be placed in the exclude options group.
+            if ( substr($element, 0, 7) == 'exclude' ) {
+                $mform->setDefault('excludeoptions['.$element.']', $value);
+            }
+
+            // If the element name starts with reportgen it needs to be placed in the report gen options group.
+            if ( substr($element, 0, 9) == 'reportgen' ) {
+                $mform->setDefault('reportgenoptions['.$element.']', $value);
+            }
+
+            // If the element is addtoindex it needs to be placed in the index options group.
+            if ($element == 'addtoindex') {
+                $mform->setDefault('indexoptions['.$element.']', $value);
+            }
+
+            // If the element is accessstudents it needs to be placed in the access options group.
+            if ($element == 'accessstudents') {
+                $mform->setDefault('accessoptions['.$element.']', $value);
+            }
+
+            $mform->setDefault($element, $value);
+        }
+    }
 }
 
 /**
@@ -999,7 +948,13 @@ function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mf
  * @param stdClass $course The course the call is made from.
  */
 function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
-    (new plagiarism_plugin_turnitinsim())->save_form_elements($data);
+    $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
+    if (empty($moduletiienabled)) {
+      return;
+    }
+
+    $form = new plagiarism_turnitinsim_settings();
+    $form->save_module_settings($data);
 
     return $data;
 }
