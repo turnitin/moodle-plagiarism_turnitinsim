@@ -51,8 +51,6 @@ class plagiarism_turnitinsim_task {
      * @var plagiarism_turnitinsim_settings Settings object.
      */
     public $tssettings;
-    
-    protected $tseula;
 
     /**
      * @var plagiarism_turnitinsim_eula Eula object.
