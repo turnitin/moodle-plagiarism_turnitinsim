@@ -499,7 +499,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Get locale.
         $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
-        $eulaurl = $this->eulaurl."?lang=".$lang->localecode;
+        $eulaurl = $this->eulaurl;
 
         // Verify EULA is output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();
