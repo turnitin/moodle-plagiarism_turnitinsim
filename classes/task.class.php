@@ -53,6 +53,11 @@ class plagiarism_turnitinsim_task {
     public $tssettings;
 
     /**
+     * @var plagiarism_turnitinsim_eula Eula object.
+     */
+    public $tseula;
+
+    /**
      * plagiarism_turnitinsim_task constructor.
      * @param null $params for the task to run.
      * @throws dml_exception
