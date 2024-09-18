@@ -51,6 +51,9 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
      */
     const TURNITINSIM_API_KEY = '123456';
 
+    protected $plugin;
+    protected $course;
+
     /**
      * Get a list of activity modules that support plagiarism plugins.
      *

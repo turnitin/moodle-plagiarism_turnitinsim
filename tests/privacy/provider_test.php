@@ -39,6 +39,9 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/turnitinsim_generato
  */
 class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase {
 
+    protected $turnitinsim_generator;
+    protected $submission;
+
     /**
      * Setup method that runs before each test.
      */
