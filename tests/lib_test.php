@@ -53,6 +53,13 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
 
     protected $plugin;
     protected $course;
+    protected $student1;
+    protected $student1ts;
+    protected $instructor;
+    protected $tseula;
+    protected $eulaurl;
+    protected $cm;
+    protected $assign;
 
     /**
      * Get a list of activity modules that support plagiarism plugins.
