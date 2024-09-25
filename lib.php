@@ -434,15 +434,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
     }
 
     /**
-     * Hook to allow status of submitted files to be updated - called on grading/report pages.
-     *
-     * @param object $course - full Course object
-     * @param object $cm - full cm object
-     */
-    public function update_status($course, $cm) {
-    }
-
-    /**
      * Get the Turnitin settings for a module.
      *
      * @param int $cmid - the course module id, if this is 0 the default settings will be retrieved
