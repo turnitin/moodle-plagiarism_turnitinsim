@@ -941,7 +941,7 @@ function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mf
 function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
     $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
     if (empty($moduletiienabled)) {
-      return;
+        return $data;
     }
 
     $form = new plagiarism_turnitinsim_settings();
