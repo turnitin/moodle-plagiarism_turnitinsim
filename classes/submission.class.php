@@ -295,7 +295,7 @@ class plagiarism_turnitinsim_submission {
 
         $userdata = array('id' => $tsuser->get_turnitinid());
 
-        if (!get_config('plagiarism_turnitinsim', 'turnitinhideidentity')) {
+        if (!$this->is_submission_anonymous()) {
             $userdata["family_name"] = $user->lastname;
             $userdata["given_name"] = $user->firstname;
             $userdata["email"] = $user->email;
@@ -971,7 +971,7 @@ class plagiarism_turnitinsim_submission {
         return array(
             'may_view_submission_full_source' => (!empty($turnitinviewerviewfullsource)) ? true : false,
             'may_view_match_submission_info' => (!empty($turnitinviewermatchsubinfo)) &&
-            !$this->is_submission_anonymous() ? true : false,
+            !$this->is_submission_anonymous(),
             'may_view_save_viewer_changes' => (!empty($turnitinviewersavechanges)) ? true : false
         );
     }
@@ -1064,18 +1064,13 @@ class plagiarism_turnitinsim_submission {
         $cm = get_coursemodule_from_id('', $this->getcm());
         $moduledata = $DB->get_record($cm->modname, array('id' => $cm->instance));
 
-        $blindmarkingon = !empty($moduledata->blindmarking);
-        $identitiesrevealed = !empty($moduledata->revealidentities);
-
-        // Return true if hide identities is on, otherwise go by module blind marking settings.
+        // Check if Hide Student's Identity is set at the plugin settings level, otherwise go by module blind marking settings.
         $turnitinhideidentity = get_config('plagiarism_turnitinsim', 'turnitinhideidentity');
-        if ($turnitinhideidentity) {
-            $anon = true;
-        } else {
-            $anon = $blindmarkingon && !$identitiesrevealed;
-        }
 
-        return $anon;
+        // Check if blind marking is on and revealidentities is not set yet.
+        $blindon = (!empty($moduledata->blindmarking) && empty($moduledata->revealidentities));
+        
+        return $blindon || $turnitinhideidentity;
     }
 
     /**
