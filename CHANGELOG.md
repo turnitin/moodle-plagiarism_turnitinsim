@@ -1,3 +1,20 @@
+### Date:       2024-November-25
+### Release:    v2024112501
+
+#### Fixed a bug with Anonymous Marking
+
+Previously, if a student submitted with anonymous marking enabled for the assignment, their email would sometimes be visible when viewing the online similarity report. This has now been fixed.
+
+#### Streamlined Eula Workflow
+
+In line with our other plagiarism plugin we have removed the Eula decline button, simplifying the Eula acceptance workflow.
+
+#### Added Userlist Provider for Privacy Compliance 
+
+Previously we were missing a userlist provider for this plugin. We have now added this.
+
+---
+
 ### Date:      2023-June-29
 ### Release:   v2023062901
 (Moodle Integration Only graphic)

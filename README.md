@@ -19,7 +19,7 @@ Useful Links
 
 Installation
 -
-Before installing this plugin firstly make sure you are logged in as an Administrator and that you are using Moodle 3.5 or higher.
+Before installing this plugin firstly make sure you are logged in as an Administrator and that you are using Moodle 4.1 or higher.
 
 To install, all you need to do is copy all the files into the plagiarism/turnitinsim directory on your Moodle installation. You should then go to `"Site Administration" > "Notifications"` and follow the on screen instructions.
 
