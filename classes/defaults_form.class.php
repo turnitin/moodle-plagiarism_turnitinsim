@@ -43,7 +43,7 @@ class plagiarism_turnitinsim_defaults_form extends moodleform {
         $mform =& $this->_form;
 
         $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->plagiarism_turnitinsim_coursemodule_standard_elements($mform, context_system::instance());
+        $plugin->add_elements_to_settings_form($mform, context_system::instance());
 
         $this->add_action_buttons(true);
     }
