@@ -45,22 +45,16 @@ require_once( __DIR__ . '/classes/task.class.php' );
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
-     * Get the fields to be used in the form to configure each module's Turnitin settings.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
+     * Add settings form elements to either defaults form or assignment settings form
      *
      * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
-     * @return void of settings fields.
+     * @return void
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed twice.
-        // TODO: Remove once this method is removed.
-
+    public function add_elements_to_settings_form($mform, $context, $modulename = "") {
         $canconfigureplugin = false;
 
         static $hassettings;
@@ -137,28 +131,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $mform->setDefault($element, $value);
             }
         }
-        // TODO: Remove once this method is removed.
+        
         $hassettings = true;
-    }
-
-    /**
-     * Save the data associated with the plugin from the module's mod_form.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @param object $data the form data to save
-     * @throws dml_exception
-     */
-    public function save_form_elements($data) {
-
-        $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
-        if (empty($moduletiienabled)) {
-            return;
-        }
-
-        $form = new plagiarism_turnitinsim_settings();
-        $form->save_module_settings($data);
     }
 
     /**
@@ -510,7 +484,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulaaccepted')
                 );
             }
-
+            
             if (!(bool)$features->tenant->require_eula) {
                 return html_writer::tag(
                     'div',
@@ -536,33 +510,18 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 array('class' => 'btn btn-primary', 'id' => 'turnitinsim_eula_accept')
             );
 
-            // Button to allow the user to decline the Turnitin EULA.
-            $euladeclinebtn = html_writer::tag('span',
-                get_string('euladecline', 'plagiarism_turnitinsim'),
-                array('class' => 'btn btn-secondary', 'id' => 'turnitinsim_eula_decline')
-            );
-
             // Output EULA container.
             $output = html_writer::tag(
                 'div',
                 html_writer::tag(
                     'p',
                     $eulalink
-                ).$eulaacceptbtn.$euladeclinebtn,
+                ).$eulaacceptbtn,
                 array('class' => 'turnitinsim_eulacontainer', 'id' => 'turnitinsim_eulacontainer')
             );
 
             return $output;
         }
-    }
-
-    /**
-     * Hook to allow status of submitted files to be updated - called on grading/report pages.
-     *
-     * @param object $course - full Course object
-     * @param object $cm - full cm object
-     */
-    public function update_status($course, $cm) {
     }
 
     /**
@@ -991,7 +950,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
+    (new plagiarism_plugin_turnitinsim())->add_elements_to_settings_form(
         $mform,
         $context,
         isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : ''
@@ -1005,7 +964,13 @@ function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mf
  * @param stdClass $course The course the call is made from.
  */
 function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
-    (new plagiarism_plugin_turnitinsim())->save_form_elements($data);
+    $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
+    if (empty($moduletiienabled)) {
+        return $data;
+    }
+
+    $form = new plagiarism_turnitinsim_settings();
+    $form->save_module_settings($data);
 
     return $data;
 }

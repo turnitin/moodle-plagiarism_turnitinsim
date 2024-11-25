@@ -57,7 +57,7 @@ class plagiarism_turnitinsim_quiz {
     public function get_itemid($params) {
         global $DB;
 
-        $item = $DB->get_record_sql('SELECT DISTINCT(q.id) FROM {question_attempt_steps} s
+        $item = $DB->get_record_sql('SELECT DISTINCT(q.uniqueid) FROM {question_attempt_steps} s
                                     RIGHT JOIN {question_attempts} a
                                     ON s.questionattemptid = a.id
                                     RIGHT JOIN {quiz_attempts} q
@@ -69,7 +69,7 @@ class plagiarism_turnitinsim_quiz {
             array($params->moduleid, $params->userid, $params->onlinetext, 'finished')
         );
 
-        return ($item) ? $item->id : 0;
+        return ($item) ? $item->uniqueid : 0;
     }
 
     /**

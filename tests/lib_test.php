@@ -51,6 +51,16 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
      */
     const TURNITINSIM_API_KEY = '123456';
 
+    protected $plugin;
+    protected $course;
+    protected $student1;
+    protected $student1ts;
+    protected $instructor;
+    protected $tseula;
+    protected $eulaurl;
+    protected $cm;
+    protected $assign;
+
     /**
      * Get a list of activity modules that support plagiarism plugins.
      *
@@ -489,7 +499,7 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         // Get locale.
         $tsrequest = new plagiarism_turnitinsim_request();
         $lang = $tsrequest->get_language();
-        $eulaurl = $this->eulaurl."?lang=".$lang->localecode;
+        $eulaurl = $this->eulaurl;
 
         // Verify EULA is output.
         $plagiarismturnitinsim = new plagiarism_plugin_turnitinsim();

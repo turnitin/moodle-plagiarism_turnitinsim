@@ -32,6 +32,8 @@ define(['jquery', 'core/str'], function($, str) {
             $(document).ready(function() {
                 if ($("#turnitinsim_eulacontainer").length) {
                     $('input[name=submitbutton]').prop('disabled', 'disabled');
+                    $('.editsubmissionform').hide();
+                    $('.mform').hide();
                 }
             });
 
@@ -50,6 +52,8 @@ define(['jquery', 'core/str'], function($, str) {
 
                             str.get_string('submissiondisplaystatus:queued', 'plagiarism_turnitinsim').done(function(text) {
                                 $('.tii_status_text').html(text);
+                                $('.editsubmissionform').show();
+                                $('.mform').show();
                             });
                         });
                     }
