@@ -38,6 +38,8 @@ class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
      * @throws base_element_struct_exception
      */
     protected function define_module_plugin_structure() {
+        global $DB;
+
         $plugin = $this->get_plugin_element();
 
         $pluginelement = new backup_nested_element($this->get_recommended_name());
@@ -71,17 +73,22 @@ class backup_plagiarism_turnitinsim_plugin extends backup_plagiarism_plugin {
             $pluginelement->add_child($submissions);
             $submissions->add_child($submission);
 
-            // Get submission details along with contenthash from files table.
-            $submission->set_source_sql(
+            // Get submission details
+            $submissiondetails = $DB->get_records_sql(
                 'SELECT PTS.userid, PTS.turnitinid, PTS.status, PTS.identifier, PTS.itemid, PTS.type,
                 PTS.submittedtime, PTS.togenerate, PTS.generationtime, PTS.overallscore, PTS.requestedtime,
-                PTS.errormessage, F.contenthash
+                PTS.errormessage
                 FROM {plagiarism_turnitinsim_sub} PTS
-                LEFT JOIN {files} F
-                ON PTS.identifier = F.pathnamehash
                 WHERE PTS.cm = ? ',
                 array(backup::VAR_PARENTID)
             );
+
+            // Use file API to get content hash
+            $fs = get_file_storage();
+            $file = $fs->get_file_by_hash($submissiondetails->identifier);
+            $submissiondetails['contenthash'] = $file->contenthash;
+
+            $submission->set_source_array($submissiondetails);
 
             // Backup users who have submitted to this module.
             $users = new backup_nested_element('turnitinsim_usrs');
