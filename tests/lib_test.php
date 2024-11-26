@@ -140,40 +140,6 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
     }
 
     /**
-     * Save Form elements
-     */
-    public function test_save_form_elements() {
-        global $DB;
-
-        $this->resetAfterTest();
-
-        // Create data object for new assignment.
-        $data = new stdClass();
-        $data->modulename = 'assign';
-        $data->coursemodule = 1;
-        $data->turnitinenabled = 1;
-
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->save_form_elements($data);
-
-        // Check settings are not saved.
-        $settings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $data->coursemodule));
-
-        $this->assertEmpty($settings);
-
-        // Set plugin as enabled in config for this module type.
-        plagiarism_plugin_turnitinsim::enable_plugin(1);
-        set_config('turnitinmodenabledassign', 1, 'plagiarism_turnitinsim');
-
-        $plugin->save_form_elements($data);
-
-        // Check settings are saved.
-        $settings = $DB->get_record('plagiarism_turnitinsim_mod', array('cm' => $data->coursemodule));
-
-        $this->assertEquals(1, $settings->turnitinenabled);
-    }
-
-    /**
      * Test that get_links returns an empty div if there is no submission.
      */
     public function test_get_links_no_submission() {
@@ -421,9 +387,10 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->coursemodule = $this->cm->id;
         $data->turnitinenabled = 0;
 
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->save_form_elements($data);
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
 
+        $plugin = new plagiarism_plugin_turnitinsim();
         $this->assertFalse($plugin->is_plugin_active($this->cm));
     }
 
@@ -490,8 +457,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->modulename = 'assign';
         $data->coursemodule = $this->cm->id;
         $data->turnitinenabled = 1;
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->save_form_elements($data);
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
 
         // Log student in.
         $this->setUser($this->student1);
@@ -526,8 +493,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->modulename = 'assign';
         $data->coursemodule = $this->cm->id;
         $data->turnitinenabled = 1;
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->save_form_elements($data);
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
 
         // Accept EULA for student.
         $data = $DB->get_record('plagiarism_turnitinsim_users', ['userid' => $this->student1->id]);
@@ -563,8 +530,8 @@ class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
         $data->modulename = 'assign';
         $data->coursemodule = $this->cm->id;
         $data->turnitinenabled = 1;
-        $plugin = new plagiarism_plugin_turnitinsim();
-        $plugin->save_form_elements($data);
+        $form = new plagiarism_turnitinsim_settings();
+        $form->save_module_settings($data);
 
         // Log student in.
         $this->setUser($this->student1);
