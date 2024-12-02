@@ -99,22 +99,6 @@ class handle_deprecation {
     }
 
     /**
-     * In Moodle 3.9, download_as_dataformat() was deprecated and \core\dataformat::download_data() was introduced.
-     * This method handles our support for multiple Moodle versions.
-     *
-     * @param string $exportfile The name of the file to download.
-     * @param string $dataformat The format of the file.
-     * @param array $columns The names of the columns.
-     * @param string $data The data to download.
-     */
-    public static function download_data($exportfile, $dataformat, $columns, $data) {
-        global $CFG;
-
-        $CFG->branch >= 39 ? \core\dataformat::download_data($exportfile, $dataformat, $columns, $data)
-            : download_as_dataformat($exportfile, $dataformat, $columns, $data);
-    }
-
-    /**
      * In Moodle 3.10, Moodle switched to use PHPUnit 8.5 which contains deprecations for some assertions.
      * assertContains was deprecated in favour of the newer assertStringContainsString. (PHPUnit 7.5)
      * This method handles our support for Moodle versions that use PHPUnit 6.5. (Moodle 3.5 and 3.6)
