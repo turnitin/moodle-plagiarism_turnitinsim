@@ -26,7 +26,6 @@
 // Require libs.
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->libdir.'/dataformatlib.php');
 require_once( __DIR__ . '/utilities/handle_deprecation.php' );
 
 // Restrict access to admins only.
@@ -68,7 +67,7 @@ if (!is_null($table)) {
         $data = $DB->get_records($table, null, 'id ASC');
 
         // Use Moodle's dataformatting functions to output the data in the desired format.
-        handle_deprecation::download_data($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
+        \core\dataformat::download_data($exportfile, $dataformat, array_keys($DB->get_columns($table)), $data);
 
         exit;
 
