@@ -45,22 +45,16 @@ require_once( __DIR__ . '/classes/task.class.php' );
 class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
     /**
-     * Get the fields to be used in the form to configure each module's Turnitin settings.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
+     * Add settings form elements to either defaults form or assignment settings form
      *
      * @param object $mform - Moodle form
      * @param object $context - current context
      * @param string $modulename - Name of the module
-     * @return void of settings fields.
+     * @return void
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        // This is a bit of a hack and untidy way to ensure the form elements aren't displayed twice.
-        // TODO: Remove once this method is removed.
-
+    public function add_elements_to_settings_form($mform, $context, $modulename = "") {
         $canconfigureplugin = false;
 
         static $hassettings;
@@ -137,28 +131,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $mform->setDefault($element, $value);
             }
         }
-        // TODO: Remove once this method is removed.
+        
         $hassettings = true;
-    }
-
-    /**
-     * Save the data associated with the plugin from the module's mod_form.
-     *
-     * TODO: This code needs to be moved for 4.3 as the method will be completely removed from core.
-     * See https://tracker.moodle.org/browse/MDL-67526
-     *
-     * @param object $data the form data to save
-     * @throws dml_exception
-     */
-    public function save_form_elements($data) {
-
-        $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
-        if (empty($moduletiienabled)) {
-            return;
-        }
-
-        $form = new plagiarism_turnitinsim_settings();
-        $form->save_module_settings($data);
     }
 
     /**
@@ -847,7 +821,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Queue every question submitted in a quiz attempt.
-        $attempt = quiz_attempt::create($eventdata['objectid']);
+        $attempt = mod_quiz\quiz_attempt::create($eventdata['objectid']);
         $context = context_module::instance($attempt->get_cmid());
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
@@ -976,7 +950,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mform) {
     $context = context_course::instance($formwrapper->get_course()->id);
 
-    (new plagiarism_plugin_turnitinsim())->get_form_elements_module(
+    (new plagiarism_plugin_turnitinsim())->add_elements_to_settings_form(
         $mform,
         $context,
         isset($formwrapper->get_current()->modulename) ? 'mod_'.$formwrapper->get_current()->modulename : ''
@@ -990,7 +964,13 @@ function plagiarism_turnitinsim_coursemodule_standard_elements($formwrapper, $mf
  * @param stdClass $course The course the call is made from.
  */
 function plagiarism_turnitinsim_coursemodule_edit_post_actions($data, $course) {
-    (new plagiarism_plugin_turnitinsim())->save_form_elements($data);
+    $moduletiienabled = $moduletiienabled = get_config('plagiarism_turnitinsim', 'turnitinmodenabled'.$data->modulename);
+    if (empty($moduletiienabled)) {
+        return $data;
+    }
+
+    $form = new plagiarism_turnitinsim_settings();
+    $form->save_module_settings($data);
 
     return $data;
 }
