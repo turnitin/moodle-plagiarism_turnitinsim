@@ -118,7 +118,7 @@ class plagiarism_turnitinsim_task {
                 continue;
             }
 
-            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
+            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED || $tssubmission->gettiiattempts() > 0) {
                 $tssubmission->create_submission_in_turnitin();
             }
 
