@@ -59,7 +59,7 @@ class plagiarism_turnitinsim_settings {
         global $PAGE;
 
         if ($context == 'module') {
-            $mform->addElement('header', 'plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitinsim'));
+            $mform->addElement('header', 'turnitinsim_plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitinsim'));
         }
 
         // Require JS modules.
