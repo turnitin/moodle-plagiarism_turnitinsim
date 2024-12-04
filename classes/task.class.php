@@ -122,11 +122,18 @@ class plagiarism_turnitinsim_task {
                 $tssubmission->create_submission_in_turnitin();
             }
 
-            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_CREATED && !empty($tssubmission->getturnitinid())) {
+            if (!empty($tssubmission->getturnitinid())) {
+                // If this is a retry, generate a new submissionid
+                if ($tssubmission->gettiiattempts() > 0) {
+                    $tssubmission->create_submission_in_turnitin();
+                }
+
                 $tssubmission->upload_submission_to_turnitin();
 
                 // Set the time for the report to be generated.
                 $tssubmission->calculate_generation_time();
+
+                mtrace(json_encode($tssubmission, JSON_PRETTY_PRINT));
             }
 
             $tssubmission->update();
