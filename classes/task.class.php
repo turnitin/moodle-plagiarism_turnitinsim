@@ -123,13 +123,18 @@ class plagiarism_turnitinsim_task {
 
             if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
+            }
 
-                if (tssubmission->getstatus() == TURNITINSIM_HTTP_CREATED) {
-                    $tssubmission->upload_submission_to_turnitin();
-
-                    // Set the time for the report to be generated.
-                    $tssubmission->calculate_generation_time();
+            if (!empty($tssubmission->getturnitinid())) {
+                // If this is a retry, generate a new submissionid
+                if ($tssubmission->gettiiattempts() > 0) {
+                    $tssubmission->create_submission_in_turnitin();
                 }
+
+                $tssubmission->upload_submission_to_turnitin();
+
+                // Set the time for the report to be generated.
+                $tssubmission->calculate_generation_time();
             }
 
             $tssubmission->update();
