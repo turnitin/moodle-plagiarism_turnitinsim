@@ -132,8 +132,6 @@ class plagiarism_turnitinsim_task {
 
                 // Set the time for the report to be generated.
                 $tssubmission->calculate_generation_time();
-
-                mtrace(json_encode($tssubmission, JSON_PRETTY_PRINT));
             }
 
             $tssubmission->update();
