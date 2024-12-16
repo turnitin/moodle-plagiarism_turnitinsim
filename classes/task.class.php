@@ -118,15 +118,15 @@ class plagiarism_turnitinsim_task {
                 continue;
             }
 
-            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED || $tssubmission->gettiiattempts() > 0) {
+            if ($tssubmission->getstatus() == TURNITINSIM_SUBMISSION_STATUS_QUEUED) {
                 $tssubmission->create_submission_in_turnitin();
-            }
 
-            if (!empty($tssubmission->getturnitinid())) {
-                $tssubmission->upload_submission_to_turnitin();
+                if (!empty($tssubmission->getturnitinid())) {
+                    $tssubmission->upload_submission_to_turnitin();
 
-                // Set the time for the report to be generated.
-                $tssubmission->calculate_generation_time();
+                    // Set the time for the report to be generated.
+                    $tssubmission->calculate_generation_time();
+                }
             }
 
             $tssubmission->update();
