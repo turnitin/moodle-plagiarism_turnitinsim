@@ -558,14 +558,12 @@ class plagiarism_turnitinsim_submission {
                 }
 
                 // Queue each answer to a question.
-                // Namespace was changed in Moodle 4.2.
-                // TODO: We can delete the else block here when we no longer support Moodle 4.1
-                if ($CFG->version >= 2023042411) {
-                    $attempt = mod_quiz\quiz_attempt::create($this->getitemid());
+                if (class_exists('\mod_quiz\quiz_attempt')) {
+                    $quizattemptclass = '\mod_quiz\quiz_attempt';
+                } else {
+                    $quizattemptclass = 'quiz_attempt';
                 }
-                else {
-                    $attempt = quiz_attempt::create($this->getitemid());
-                }
+                $attempt = $quizattemptclass::create($this->getitemid());
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
                     if ($this->getidentifier() == sha1($qa->get_response_summary())) {
