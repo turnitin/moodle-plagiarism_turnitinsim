@@ -811,6 +811,8 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @throws dml_exception
      */
     public function quiz_handler($cm, $eventdata, $sendtoturnitin, $features) {
+        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
         // Create module object.
         $moduleclass = 'plagiarism_turnitinsim_'.$cm->modname;
         $moduleobject = new $moduleclass;
