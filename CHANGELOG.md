@@ -1,3 +1,16 @@
+### Date:       2025-February-13
+### Release:    v2025021301
+
+#### Fixed Issue with Database Download
+
+An issue was identified where database downloads were not working for some users. This has now been resolved.
+
+#### Fixed Issue with Quizzes
+
+Previously when reviewing a quiz attempt, some users would encounter an error. This has now been resolved.
+
+---
+
 ### Date:       2024-November-25
 ### Release:    v2024112501
 
