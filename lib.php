@@ -213,7 +213,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
              context_module::instance($cm->id)
         );
 		
-		// Check if the logged in user is an student.
+	// Check if the logged in user is an student.
         $student = has_capability(
             'plagiarism/turnitinsim:viewreport',
              context_module::instance($cm->id)
