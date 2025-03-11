@@ -140,6 +140,7 @@ $string['tasksendqueuedsubmissions'] = 'Send Queued Files from the Turnitin Inte
 $string['turnitinsim'] = 'Turnitin Integrity plugin';
 $string['turnitinsim:enable'] = 'Enable Turnitin Integrity';
 $string['turnitinsim:viewfullreport'] = 'View Originality Report';
+$string['turnitinsim:viewfullreport'] = 'View Originality Report (Student)';
 $string['turnitinapikey'] = 'Turnitin API Key';
 $string['turnitinapiurl'] = 'Turnitin API URL';
 $string['turnitinsiminternet'] = 'Check against internet content';
