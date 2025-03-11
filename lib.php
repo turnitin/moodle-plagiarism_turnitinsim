@@ -212,6 +212,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             'plagiarism/turnitinsim:viewfullreport',
              context_module::instance($cm->id)
         );
+		
+		// Check if the logged in user is an student.
+        $student = has_capability(
+            'plagiarism/turnitinsim:viewreport',
+             context_module::instance($cm->id)
+        );
 
         // Get the user ID for a quiz submission as it does not exist in the linkarray.
         if (!empty($linkarray['file']) && $cm->modname == "quiz") {
@@ -246,7 +252,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
                 // If the user is a student and they are not allowed to view reports,
                 // and they have accepted the EULA then return empty output.
-                if (!$instructor && empty($plagiarismsettings->accessstudents) &&
+                if (!$instructor && $student && empty($plagiarismsettings->accessstudents) &&
                     $submission->getstatus() !== TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     return $output;
                 }
@@ -364,7 +370,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';
 
             // Output rendered status and resubmission link if applicable.
-            if ($instructor || (!$instructor && $plagiarismsettings->accessstudents)) {
+            if ($instructor || (!$instructor && $student && $plagiarismsettings->accessstudents)) {
                 $output .= html_writer::tag('div', $eulaconfirm . $turnitinicon . $status . $resubmitlink,
                     array('class' => 'turnitinsim_status submission_' . $submissionid));
             }
