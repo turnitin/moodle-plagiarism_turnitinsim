@@ -60,7 +60,7 @@ class plagiarism_turnitinsim_logger {
     public function __construct() {
         global $CFG;
         
-        $this->logger = new \Monolog\Logger(APILOG_PREFIX);
+        $this->logger = new \Monolog\Logger(self::APILOG_PREFIX);
 
         // Use RotatingFileHandler for automatic log rotation
         $handler = new RotatingFileHandler($CFG->tempdir.'/'.self::LOG_DIR, KEEPLOGS, \Monolog\Logger::DEBUG);
