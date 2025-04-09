@@ -51,7 +51,7 @@ class plagiarism_turnitinsim_logger {
      */
     const APILOG_PREFIX = 'apilog_';
 
-    private Logger $logger;
+    private Monolog\Logger $logger;
 
     /**
      * plagiarism_turnitinsim_logger constructor.
