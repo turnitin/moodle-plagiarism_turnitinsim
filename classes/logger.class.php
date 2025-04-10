@@ -66,4 +66,21 @@ class plagiarism_turnitinsim_logger {
         $handler = new RotatingFileHandler($CFG->tempdir.'/'.self::LOG_DIR, self::KEEPLOGS, \Monolog\Logger::DEBUG);
         $this->logger->pushHandler($handler);
     }
+
+
+    public function debug($string) {
+      $this->logger->debug($string);
+    }
+  
+    public function info($string) {
+      $this->logger->info($string);
+    }
+
+    public function warning($string) {
+        $this->logger->warning($string);
+    }
+
+    public function error($string) {
+        $this->logger->error($string);
+    }
 }
