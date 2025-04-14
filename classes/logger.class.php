@@ -30,6 +30,7 @@ require($CFG->dirroot . '/plagiarism/turnitinsim/vendor/autoload.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
 use Monolog\Monolog;
+use Monolog\Handler\RotatingFileHandler;
 
 /**
  * Log API requests and responses from Turnitin.
@@ -51,7 +52,7 @@ class plagiarism_turnitinsim_logger {
      */
     const APILOG_PREFIX = 'apilog_';
 
-    private Logger $logger;
+    private \Monolog\Logger $logger;
 
     /**
      * plagiarism_turnitinsim_logger constructor.
@@ -59,10 +60,27 @@ class plagiarism_turnitinsim_logger {
     public function __construct() {
         global $CFG;
         
-        $this->logger = new Logger(APILOG_PREFIX);
+        $this->logger = new \Monolog\Logger(self::APILOG_PREFIX);
 
         // Use RotatingFileHandler for automatic log rotation
-        $handler = new RotatingFileHandler($CFG->tempdir.'/'.self::LOG_DIR, KEEPLOGS, Logger::DEBUG);
+        $handler = new RotatingFileHandler($CFG->tempdir.'/'.self::LOG_DIR, self::KEEPLOGS, \Monolog\Logger::DEBUG);
         $this->logger->pushHandler($handler);
+    }
+
+
+    public function debug($string) {
+      $this->logger->debug($string);
+    }
+  
+    public function info($string) {
+      $this->logger->info($string);
+    }
+
+    public function warning($string) {
+        $this->logger->warning($string);
+    }
+
+    public function error($string) {
+        $this->logger->error($string);
     }
 }
