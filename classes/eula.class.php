@@ -41,7 +41,7 @@ class plagiarism_turnitinsim_eula {
      * @param plagiarism_turnitinsim_request|null $tsrequest The request we're handling.
      * @throws dml_exception
      */
-    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
+    public function __construct(?plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }
 
@@ -60,10 +60,11 @@ class plagiarism_turnitinsim_eula {
             $langcode = $lang->localecode;
             $endpoint = TURNITINSIM_ENDPOINT_GET_LATEST_EULA."?lang=".$langcode;
             $response = $this->tsrequest->send_request($endpoint, json_encode(array()), 'GET');
-            $responsedata = json_decode($response);
+            $response = json_decode($response);
 
             // Latest version retrieved.
-            if ($responsedata->httpstatus == TURNITINSIM_HTTP_OK) {
+            if ($response->httpstatus == TURNITINSIM_HTTP_OK) {
+                $responsedata = $response;
                 mtrace(get_string('taskoutputlatesteularetrieved', 'plagiarism_turnitinsim', $responsedata->version));
                 return $responsedata;
             }
