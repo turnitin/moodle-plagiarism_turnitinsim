@@ -55,7 +55,7 @@ class plagiarism_turnitinsim_logging_request {
      * @param string $message The error message.
      * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
      */
-    public function __construct($message = 'Error', plagiarism_turnitinsim_request $tsrequest = null) {
+    public function __construct($message = 'Error', ?plagiarism_turnitinsim_request $tsrequest = null) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
         $this->loggingrequest = array();
         $this->loggingrequest["message"] = $message;
