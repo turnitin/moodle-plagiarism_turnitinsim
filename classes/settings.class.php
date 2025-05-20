@@ -41,7 +41,7 @@ class plagiarism_turnitinsim_settings {
      * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
      * @throws dml_exception
      */
-    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
+    public function __construct(?plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
     }
 
