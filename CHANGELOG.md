@@ -1,3 +1,19 @@
+### Date:       2025-May-29
+### Release:    v2025052901
+
+---
+
+#### Assignment Settings Error Fixed
+An issue was identified where when navigating the assignment settings an error message would appear. This has been resolved.
+
+#### Course Backup Issue Fixed
+An issue was identified affecting course backup/restore that would sometimes cause courses to fail to backup. This has now been resolved.
+
+#### Quiz Attempt DB Issue Resolved
+An issue was identified where when a user would select `No Online Text` for a quiz attempt, reviewing the attempt would cause an error. This has now been resolved.
+
+---
+
 ### Date:       2025-February-13
 ### Release:    v2025021301
 
