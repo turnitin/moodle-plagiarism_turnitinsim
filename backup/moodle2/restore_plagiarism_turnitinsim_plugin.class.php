@@ -112,6 +112,10 @@ class restore_plagiarism_turnitinsim_plugin extends restore_plagiarism_plugin {
     public function after_restore_module() {
         global $DB, $SESSION;
 
+        if (!isset($SESSION->tsrestore)) {
+            return;
+        }
+
         foreach ($SESSION->tsrestore as $data) {
             // Get new itemid for files.
             if ($data->type == TURNITINSIM_SUBMISSION_TYPE_FILE) {
