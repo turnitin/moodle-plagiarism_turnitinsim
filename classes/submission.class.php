@@ -152,7 +152,7 @@ class plagiarism_turnitinsim_submission {
      * @param null $id The submission ID.
      * @throws dml_exception
      */
-    public function __construct(plagiarism_turnitinsim_request $tsrequest = null, $id = null) {
+    public function __construct(?plagiarism_turnitinsim_request $tsrequest = null, $id = null) {
         global $DB;
 
         $this->setid($id);
