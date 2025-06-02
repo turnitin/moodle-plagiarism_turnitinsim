@@ -45,7 +45,7 @@ class plagiarism_turnitinsim_callback {
      *
      * @param plagiarism_turnitinsim_request|null $tsrequest The request we're handling.
      */
-    public function __construct(plagiarism_turnitinsim_request $tsrequest = null ) {
+    public function __construct(?plagiarism_turnitinsim_request $tsrequest = null ) {
         $this->tsrequest = $tsrequest;
     }
 
