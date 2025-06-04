@@ -11,25 +11,25 @@ class ComposerStaticIniteed7468aa416fb39bd82eedd362af61c
         array (
             'Psr\\Log\\' => 8,
         ),
-        'K' => 
+        'M' => 
         array (
-            'Katzgrau\\KLogger\\' => 17,
+            'Monolog\\' => 8,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Psr\\Log\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Katzgrau\\KLogger\\' => 
+        'Monolog\\' => 
         array (
-            0 => __DIR__ . '/..' . '/katzgrau/klogger/src',
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
     );
 
     public static $classMap = array (
-        'Katzgrau\\KLogger\\Logger' => __DIR__ . '/..' . '/katzgrau/klogger/src/Logger.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
