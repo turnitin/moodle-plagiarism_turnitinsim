@@ -230,6 +230,10 @@ class quiz_class_testcase extends advanced_testcase {
         $this->setUser($this->student1);
 
         $file = create_test_file(1, 1, 'mod_quiz', 'submissions');
+        // Create a question attempt, step and quiz attempt.
+        $questionattempt = $this->create_question_attempt();
+        $this->create_question_attempt_step($questionattempt->id);
+        $quizattempt = $this->create_quiz_attempt($questionattempt->questionusageid);
 
         // Create dummy link array data.
         $linkarray = array(
@@ -247,7 +251,7 @@ class quiz_class_testcase extends advanced_testcase {
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
         $this->assertEquals(array($file->get_pathnamehash()), $response['other']['pathnamehashes']);
-        $this->assertEquals($linkarray['area'], $response['objectid']);
+        $this->assertEquals($quizattempt->id, $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
     }
@@ -277,7 +281,7 @@ class quiz_class_testcase extends advanced_testcase {
         // Create a question attempt, step and quiz attempt.
         $questionattempt = $this->create_question_attempt();
         $this->create_question_attempt_step($questionattempt->id);
-        $this->create_quiz_attempt($questionattempt->questionusageid);
+        $quizattempt = $this->create_quiz_attempt($questionattempt->questionusageid);
 
         // Create dummy link array data.
         $linkarray = array(
@@ -293,7 +297,7 @@ class quiz_class_testcase extends advanced_testcase {
         $this->assertEquals('quiz_submitted', $response['eventtype']);
         $this->assertEquals($cm->id, $response['contextinstanceid']);
         $this->assertEquals($this->student1->id, $response['userid']);
-        $this->assertEquals($linkarray['area'], $response['objectid']);
+        $this->assertEquals($quizattempt->id, $response['objectid']);
         $this->assertEquals($this->student1->id, $response['relateduserid']);
         $this->assertEquals('quiz', $response['other']['modulename']);
     }
