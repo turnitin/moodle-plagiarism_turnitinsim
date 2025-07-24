@@ -449,12 +449,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         global $CFG, $PAGE, $USER;
 
         // Avoid printing the EULA acceptance box more than once.
-        // This needs to be shown twice for a text submission as it exists in the dom twice.
         // Allowed for unit testing otherwise only the first test that calls this would work.
         static $disclosurecount = 1;
-        if (($submissiontype == 'file' && $disclosurecount === 1) ||
-            ($submissiontype == 'content' && $disclosurecount <= 2) ||
-            PHPUNIT_TEST) {
+        if ($disclosurecount === 1 || PHPUNIT_TEST) {
             $disclosurecount++;
 
             // Return empty output if the plugin is not being used.
