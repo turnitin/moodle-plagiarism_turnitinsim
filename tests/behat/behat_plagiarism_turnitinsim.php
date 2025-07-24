@@ -24,9 +24,6 @@
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
-// namespace behat;
-namespace behat1;
-
 use behat_base;
 use testing_util;
 
