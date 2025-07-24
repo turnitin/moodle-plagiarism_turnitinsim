@@ -363,10 +363,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             // Render a resubmit link for instructors if necessary.
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';
 
-            // Output rendered status and resubmission link if applicable.
+            // Output rendered status, eula prompt, and resubmission link if applicable.
+            $towrite = $eulaconfirm ?? '';
             if ($instructor || (!$instructor && $plagiarismsettings->accessstudents)) {
-                $output .= html_writer::tag('div', $eulaconfirm . $turnitinicon . $status . $resubmitlink,
-                    array('class' => 'turnitinsim_status submission_' . $submissionid));
+                $towrite .= $turnitinicon . $status . $resubmitlink;
+            }
+            if (!empty($towrite)) {
+                $output .= html_writer::tag('div', $towrite, ['class' => 'turnitinsim_status submission_' . $submissionid]);
             }
         }
 
@@ -446,12 +449,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         global $CFG, $PAGE, $USER;
 
         // Avoid printing the EULA acceptance box more than once.
-        // This needs to be shown twice for a text submission as it exists in the dom twice.
         // Allowed for unit testing otherwise only the first test that calls this would work.
         static $disclosurecount = 1;
-        if (($submissiontype == 'file' && $disclosurecount === 1) ||
-            ($submissiontype == 'content' && $disclosurecount <= 2) ||
-            PHPUNIT_TEST) {
+        if ($disclosurecount === 1 || PHPUNIT_TEST) {
             $disclosurecount++;
 
             // Return empty output if the plugin is not being used.
