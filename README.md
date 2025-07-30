@@ -1,3 +1,12 @@
+Announcement - Issues page merged with Turnitin's support page
+================
+
+In order to be able to better monitor incoming issues, we are consolidating the 3 issues pages for the 2 plagiarism plugins and Direct v2 with our existing support area.
+
+The support area is how our team currently monitors issues for every other area of Turnitin. Therefore, we will be closing the Issues pages. If you have issues with the Turnitin integrity plugin, please raise them here: https://helpcenter.turnitin.com/hc/en-us/requests/new
+
+The team appreciates your ongoing support and contributions. Thank you!
+
 Turnitin Integrity Plugin for Moodle
 =
 
@@ -48,3 +57,13 @@ Then run the following command from the Moodle root directory:
 `php admin/tool/behat/cli/run.php --tags=@plagiarism_turnitinsim`
 
 See [Running Acceptance Tests](https://docs.moodle.org/dev/Running_acceptance_test) for further information.
+
+On Behat tests
+=====================================
+
+Recently we fixed our existing Behat tests to work with Moodle 4.5 and 5.0. As is sometimes the case with Gherkin tests, there could be occasional timeouts or slight variations between browsers.
+
+If you would like them yourself along with the other Moodle tests, please include these Environment variables (you can find them in your Site administration -> Plugin configuration):
+
+TII_APIKEY: "[your API key]"
+TII_APIURL: "[your Turnitin API URL]"
