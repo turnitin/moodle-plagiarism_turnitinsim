@@ -187,16 +187,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Get course module details.
-        static $cm;
-        if (empty($cm) && !empty($linkarray["cmid"])) {
+        $cm = "";
+        if (!empty($linkarray["cmid"])) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
         }
 
         // Check whether the plugin is active.
-        static $ispluginactive;
-        if (empty($ispluginactive)) {
-            $ispluginactive = $this->is_plugin_active($cm);
-        }
+        $ispluginactive = $this->is_plugin_active($cm);
 
         // Return empty output if the plugin is not being used.
         if (!$ispluginactive) {
