@@ -138,6 +138,9 @@ class plagiarism_turnitinsim_request {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
+        $useragentstring = 'Moodle/' . $CFG->version . ' TiiIntegrityPlugin/' . get_config('plagiarism_turnitinsim', 'version');
+        curl_setopt($ch, CURLOPT_USERAGENT, $useragentstring);
+
         if ($isasync) {
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
             curl_setopt($ch, CURLOPT_TIMEOUT, 5);
