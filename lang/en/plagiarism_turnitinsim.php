@@ -198,4 +198,4 @@ $string['errorenabledfeatures'] = 'Could not get the list of enabled features.';
 $string['errorgettingsubmissioninfo'] = 'There was an error attempting to get the submission info.';
 $string['errorprocessingdeletedsubmission'] = 'This submission belongs to a deleted assignment and cannot be processed.';
 $string['errorquizattemptnotfound'] = 'The quiz attempt for this submission could not be found.';
-$string['help_link'] = 'https://help.turnitin.com/integrity/instructor/moodle.htm';
+$string['help_link'] = 'https://guides.turnitin.com/hc/en-us/articles/22091480772109-Creating-an-assignment-or-activity-in-Originality-Similarity-and-SimCheck-using-Moodle-Integrity-Plugin';
