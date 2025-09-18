@@ -25,4 +25,4 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['help_link'] = 'https://help.turnitin.com/da/integrity/instruktor/moodle.htm';
+$string['help_link'] = 'https://guides.turnitin.com/hc/en-us/articles/22091480772109-Creating-an-assignment-or-activity-in-Originality-Similarity-and-SimCheck-using-Moodle-Integrity-Plugin';
