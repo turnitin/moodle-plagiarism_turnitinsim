@@ -219,6 +219,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             )->userid;
         }
 
+        $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
+        // If this is a preview quiz submission there will be no record in turnitinsim_sub, so don't display any links
+        if (empty($plagiarismfile)) {
+            return;
+        }
+
         // Display cv link and OR score or status.
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
             $submissionid = '';
@@ -226,9 +232,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $status = '';
             $showresubmitlink = false;
             $submission = null;
-
-            // Get turnitin submission details.
-            $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
             // The links for forum posts get shown to all users.
             // Return if the logged in user shouldn't see OR scores. E.g. forum posts.
@@ -341,8 +344,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $this->submission_handler($eventdata);
 
                 // Check if student has accepted the EULA.
-                $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
-
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
                     $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type, $plagiarismfile->userid);
@@ -824,6 +825,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $quizattemptclass = 'quiz_attempt';
         }
         $attempt = $quizattemptclass::create($eventdata['objectid']);
+
+        // Don't generate similarity reports for preview submissions
+        if ($attempt->is_preview()) {
+            return;
+        }
+
         $context = context_module::instance($attempt->get_cmid());
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
