@@ -197,7 +197,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
         // Return empty output if the plugin is not being used.
         if (!$ispluginactive) {
-            return $output;
+            return '';
         }
 
         // Create module object.
@@ -222,7 +222,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
         // If this is a preview quiz submission there will be no record in turnitinsim_sub, so don't display any links
         if (empty($plagiarismfile)) {
-            return;
+            return html_writer::tag('div', $output, array('class' => 'turnitinsim_links'));
         }
 
         // Display cv link and OR score or status.

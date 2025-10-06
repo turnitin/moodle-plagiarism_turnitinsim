@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for lib methods.
  */
-class plagiarism_turnitinsim_lib_testcase extends advanced_testcase {
+class lib_test extends \advanced_testcase {
 
     /**
      * Sample eula version for unit testing.
