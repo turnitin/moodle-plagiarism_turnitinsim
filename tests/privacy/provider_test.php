@@ -104,10 +104,9 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
         $this->resetAfterTest();
 
         // Set the cm to the correct one for our submission.
-        $cms = $DB->get_records('course_modules');
-        $cm = reset($cms);
         $submissions = $DB->get_records('plagiarism_turnitinsim_sub');
         $submission = reset($submissions);
+        $cm = get_coursemodule_from_id('assign', $submission->cm);
 
         $update = new stdClass();
         $update->id = $submission->id;
