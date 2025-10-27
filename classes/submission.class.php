@@ -949,6 +949,17 @@ class plagiarism_turnitinsim_submission {
             }
         } else if (!empty($linkarray["content"])) {
             $identifier = sha1($linkarray['content']);
+            if (!empty($linkarray["component"]) && $linkarray["component"] == "qtype_essay") {
+                $record = $DB->get_record('plagiarism_turnitinsim_sub', array(
+                    'type' => 'content',
+                    'cm' => $linkarray['cmid'],
+                    'quizanswer' => $quizanswer
+                ));
+                if ($record) {
+                    $record->identifier = $identifier; // to tackle race condition where identifier was not set at submission time.
+                    $DB->update_record('plagiarism_turnitinsim_sub', $record);
+                }
+            }
 
             // If user id is empty this must be a group submission.
             if (empty($linkarray['userid'])) {

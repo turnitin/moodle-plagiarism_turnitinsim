@@ -839,7 +839,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             if ($qa->get_question()->get_type_name() != 'essay') {
                 continue;
             }
-            
+
             $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();
 
             $files = $qa->get_last_qt_files('attachments', $context->id);
