@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="../../lib/phpunit/bootstrap.php">
+    <testsuites>
+        <testsuite name="plagiarism_turnitinsim">
+            <directory suffix="test.php">tests</directory>
+            <exclude>tests/behat</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>

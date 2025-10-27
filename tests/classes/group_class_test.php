@@ -31,7 +31,10 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/group.class.php');
 /**
  * Tests for Turnitin Integrity group class.
  */
-class group_class_testcase extends advanced_testcase {
+class group_class_test extends advanced_testcase {
+
+		private $course;
+		private $student1;
 
     /**
      * Test that group constructor creates a turnitinid in the correct format.

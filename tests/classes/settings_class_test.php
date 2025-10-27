@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/settings.class.php
 /**
  * Tests for settings form.
  */
-class settings_class_testcase extends advanced_testcase {
+class settings_class_test extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -130,7 +130,7 @@ class settings_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 
@@ -155,7 +155,7 @@ class settings_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 
@@ -183,7 +183,7 @@ class settings_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_FEATURES_ENABLED])
             ->getMock();
 

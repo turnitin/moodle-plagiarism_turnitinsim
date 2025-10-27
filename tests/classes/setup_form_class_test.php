@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecati
 /**
  * Tests for settings form.
  */
-class setupform_class_testcase extends advanced_testcase {
+class setup_form_class_test extends advanced_testcase {
 
     /**
      * Plugin enabled.

@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class logging_request_class_testcase extends advanced_testcase {
+class logging_request_class_test extends advanced_testcase {
 
 
     /**
@@ -52,7 +52,7 @@ class logging_request_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Mock API send request method.
@@ -76,7 +76,7 @@ class logging_request_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Mock API send request method.
