@@ -951,9 +951,12 @@ class plagiarism_turnitinsim_submission {
         } else if (!empty($linkarray["content"])) {
             // Caclulate hash for quiz online text attempts
             if (isset($quizanswer)) {
-							$identifier = sha1($quizanswer);
-              return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
-                  'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+                $identifier = sha1($quizanswer);
+                $result = $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
+                    'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+								if (isset($result)) {
+									  return $result;
+								}
             }
 
 						// Calculate hash for submissions other than quiz answers, moodle versions < 4.5, or quiz attempts created before upgrading the plugin
