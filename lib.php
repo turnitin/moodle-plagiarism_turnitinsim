@@ -851,18 +851,19 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $this->queue_files($cm, $eventdata, $sendtoturnitin, $features, $quizanswer);
 
-            // Don't queue empty content as it may be a file only question.
-            if (empty($qa->get_response_summary())) {
+            // If online text is not enabled for this submission, don't generate a similarity score for the online text attachment
+            if ($qa->get_question()->responseformat === 'noinline') {
                 continue;
-            }
+            } 
 
+            // Queue online text content - later we will check if it's actually populated
             $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
             $tssubmission->setcm($cm->id);
             $tssubmission->setuserid($author);
             $tssubmission->setgroupid($groupid);
             $tssubmission->setsubmitter($submitter->userid);
             $tssubmission->setitemid($eventdata['objectid']);
-            $tssubmission->setidentifier(sha1($qa->get_response_summary()));
+            $tssubmission->setidentifier(sha1($quizanswer));
             $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
             $tssubmission->setquizanswer($quizanswer);
 
