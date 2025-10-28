@@ -56,7 +56,12 @@ class plagiarism_turnitinsim_settings {
      * @throws coding_exception
      */
     public function add_settings_to_module($mform, $canconfigureplugin = false, $context = 'module', $modulename = '') {
-        global $PAGE;
+        global $COURSE, $PAGE;
+
+        // Don't allow this plugin to be used on the site home page
+        if ($COURSE->id == 1) {
+            return;
+        }
 
         if ($context == 'module') {
             $mform->addElement('header', 'turnitinsim_plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitinsim'));
