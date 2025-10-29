@@ -566,7 +566,8 @@ class plagiarism_turnitinsim_submission {
                 $attempt = $quizattemptclass::create($this->getitemid());
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
-                    if ($this->getidentifier() == sha1($qa->get_response_summary())) {
+                    $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();
+                    if ($this->getidentifier() == sha1($qa->get_response_summary()) || $this->getidentifier() == sha1($quizanswer)) {
                         $textcontent = html_to_text($qa->get_response_summary());
                         $filename = 'onlinetext_'.$this->id.'_'.$this->cm.'_'.$this->itemid.'.txt';
                         break;
@@ -948,6 +949,17 @@ class plagiarism_turnitinsim_submission {
                 }
             }
         } else if (!empty($linkarray["content"])) {
+            // Caclulate hash for quiz online text attempts
+            if (isset($quizanswer)) {
+                $identifier = sha1($quizanswer);
+                $result = $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
+                    'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+								if (isset($result)) {
+									  return $result;
+								}
+            }
+
+						// Calculate hash for submissions other than quiz answers, moodle versions < 4.5, or quiz attempts created before upgrading the plugin
             $identifier = sha1($linkarray['content']);
 
             // If user id is empty this must be a group submission.
@@ -957,9 +969,10 @@ class plagiarism_turnitinsim_submission {
             }
         }
 
-        return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
-            'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
-
+        if (isset($identifier)) {
+            return $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
+                'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
+        }
     }
 
     /**

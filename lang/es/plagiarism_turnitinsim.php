@@ -24,7 +24,7 @@
  * @author    Isaac Xiong <ixiong@turnitin.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['help_link'] = 'https://help.turnitin.com/es/integrity/instructor/moodle.htm';
+$string['help_link'] = 'https://guides.turnitin.com/hc/es/articles/22091480772109-Creaci%C3%B3n-de-una-tarea-o-actividad-en-Originality-Similarity-y-SimCheck-usando-el-Plugin-de-integridad-de-Moodle';
 
 $string['accessstudents'] = 'Permitir que los estudiantes vean los informes de similitud';
 $string['accessoptions'] = 'Acceso para estudiantes';
