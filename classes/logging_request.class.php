@@ -55,7 +55,7 @@ class plagiarism_turnitinsim_logging_request {
      * @param string $message The error message.
      * @param plagiarism_turnitinsim_request|null $tsrequest Request object.
      */
-    public function __construct($message = 'Error', plagiarism_turnitinsim_request $tsrequest = null) {
+    public function __construct($message = 'Error', ?plagiarism_turnitinsim_request $tsrequest = null) {
         $this->tsrequest = ($tsrequest) ? $tsrequest : new plagiarism_turnitinsim_request();
         $this->loggingrequest = array();
         $this->loggingrequest["message"] = $message;
@@ -68,8 +68,8 @@ class plagiarism_turnitinsim_logging_request {
      * @param plagiarism_turnitinsim_logging_request_event_info|null $loggingrequesteventinfo The logging_request_event_info object.
      * @param bool $sendsecrets The boolean value, if true send secrets as part of logs.
      */
-    public function send_error_to_turnitin(plagiarism_turnitinsim_logging_request_info $loggingrequestinfo = null,
-                                           plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo = null,
+    public function send_error_to_turnitin(?plagiarism_turnitinsim_logging_request_info $loggingrequestinfo = null,
+                                           ?plagiarism_turnitinsim_logging_request_event_info $loggingrequesteventinfo = null,
                                            $sendsecrets = false) {
 
         if (!get_config('plagiarism_turnitinsim', 'turnitinenableremotelogging')) {

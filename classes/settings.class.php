@@ -56,7 +56,12 @@ class plagiarism_turnitinsim_settings {
      * @throws coding_exception
      */
     public function add_settings_to_module($mform, $canconfigureplugin = false, $context = 'module', $modulename = '') {
-        global $PAGE;
+        global $COURSE, $PAGE;
+
+        // Don't allow this plugin to be used on the site home page
+        if ($COURSE->id == 1) {
+            return;
+        }
 
         if ($context == 'module') {
             $mform->addElement('header', 'turnitinsim_plugin_header', get_string('turnitinpluginsettings', 'plagiarism_turnitinsim'));
@@ -83,7 +88,9 @@ class plagiarism_turnitinsim_settings {
         // Group exclude options together.
         $mform->addGroup($excludes, 'excludeoptions', get_string('excludeoptions', 'plagiarism_turnitinsim'), '<br />');
         $mform->addHelpButton('excludeoptions', 'excludeoptions', 'plagiarism_turnitinsim');
-        $mform->disabledIf('excludeoptions', 'turnitinenabled', 'notchecked');
+        if (!empty($modulename)) {
+          $mform->disabledIf('excludeoptions', 'turnitinenabled', 'notchecked');
+        }
 
         // Indexing options.
         // Add to Index.
@@ -93,7 +100,9 @@ class plagiarism_turnitinsim_settings {
         // Group index options together.
         $mform->addGroup($indexes, 'indexoptions', get_string('indexoptions', 'plagiarism_turnitinsim'), '<br />');
         $mform->addHelpButton('indexoptions', 'indexoptions', 'plagiarism_turnitinsim');
-        $mform->disabledIf('indexoptions', 'turnitinenabled', 'notchecked');
+        if (!empty($modulename)) {
+          $mform->disabledIf('indexoptions', 'turnitinenabled', 'notchecked');
+        }
 
         // If this is an assignment we will offer report generation options. Otherwise default to immediate.
         if ($modulename == 'mod_assign' || $context == 'defaults') {
@@ -134,8 +143,10 @@ class plagiarism_turnitinsim_settings {
             // Group Report Gen options together.
             $mform->addGroup($reportgen, 'reportgenoptions', get_string('reportgenoptions', 'plagiarism_turnitinsim'), '<br />');
             $mform->addHelpButton('reportgenoptions', 'reportgenoptions', 'plagiarism_turnitinsim');
-            $mform->disabledIf('reportgenoptions', 'duedate[enabled]', 'notchecked');
-            $mform->disabledIf('reportgenoptions', 'turnitinenabled', 'notchecked');
+            if (!empty($modulename)) {
+              $mform->disabledIf('reportgenoptions', 'duedate[enabled]', 'notchecked');
+              $mform->disabledIf('reportgenoptions', 'turnitinenabled', 'notchecked');
+            }
         } else {
             $mform->addElement('hidden', 'reportgeneration', TURNITINSIM_REPORT_GEN_IMMEDIATE);
             $mform->setType('reportgeneration', PARAM_RAW);
@@ -149,14 +160,18 @@ class plagiarism_turnitinsim_settings {
         // Group index options together.
         $mform->addGroup($access, 'accessoptions', get_string('accessoptions', 'plagiarism_turnitinsim'), '<br />');
         $mform->addHelpButton('accessoptions', 'accessoptions', 'plagiarism_turnitinsim');
-        $mform->disabledIf('accessoptions', 'turnitinenabled', 'notchecked');
+        if (!empty($modulename)) {
+          $mform->disabledIf('accessoptions', 'turnitinenabled', 'notchecked');
+        }
 
         // Send submission drafts to Turnitin setting.
         if ($mform->elementExists('submissiondrafts') || $context != 'module') {
             $mform->addElement('checkbox', 'queuedrafts', get_string('queuedrafts', 'plagiarism_turnitinsim'));
             $mform->addHelpButton('queuedrafts', 'queuedrafts', 'plagiarism_turnitinsim');
-            $mform->disabledIf('queuedrafts', 'submissiondrafts', 'eq', 0);
-            $mform->disabledIf('queuedrafts', 'turnitinenabled', 'notchecked');
+            if (!empty($modulename)) {
+              $mform->disabledIf('queuedrafts', 'submissiondrafts', 'eq', 0);
+              $mform->disabledIf('queuedrafts', 'turnitinenabled', 'notchecked');
+            }
         }
 
         // Show link to guides.

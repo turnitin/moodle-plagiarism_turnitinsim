@@ -187,16 +187,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         }
 
         // Get course module details.
-        static $cm;
-        if (empty($cm) && !empty($linkarray["cmid"])) {
+        $cm = "";
+        if (!empty($linkarray["cmid"])) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
         }
 
         // Check whether the plugin is active.
-        static $ispluginactive;
-        if (empty($ispluginactive)) {
-            $ispluginactive = $this->is_plugin_active($cm);
-        }
+        $ispluginactive = $this->is_plugin_active($cm);
 
         // Return empty output if the plugin is not being used.
         if (!$ispluginactive) {
@@ -222,6 +219,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             )->userid;
         }
 
+        $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
+        // If this is a preview quiz submission there will be no record in turnitinsim_sub, so don't display any links
+        if (empty($plagiarismfile)) {
+            return;
+        }
+
         // Display cv link and OR score or status.
         if ((!empty($linkarray['file'])) || (!empty($linkarray['content']))) {
             $submissionid = '';
@@ -229,9 +232,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $status = '';
             $showresubmitlink = false;
             $submission = null;
-
-            // Get turnitin submission details.
-            $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
 
             // The links for forum posts get shown to all users.
             // Return if the logged in user shouldn't see OR scores. E.g. forum posts.
@@ -344,8 +344,6 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $this->submission_handler($eventdata);
 
                 // Check if student has accepted the EULA.
-                $plagiarismfile = plagiarism_turnitinsim_submission::get_submission_details($linkarray);
-
                 if ($plagiarismfile->status === TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED) {
                     $eula = new plagiarism_turnitinsim_eula();
                     $statusset = $eula->get_eula_status($cm->id, $plagiarismfile->type, $plagiarismfile->userid);
@@ -363,10 +361,13 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             // Render a resubmit link for instructors if necessary.
             $resubmitlink = ($instructor && $showresubmitlink) ? $this->render_resubmit_link($submission->getid()) : '';
 
-            // Output rendered status and resubmission link if applicable.
+            // Output rendered status, eula prompt, and resubmission link if applicable.
+            $towrite = $eulaconfirm ?? '';
             if ($instructor || (!$instructor && $plagiarismsettings->accessstudents)) {
-                $output .= html_writer::tag('div', $eulaconfirm . $turnitinicon . $status . $resubmitlink,
-                    array('class' => 'turnitinsim_status submission_' . $submissionid));
+                $towrite .= $turnitinicon . $status . $resubmitlink;
+            }
+            if (!empty($towrite)) {
+                $output .= html_writer::tag('div', $towrite, ['class' => 'turnitinsim_status submission_' . $submissionid]);
             }
         }
 
@@ -446,12 +447,9 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         global $CFG, $PAGE, $USER;
 
         // Avoid printing the EULA acceptance box more than once.
-        // This needs to be shown twice for a text submission as it exists in the dom twice.
         // Allowed for unit testing otherwise only the first test that calls this would work.
         static $disclosurecount = 1;
-        if (($submissiontype == 'file' && $disclosurecount === 1) ||
-            ($submissiontype == 'content' && $disclosurecount <= 2) ||
-            PHPUNIT_TEST) {
+        if ($disclosurecount === 1 || PHPUNIT_TEST) {
             $disclosurecount++;
 
             // Return empty output if the plugin is not being used.
@@ -827,6 +825,12 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
             $quizattemptclass = 'quiz_attempt';
         }
         $attempt = $quizattemptclass::create($eventdata['objectid']);
+
+        // Don't generate similarity reports for preview submissions
+        if ($attempt->is_preview()) {
+            return;
+        }
+
         $context = context_module::instance($attempt->get_cmid());
         foreach ($attempt->get_slots() as $slot) {
             $eventdata['other']['pathnamehashes'] = array();
@@ -847,18 +851,19 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
 
             $this->queue_files($cm, $eventdata, $sendtoturnitin, $features, $quizanswer);
 
-            // Don't queue empty content as it may be a file only question.
-            if (empty($qa->get_response_summary())) {
+            // If online text is not enabled for this submission, don't generate a similarity score for the online text attachment
+            if ($qa->get_question()->responseformat === 'noinline') {
                 continue;
-            }
+            } 
 
+            // Queue online text content - later we will check if it's actually populated
             $tssubmission = new plagiarism_turnitinsim_submission(new plagiarism_turnitinsim_request());
             $tssubmission->setcm($cm->id);
             $tssubmission->setuserid($author);
             $tssubmission->setgroupid($groupid);
             $tssubmission->setsubmitter($submitter->userid);
             $tssubmission->setitemid($eventdata['objectid']);
-            $tssubmission->setidentifier(sha1($qa->get_response_summary()));
+            $tssubmission->setidentifier(sha1($quizanswer));
             $tssubmission->settype(TURNITINSIM_SUBMISSION_TYPE_CONTENT);
             $tssubmission->setquizanswer($quizanswer);
 
