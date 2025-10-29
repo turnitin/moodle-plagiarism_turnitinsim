@@ -6,7 +6,7 @@
 #### Similarity Scores For Preview Quiz Attempts Not Shoeing Anymore
 We were previously attempting to generate similarity scores for preview quiz attempts, this has now been fixed.
 
-#### Complete Report vVew Showed Queued For Non IP Assignments If Previous Assignment Had IP Enabled
+#### Complete Report View Showed Queued For Non IP Assignments If Previous Assignment Had IP Enabled
 Complete Report view mistakenly showed Queued and the Turnitin logo for assignments without IP enabled if a previous one did have it enabled, the visual is no longer displayed.
 
 #### Enabling Defaults Without Plugin Enabled By Default
