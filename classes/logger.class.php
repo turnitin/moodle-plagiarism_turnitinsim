@@ -29,13 +29,12 @@ global $CFG;
 require($CFG->dirroot . '/plagiarism/turnitinsim/vendor/autoload.php');
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/lib.php');
 
-use Monolog\Monolog;
-use Monolog\Handler\RotatingFileHandler;
+use Katzgrau\KLogger;
 
 /**
  * Log API requests and responses from Turnitin.
  */
-class plagiarism_turnitinsim_logger {
+class plagiarism_turnitinsim_logger extends Katzgrau\KLogger\Logger {
 
     /**
      * The location of the log directory.
@@ -52,35 +51,44 @@ class plagiarism_turnitinsim_logger {
      */
     const APILOG_PREFIX = 'apilog_';
 
-    private \Monolog\Logger $logger;
-
     /**
      * plagiarism_turnitinsim_logger constructor.
      */
     public function __construct() {
         global $CFG;
-        
-        $this->logger = new \Monolog\Logger(self::APILOG_PREFIX);
 
-        // Use RotatingFileHandler for automatic log rotation
-        $handler = new RotatingFileHandler($CFG->tempdir.'/'.self::LOG_DIR, self::KEEPLOGS, \Monolog\Logger::DEBUG);
-        $this->logger->pushHandler($handler);
+        $this->rotate_logs( $CFG->tempdir.'/'.self::LOG_DIR );
+
+        parent::__construct($CFG->tempdir.'/'.self::LOG_DIR, Psr\Log\LogLevel::DEBUG, array (
+            'prefix' => self::APILOG_PREFIX
+        ));
     }
 
+    /**
+     * Rotate logs, only keep the last KEEPLOGS number of logs.
+     *
+     * @param string $filepath The file path for the logs.
+     */
+    private function rotate_logs( $filepath ) {
 
-    public function debug($string) {
-      $this->logger->debug($string);
-    }
-  
-    public function info($string) {
-      $this->logger->info($string);
-    }
+        // Create log directory if necessary.
+        if ( !file_exists( $filepath ) ) {
+            mkdir( $filepath, 0777, true );
+        }
 
-    public function warning($string) {
-        $this->logger->warning($string);
-    }
+        // Search for log files to delete.
+        $dir = opendir( $filepath );
+        $files = array();
+        while ( $entry = readdir( $dir ) ) {
+            if ( substr( basename( $entry ), 0, 1 ) != '.' AND substr_count( basename( $entry ), self::APILOG_PREFIX ) > 0 ) {
+                $files[] = basename( $entry );
+            }
+        }
 
-    public function error($string) {
-        $this->logger->error($string);
+        // Delete old log files.
+        sort( $files );
+        for ($i = 0; $i < count( $files ) - self::KEEPLOGS; $i++) {
+            unlink( $filepath . '/' . $files[$i] );
+        }
     }
 }

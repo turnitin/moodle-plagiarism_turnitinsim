@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
+        <location>vendor/katzgrau</location>
+        <name>Klogger</name>
+        <version>1.2.1</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
         <location>vendor/psr</location>
         <name>PSR</name>
         <version>3</version>
