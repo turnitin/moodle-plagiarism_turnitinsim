@@ -924,8 +924,6 @@ class plagiarism_turnitinsim_submission {
             }
         }
 
-				throw new \moodle_exception($linkarray["component"]);
-
         // To uniquely identify the quiz answer.
         if (!empty($linkarray["component"]) && $linkarray["component"] == "qtype_essay") {
             $quizanswer = $linkarray['area'].'-'.$linkarray['itemid'];
