@@ -917,12 +917,14 @@ class plagiarism_turnitinsim_submission {
         if (empty($cm)) {
             $cm = get_coursemodule_from_id('', $linkarray["cmid"]);
 
-            if ($cm->modname == 'forum') {
+            if ($cm->modname === 'forum') {
                 if (! $forum = $DB->get_record("forum", array("id" => $cm->instance))) {
                     print_error('invalidforumid', 'forum');
                 }
             }
         }
+
+				throw new \moodle_exception($linkarray["component"]);
 
         // To uniquely identify the quiz answer.
         if (!empty($linkarray["component"]) && $linkarray["component"] == "qtype_essay") {
@@ -950,7 +952,7 @@ class plagiarism_turnitinsim_submission {
             }
         } else if (!empty($linkarray["content"])) {
             // Caclulate hash for quiz online text attempts
-            if (isset($quizanswer)) {
+            if ($cm->modname === 'quiz') {
                 $identifier = sha1($quizanswer);
                 $result = $DB->get_record('plagiarism_turnitinsim_sub', array('userid' => $linkarray['userid'],
                     'cm' => $linkarray['cmid'], 'identifier' => $identifier, 'quizanswer' => $quizanswer));
