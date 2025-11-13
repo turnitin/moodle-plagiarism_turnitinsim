@@ -1,9 +1,22 @@
+### Date:       2025-November-13
+### Release:    v2025111301
+
+---
+
+#### Similarity Scores For Forum Attempts Were Not Showing
+We fixed a bug where the similarity score would not show up next to a forum post.
+
+#### Settings View Visible Again
+There was a bug where the Default settings page was not loading, this has now been fixed.
+
+---
+
 ### Date:       2025-October-29
 ### Release:    v2025102901
 
 ---
 
-#### Similarity Scores For Preview Quiz Attempts Not Shoeing Anymore
+#### Similarity Scores For Preview Quiz Attempts Not Showing Anymore
 We were previously attempting to generate similarity scores for preview quiz attempts, this has now been fixed.
 
 #### Complete Report View Showed Queued For Non IP Assignments If Previous Assignment Had IP Enabled
