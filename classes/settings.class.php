@@ -59,7 +59,7 @@ class plagiarism_turnitinsim_settings {
         global $COURSE, $PAGE;
 
         // Don't allow this plugin to be used on the site home page
-        if ($COURSE->id == 1) {
+        if ($context === 'module' && $COURSE->id == 1) {
             return;
         }
 
