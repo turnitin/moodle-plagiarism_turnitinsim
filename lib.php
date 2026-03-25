@@ -721,11 +721,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $tssubmission->setquizanswer($quizanswer);
 
                 // Check if this file has been submitted previously and re-use record.
-                $query = ' cm = ? AND userid = ? AND identifier = ? ';
-                $params = array($cm->id, $author, $pathnamehash);
+                $query = ' cm = ? AND identifier = ? ';
+                $params = array($cm->id, $pathnamehash);
+                // INT-24057 For group submissions, use the group ID instead of the user ID to
+                // indicate whether we should reuse the record
                 if (!is_null($groupid)) {
                     $query .= ' AND groupid = ?';
                     $params[] = $groupid;
+                } else {
+                    $query .= 'AND userid = ?';
+                    $params[] = $author;
                 }
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
                 $filedetails = $tssubmission->get_file_details();
