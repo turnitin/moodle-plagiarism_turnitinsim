@@ -280,11 +280,11 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                         $score = $submission->getoverallscore();
                         $csssuffix = match (true) {
                             $score === null || $score === '' => '',
-                            $score <= 24  => '0',
-                            $score <= 49  => '25',
-                            $score <= 74  => '50',
-                            $score <= 99  => '75',
-                            $score == 100 => '100',
+                            $score == 0   => '0',
+                            $score <= 25  => '25',
+                            $score <= 50  => '50',
+                            $score <= 75  => '75',
+                            $score <= 100 => '100',
                             default       => ''
                         };
                         $orcolour = ' turnitinsim_or_score_colour_' . $csssuffix;
