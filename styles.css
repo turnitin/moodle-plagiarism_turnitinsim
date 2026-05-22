@@ -82,55 +82,12 @@
 }
 
 /* Define OR score colours */
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_0 {
-    background: #3552b7;
-    color: #fff;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_10 {
-    background: #617b8d;
-    color: #fff;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_20 {
-    background: #a1b556;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_30 {
-    background: #dae235;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_40 {
-    background: #edac28;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_50 {
-    background: #edd42f;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_60 {
-    background: #ecad28;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_70 {
-    background: #e15a21;
-    color: #fff;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_80 {
-    background: #e05a21;
-    color: #fff;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_90 {
-    background: #dc4321;
-    color: #fff;
-}
-
-.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_100 {
-    background: #db4221;
-    color: #fff;
-}
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_ { background: #999999; color:#000000; }
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_0 { background: #4ea3f0; color:#FFFFFF; }
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_25 { background: #70c30f; }
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_50 { background: #ffe225; }
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_75 { background: #ffa400; }
+.turnitinsim_links .turnitinsim_status .turnitinsim_or_score_colour_100 { background: #f03a3a; color:#FFFFFF; }
 
 .form-group .form-inline .form-check-inline.form-check-label.fitem.turnitinsim_settings_radio {
     margin-right: 0;

@@ -277,7 +277,17 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     case TURNITINSIM_SUBMISSION_STATUS_COMPLETE:
                         $score = $submission->getoverallscore() . '%';
                         $submissionid = $submission->getid();
-                        $orcolour = ' turnitinsim_or_score_colour_' . round($submission->getoverallscore(), -1);
+                        $score = $submission->getoverallscore();
+                        $csssuffix = match (true) {
+                            $score === null || $score === '' => '',
+                            $score <= 24  => '0',
+                            $score <= 49  => '25',
+                            $score <= 74  => '50',
+                            $score <= 99  => '75',
+                            $score == 100 => '100',
+                            default       => ''
+                        };
+                        $orcolour = ' turnitinsim_or_score_colour_' . $csssuffix;
                         $status = html_writer::tag('div', $score, array('class' => 'turnitinsim_or_score' . $orcolour));
                         break;
 
