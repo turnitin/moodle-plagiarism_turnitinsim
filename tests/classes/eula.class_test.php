@@ -149,7 +149,7 @@ class eula_class_testcase extends advanced_testcase {
         // Insert a user to the TII table.
         $user = new stdClass();
         $user->userid = $submission['student']->id;
-        $user->turnitinid = (new handle_deprecation)->create_uuid();
+        $user->turnitinid = \core\uuid::generate();
         $DB->insert_record('plagiarism_turnitinsim_users', $user);
 
         // Check the data.
@@ -244,9 +244,9 @@ class eula_class_testcase extends advanced_testcase {
         $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
         $result = $tseula->get_eula_status($cm->id, 'file', $this->student->id);
 
-        handle_deprecation::assertcontains($this,
+        $this->assertStringContainsString(
             get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
-        handle_deprecation::assertcontains($this,
+        $this->assertStringContainsString(
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
     }
 
@@ -320,9 +320,9 @@ class eula_class_testcase extends advanced_testcase {
         $tseula = new plagiarism_turnitinsim_eula($tsrequest);
         $result = $tseula->get_eula_status($cm->id, 'file', $this->instructor->id);
 
-        handle_deprecation::assertcontains($this,
+        $this->assertStringContainsString(
             get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
-        handle_deprecation::assertcontains($this,
+        $this->assertStringContainsString(
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
     }
 }

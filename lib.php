@@ -957,7 +957,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @return mixed
      */
     public static function plugin_enabled() {
-        return get_config('plagiarism_turnitinsim', 'enabled');;
+        return get_config('plagiarism_turnitinsim', 'enabled');
     }
 }
 
