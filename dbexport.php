@@ -26,7 +26,6 @@
 // Require libs.
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once( __DIR__ . '/utilities/handle_deprecation.php' );
 
 // Restrict access to admins only.
 require_login();

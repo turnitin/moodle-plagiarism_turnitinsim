@@ -834,7 +834,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Queue every question submitted in a quiz attempt.
-        $attempt = '\mod_quiz\quiz_attempt'::create($eventdata['objectid']);
+        $attempt = \mod_quiz\quiz_attempt::create($eventdata['objectid']);
 
         // Don't generate similarity reports for preview submissions
         if ($attempt->is_preview()) {
@@ -947,7 +947,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @param int $enabled 1 if plugin is to be enabled.
      */
     public static function enable_plugin($enabled) {
-        handle_deprecation::set_plugin_enabled($enabled);
+        set_config('enabled', $enabled, 'plagiarism_turnitinsim');
     }
 
     /**
@@ -957,7 +957,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @return mixed
      */
     public static function plugin_enabled() {
-        return handle_deprecation::get_plugin_enabled();
+        return get_config('plagiarism_turnitinsim', 'enabled');;
     }
 }
 
