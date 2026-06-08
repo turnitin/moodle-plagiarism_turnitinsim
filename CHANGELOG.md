@@ -1,7 +1,40 @@
-### Date:       2025-May-29
-### Release:    v2025052901
+### Date:       2025-November-13
+### Release:    v2025111301
 
 ---
+
+#### Similarity Scores For Forum Attempts Were Not Showing
+We fixed a bug where the similarity score would not show up next to a forum post.
+
+#### Settings View Visible Again
+There was a bug where the Default settings page was not loading, this has now been fixed.
+
+---
+
+### Date:       2025-October-29
+### Release:    v2025102901
+
+---
+
+#### Similarity Scores For Preview Quiz Attempts Not Showing Anymore
+We were previously attempting to generate similarity scores for preview quiz attempts, this has now been fixed.
+
+#### Complete Report View Showed Queued For Non IP Assignments If Previous Assignment Had IP Enabled
+Complete Report view mistakenly showed Queued and the Turnitin logo for assignments without IP enabled if a previous one did have it enabled, the visual is no longer displayed.
+
+#### Enabling Defaults Without Plugin Enabled By Default
+The plugin now allows enabling defaults without the plugin enabled by default, so they are persisted between assignments.
+
+#### Behat Updates
+The tests can now be run as part of the behat suite.
+
+#### Minor Bug Fixes And Improvements
+Logging and performance related.
+
+---
+
+### Date:       2025-May-29
+### Release:    v2025052901
 
 #### Assignment Settings Error Fixed
 An issue was identified where when navigating the assignment settings an error message would appear. This has been resolved.

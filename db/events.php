@@ -28,34 +28,42 @@ defined('MOODLE_INTERNAL') || die();
 $observers = array (
     array(
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_file_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_file_uploaded',
+        'internal'  => true
     ),
     array(
         'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_onlinetext_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_onlinetext_uploaded',
+        'internal'  => true
     ),
     array(
         'eventname' => '\mod_assign\event\assessable_submitted',
-        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_submitted'
+        'callback'  => 'plagiarism_turnitinsim_observer::assignsubmission_submitted',
+        'internal'  => true
     ),
     array(
         'eventname' => '\mod_workshop\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitinsim_observer::workshop_assessable_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::workshop_assessable_uploaded',
+        'internal'  => true
     ),
     array(
         'eventname' => '\mod_forum\event\assessable_uploaded',
-        'callback'  => 'plagiarism_turnitinsim_observer::forum_assessable_uploaded'
+        'callback'  => 'plagiarism_turnitinsim_observer::forum_assessable_uploaded',
+        'internal'  => true
     ),
     array(
         'eventname' => '\mod_quiz\event\attempt_submitted',
-        'callback' => 'plagiarism_turnitinsim_observer::quiz_submitted'
+        'callback' => 'plagiarism_turnitinsim_observer::quiz_submitted',
+        'internal'  => true
     ),
     array(
         'eventname' => '\core\event\course_module_updated',
-        'callback'  => 'plagiarism_turnitinsim_observer::module_updated'
+        'callback'  => 'plagiarism_turnitinsim_observer::module_updated',
+        'internal'  => true
     ),
     array(
         'eventname' => '\core\event\course_module_deleted',
-        'callback'  => 'plagiarism_turnitinsim_observer::course_module_deleted'
+        'callback'  => 'plagiarism_turnitinsim_observer::course_module_deleted',
+        'internal'  => true
     ),
 );
