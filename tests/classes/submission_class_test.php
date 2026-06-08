@@ -191,6 +191,14 @@ class submission_class_test extends advanced_testcase {
         $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
 
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $tssubmission->setcm($cm);
+
         // Build user entry and get Turnitin id.
         $userentry = $tssubmission->build_user_array_entry($this->student1);
         $tsuser = new plagiarism_turnitinsim_user($this->student1->id);

@@ -36,6 +36,9 @@ require_once($CFG->dirroot . '/mod/workshop/tests/fixtures/testable.php');
  */
 class workshop_class_test extends advanced_testcase {
 
+    protected $student1;
+    protected $student2;
+
     /**
      * Sample text used for unit testing a workshop.
      */
