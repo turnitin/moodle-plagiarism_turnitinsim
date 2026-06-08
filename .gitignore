@@ -1,2 +1,2 @@
 .idea/*
-tests/behat
+.phpunit.result.cache

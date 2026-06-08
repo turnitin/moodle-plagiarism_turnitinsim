@@ -33,7 +33,12 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/turnitinsim_generato
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class eula_class_testcase extends advanced_testcase {
+class eula_class_test extends advanced_testcase {
+
+		private $turnitinsim_generator;
+		private $course;
+		private $student;
+		private $instructor;
 
     /**
      * Set config for use in the tests.
@@ -60,7 +65,7 @@ class eula_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
@@ -85,7 +90,7 @@ class eula_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
@@ -113,7 +118,7 @@ class eula_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
 
@@ -141,7 +146,7 @@ class eula_class_testcase extends advanced_testcase {
         set_config('turnitin_eula_version', 'v1beta', 'plagiarism_turnitinsim');
 
         // Create 3 submissions.
-        $this->turnitinsim_generator = new turnitinsim_generator();
+        $this->turnitinsim_generator = new turnitinsim_generator('turnitinsim_generator');
         $submission = $this->turnitinsim_generator->create_submission(3, TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED);
 
         $this->setUser($submission['student']);
@@ -232,20 +237,16 @@ class eula_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
-
-        // Mock API send request method.
-        $tsrequest->expects($this->once())
-            ->method('send_request')
-            ->willReturn($response);
 
         $tseula = new plagiarism_turnitinsim_eula( $tsrequest );
         $result = $tseula->get_eula_status($cm->id, 'file', $this->student->id);
 
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url');
         handle_deprecation::assertcontains($this,
-            get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
+            get_string('eulalink', 'plagiarism_turnitinsim', $eulaurl), $result['eula-confirm']);
         handle_deprecation::assertcontains($this,
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
     }
@@ -308,20 +309,16 @@ class eula_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_LATEST_EULA])
             ->getMock();
-
-        // Mock API send request method.
-        $tsrequest->expects($this->once())
-            ->method('send_request')
-            ->willReturn($response);
 
         $tseula = new plagiarism_turnitinsim_eula($tsrequest);
         $result = $tseula->get_eula_status($cm->id, 'file', $this->instructor->id);
 
+        $eulaurl = get_config('plagiarism_turnitinsim', 'turnitin_eula_url');
         handle_deprecation::assertcontains($this,
-            get_string('eulalink', 'plagiarism_turnitinsim', '?lang=en-US'), $result['eula-confirm']);
+            get_string('eulalink', 'plagiarism_turnitinsim', $eulaurl), $result['eula-confirm']);
         handle_deprecation::assertcontains($this,
             get_string('submissiondisplayerror:eulanotaccepted_help', 'plagiarism_turnitinsim'), $result['eula-status']);
     }

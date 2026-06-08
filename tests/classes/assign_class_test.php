@@ -32,12 +32,18 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for assign module class for plagiarism_turnitinsim component.
  */
-class assign_class_testcase extends advanced_testcase {
+class assign_class_test extends advanced_testcase {
 
     /**
      * This is text content for unit testing a text submission.
      */
     const TEST_ASSIGN_TEXT = 'This is text content for unit testing a text submission.';
+
+		private $student1;
+		private $student2;
+		private $course;
+		private $instructor;
+		private $instructorrole;
 
     /**
      * Set config for use in the tests.

@@ -37,7 +37,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/turnitinsim_generato
 /**
  * Privacy provider tests.
  */
-class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase {
+class provider_test extends advanced_testcase {
 
     protected $turnitinsim_generator;
     protected $submission;
@@ -46,7 +46,7 @@ class plagiarism_turnitinsim_privacy_provider_testcase extends advanced_testcase
      * Setup method that runs before each test.
      */
     public function setUp(): void {
-        $this->turnitinsim_generator = new turnitinsim_generator();
+        $this->turnitinsim_generator = new turnitinsim_generator('turnitinsim_generator');
         $this->submission = $this->turnitinsim_generator->create_submission();
     }
 

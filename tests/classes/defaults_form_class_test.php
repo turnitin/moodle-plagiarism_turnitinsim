@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecati
 /**
  * Tests for default settings form.
  */
-class defaultsform_class_testcase extends advanced_testcase {
+class defaults_form_class_test extends advanced_testcase {
 
     /**
      * Set config for use in the tests.

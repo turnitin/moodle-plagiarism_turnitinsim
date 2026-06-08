@@ -269,7 +269,9 @@ class plagiarism_turnitinsim_request {
         $this->set_headers();
 
         $response = $this->send_request(TURNITINSIM_ENDPOINT_WEBHOOKS, json_encode(array()), 'GET');
-        $responsedata = json_decode($response);
+        if (isset($response)) {
+            $responsedata = json_decode($response);
+        }
 
         if (isset($responsedata->httpstatus) && $responsedata->httpstatus === TURNITINSIM_HTTP_OK) {
             $data["connection_status"] = TURNITINSIM_HTTP_OK;

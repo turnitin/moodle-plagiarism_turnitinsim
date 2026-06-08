@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecati
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class submission_class_testcase extends advanced_testcase {
+class submission_class_test extends advanced_testcase {
 
     /**
      * A valid submission ID.
@@ -54,6 +54,11 @@ class submission_class_testcase extends advanced_testcase {
      * Another sample error message.
      */
     const TEST_ERROR_MESSAGE_2 = 'Example error message 2.';
+
+		private $instructor;
+		private $student1;
+		private $student2;
+		private $course;
 
     /**
      * Set config for use in the tests.
@@ -185,6 +190,14 @@ class submission_class_testcase extends advanced_testcase {
         // Create submission object.
         $tssubmission = new plagiarism_turnitinsim_submission();
         $tssubmission->setuserid($this->student1->id);
+
+        // Create assign module.
+        $record = new stdClass();
+        $record->course = $this->course;
+        $module = $this->getDataGenerator()->create_module('assign', $record);
+        // Get course module data.
+        $cm = get_coursemodule_from_instance('assign', $module->id);
+        $tssubmission->setcm($cm);
 
         // Build user entry and get Turnitin id.
         $userentry = $tssubmission->build_user_array_entry($this->student1);
@@ -493,7 +506,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
 
@@ -531,7 +544,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_CREATE_SUBMISSION])
             ->getMock();
 
@@ -593,7 +606,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
@@ -651,7 +664,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API update submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
@@ -725,7 +738,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // We must parse the expected response to get the submission id for the upload request.
@@ -797,7 +810,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -873,7 +886,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -952,7 +965,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -1029,7 +1042,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -1105,7 +1118,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -1181,7 +1194,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API create submission request class and send call.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Add submission ID to endpoint.
@@ -2035,7 +2048,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
             ->getMock();
 
@@ -2079,7 +2092,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
             ->getMock();
 
@@ -2135,7 +2148,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_GET_SUBMISSION_INFO])
             ->getMock();
 
@@ -2291,7 +2304,7 @@ class submission_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->getMock();
 
         // Mock API send request method.

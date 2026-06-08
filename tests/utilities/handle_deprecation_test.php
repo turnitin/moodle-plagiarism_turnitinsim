@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecati
 /**
  * Tests for handle_deprecations methods.
  */
-class plagiarism_turnitinsim_handle_deprecation_testcase extends advanced_testcase {
+class handle_deprecation_test extends advanced_testcase {
 
     /**
      * Test the enable_plugin and plugin_enabled methods.

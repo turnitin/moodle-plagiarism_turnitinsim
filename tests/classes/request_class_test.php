@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/turnitinsim/tests/utilities.php');
 /**
  * Tests for Turnitin Integrity submission class.
  */
-class request_class_testcase extends advanced_testcase {
+class request_class_test extends advanced_testcase {
 
     /**
      * Set config for use in the tests.
@@ -57,7 +57,7 @@ class request_class_testcase extends advanced_testcase {
 
         // Mock API request class.
         $tsrequest = $this->getMockBuilder(plagiarism_turnitinsim_request::class)
-            ->setMethods(['send_request'])
+            ->onlyMethods(['send_request'])
             ->setConstructorArgs([TURNITINSIM_ENDPOINT_WEBHOOKS])
             ->getMock();
 
