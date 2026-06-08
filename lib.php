@@ -288,7 +288,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                             default       => ''
                         };
                         $orcolour = ' turnitinsim_or_score_colour_' . $csssuffix;
-                        $status = html_writer::tag('div', $score, array('class' => 'turnitinsim_or_score' . $orcolour));
+                        $status = html_writer::tag('div', $score.'%', array('class' => 'turnitinsim_or_score' . $orcolour));
                         break;
 
                     case TURNITINSIM_SUBMISSION_STATUS_EULA_NOT_ACCEPTED:
