@@ -558,12 +558,7 @@ class plagiarism_turnitinsim_submission {
                 }
 
                 // Queue each answer to a question.
-                if (class_exists('\mod_quiz\quiz_attempt')) {
-                    $quizattemptclass = '\mod_quiz\quiz_attempt';
-                } else {
-                    $quizattemptclass = 'quiz_attempt';
-                }
-                $attempt = $quizattemptclass::create($this->getitemid());
+                $attempt = \mod_quiz\quiz_attempt::create($this->getitemid());
                 foreach ($attempt->get_slots() as $slot) {
                     $qa = $attempt->get_question_attempt($slot);
                     $quizanswer = $qa->get_usage_id().'-'.$qa->get_slot();

@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/setup_form.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
-
 /**
  * Tests for settings form.
  */
@@ -133,10 +131,10 @@ class setupform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display();
 
-        handle_deprecation::assertcontains($this, '</form>', $output);
+        $this->assertStringContainsString( '</form>', $output);
 
         // Verify that FERPA statement is present.
-        handle_deprecation::assertcontains($this, get_string('viewerpermissionferpa', 'plagiarism_turnitinsim'), $output);
+        $this->assertStringContainsString( get_string('viewerpermissionferpa', 'plagiarism_turnitinsim'), $output);
     }
 
     /**
@@ -171,6 +169,6 @@ class setupform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_setup_form();
         $output = $form->display_features();
 
-        handle_deprecation::assertcontains($this, get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'), $output);
+        $this->assertStringContainsString( get_string('turnitinfeatures::moreinfo', 'plagiarism_turnitinsim'), $output);
     }
 }
