@@ -283,15 +283,19 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020061202) {
-        // This line needs to be included in all future upgrade blocks until we drop 3.8 support.
-        // This is because a user may upgrade Moodle after upgrading to this version.
-        (new handle_deprecation)->unset_turnitinsim_use();
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        if (!empty($turnitinsimuse)) {
+            unset_config('turnitinsim_use', 'plagiarism');
+        }
 
         upgrade_plugin_savepoint(true, 2020061202, 'plagiarism', 'turnitinsim');
     }
 
     if ($oldversion < 2020092301) {
-        (new handle_deprecation)->unset_turnitinsim_use();
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        if (!empty($turnitinsimuse)) {
+            unset_config('turnitinsim_use', 'plagiarism');
+        }
 
         $table = new xmldb_table('plagiarism_turnitinsim_sub');
         $field = new xmldb_field('quizanswer', XMLDB_TYPE_CHAR, '32', null, false, null, 0, 'tiiretrytime');
@@ -307,7 +311,10 @@ function xmldb_plagiarism_turnitinsim_upgrade($oldversion) {
     // Remove "/api" from the Turnitin URL as its been added to the endpoint constants.
     // Update field defaults for quizanswer to match install.xml.
     if ($oldversion < 2021030201) {
-        (new handle_deprecation)->unset_turnitinsim_use();
+        $turnitinsimuse = get_config('plagiarism', 'turnitinsim_use');
+        if (!empty($turnitinsimuse)) {
+            unset_config('turnitinsim_use', 'plagiarism');
+        }
 
         $turnitinapiurl = get_config('plagiarism_turnitinsim', 'turnitinapiurl');
 
