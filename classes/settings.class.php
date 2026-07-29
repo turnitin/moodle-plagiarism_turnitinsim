@@ -222,7 +222,8 @@ class plagiarism_turnitinsim_settings {
             $DB->update_record('plagiarism_turnitinsim_mod', $settings);
         } else {
             // Inserts only happen on activity creation, so if turnitinenabled is false - don't insert.
-            if ($settings->turnitinenabled) {
+            // Override if saving defaults (we know we're on the defaults page when cm == 0)
+            if ($settings->cm == 0 || $settings->turnitinenabled) {
                 $DB->insert_record('plagiarism_turnitinsim_mod', $settings);
             }
         }

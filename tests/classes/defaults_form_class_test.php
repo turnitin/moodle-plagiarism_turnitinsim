@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/plagiarism/turnitinsim/classes/defaults_form.class.php');
-require_once($CFG->dirroot . '/plagiarism/turnitinsim/utilities/handle_deprecation.php');
-
 /**
  * Tests for default settings form.
  */
@@ -88,6 +86,6 @@ class defaultsform_class_testcase extends advanced_testcase {
         $form = new plagiarism_turnitinsim_defaults_form();
         $output = $form->display();
 
-        handle_deprecation::assertcontains($this, '</form>', $output);
+        $this->assertStringContainsString('</form>', $output);
     }
 }

@@ -277,7 +277,17 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                     case TURNITINSIM_SUBMISSION_STATUS_COMPLETE:
                         $score = $submission->getoverallscore() . '%';
                         $submissionid = $submission->getid();
-                        $orcolour = ' turnitinsim_or_score_colour_' . round($submission->getoverallscore(), -1);
+                        $score = $submission->getoverallscore();
+                        $csssuffix = match (true) {
+                            $score === null || $score === '' => '',
+                            $score == 0   => '0',
+                            $score <= 25  => '25',
+                            $score <= 50  => '50',
+                            $score <= 75  => '75',
+                            $score <= 100 => '100',
+                            default       => ''
+                        };
+                        $orcolour = ' turnitinsim_or_score_colour_' . $csssuffix;
                         $status = html_writer::tag('div', $score, array('class' => 'turnitinsim_or_score' . $orcolour));
                         break;
 
@@ -721,11 +731,16 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
                 $tssubmission->setquizanswer($quizanswer);
 
                 // Check if this file has been submitted previously and re-use record.
-                $query = ' cm = ? AND userid = ? AND identifier = ? ';
-                $params = array($cm->id, $author, $pathnamehash);
+                $query = ' cm = ? AND identifier = ? ';
+                $params = array($cm->id, $pathnamehash);
+                // INT-24057 For group submissions, use the group ID instead of the user ID to
+                // indicate whether we should reuse the record
                 if (!is_null($groupid)) {
                     $query .= ' AND groupid = ?';
                     $params[] = $groupid;
+                } else {
+                    $query .= 'AND userid = ?';
+                    $params[] = $author;
                 }
                 $submission = $DB->get_record_select('plagiarism_turnitinsim_sub', $query, $params);
                 $filedetails = $tssubmission->get_file_details();
@@ -819,12 +834,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
         $submitter = new plagiarism_turnitinsim_user($eventdata['userid']);
 
         // Queue every question submitted in a quiz attempt.
-        if (class_exists('\mod_quiz\quiz_attempt')) {
-           $quizattemptclass = '\mod_quiz\quiz_attempt';
-        } else {
-            $quizattemptclass = 'quiz_attempt';
-        }
-        $attempt = $quizattemptclass::create($eventdata['objectid']);
+        $attempt = \mod_quiz\quiz_attempt::create($eventdata['objectid']);
 
         // Don't generate similarity reports for preview submissions
         if ($attempt->is_preview()) {
@@ -937,7 +947,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @param int $enabled 1 if plugin is to be enabled.
      */
     public static function enable_plugin($enabled) {
-        handle_deprecation::set_plugin_enabled($enabled);
+        set_config('enabled', $enabled, 'plagiarism_turnitinsim');
     }
 
     /**
@@ -947,7 +957,7 @@ class plagiarism_plugin_turnitinsim extends plagiarism_plugin {
      * @return mixed
      */
     public static function plugin_enabled() {
-        return handle_deprecation::get_plugin_enabled();
+        return get_config('plagiarism_turnitinsim', 'enabled');
     }
 }
 
