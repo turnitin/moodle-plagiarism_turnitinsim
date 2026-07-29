@@ -1,3 +1,19 @@
+### Date:       2026-July-29
+### Release:    v2026072901
+
+---
+
+#### Fixed Incorrect Similarity Report After Replacing Group Submission
+We fixed a bug where replacing a group submission with a file of the same name would incorrectly display the previous submission's Similarity Report.
+
+#### Fixed Plugin Settings Not Saving Correctly
+We fixed a bug where plugin settings were not saving correctly.
+
+#### UI Fixes
+UI fixes.
+
+---
+
 ### Date:       2025-November-13
 ### Release:    v2025111301
 
