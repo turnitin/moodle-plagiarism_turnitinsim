@@ -180,12 +180,19 @@ class plagiarism_turnitinsim_callback {
     /**
      * Generate a 64 character length hash of the request string.
      *
+     * An empty webhook secret must not be used as the HMAC key. The public callback
+     * compares this result with !==, and false never matches a request header.
+     *
      * @param string $requeststring The request in string format.
-     * @return string A 64 character length hash.
+     * @return string|false A 64 character length hash, or false when the webhook secret is not set.
      * @throws dml_exception
      */
     public function expected_callback_signature($requeststring) {
         $secret = get_config('plagiarism_turnitinsim', 'turnitin_webhook_secret');
+        if (!is_string($secret) || $secret === '') {
+            return false;
+        }
+
         $sig = hash_hmac('sha256', $requeststring, base64_decode($secret));
 
         return $sig;
