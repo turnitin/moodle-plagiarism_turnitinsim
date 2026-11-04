@@ -376,9 +376,26 @@ class callback_class_testcase extends advanced_testcase {
     public function test_expected_callback_signature_generates_hash() {
         $this->resetAfterTest();
 
+        set_config('turnitin_webhook_secret', 'secret', 'plagiarism_turnitinsim');
+
         $tscallback = new plagiarism_turnitinsim_callback( new plagiarism_turnitinsim_request() );
         $hash = $tscallback->expected_callback_signature('{"any": "string","but": "usually", "raw": "json"}');
 
         $this->assertMatchesRegularExpression("/[0-9a-f]{64}/i", $hash);
+    }
+
+    /**
+     * Test that a missing or empty webhook secret does not produce a signature.
+     */
+    public function test_expected_callback_signature_empty_secret() {
+        $this->resetAfterTest();
+
+        $tscallback = new plagiarism_turnitinsim_callback(new plagiarism_turnitinsim_request());
+        $request = '{"any": "string"}';
+
+        $this->assertFalse($tscallback->expected_callback_signature($request));
+
+        set_config('turnitin_webhook_secret', '', 'plagiarism_turnitinsim');
+        $this->assertFalse($tscallback->expected_callback_signature($request));
     }
 }
